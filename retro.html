@@ -16,6 +16,9 @@
   a.go { display:block; background:#3b82f6; color:#fff; text-decoration:none;
          padding:18px; border-radius:10px; font-size:18px; font-weight:700; }
   .hint { color:#9ca3af; font-size:13px; margin-top:24px; line-height:1.7; }
+  a.alt { display:block; background:#27272a; color:#e5e7eb; text-decoration:none;
+          padding:13px; border-radius:8px; margin-top:9px; font-size:15px;
+          border:1px solid #3f3f46; }
   code { display:block; background:#111; color:#93c5fd; padding:10px;
          border-radius:6px; margin-top:8px; font-size:11px;
          word-break:break-all; user-select:all; -webkit-user-select:all; }
@@ -26,9 +29,16 @@
   <h1>🌙 오늘 회고</h1>
   <div class="date" id="date"></div>
   <a class="go" id="go" href="#">📝 옵시디언에서 열기</a>
+
   <div class="hint">
-    버튼을 눌러도 앱이 안 열리면, 아래 주소를 길게 눌러 복사한 뒤
-    브라우저 주소창에 붙여넣으세요.
+    위 버튼이 <b>앱만 열고 오늘 노트로 안 가면</b>,
+    아래를 위에서부터 하나씩 눌러 보고
+    <b>어느 번호가 노트를 열었는지</b> 알려주세요.
+  </div>
+  <div id="alts"></div>
+
+  <div class="hint">
+    전부 실패하면 아래 주소를 길게 눌러 복사한 뒤 브라우저 주소창에 붙여넣으세요.
     <code id="uri"></code>
   </div>
 </div>
@@ -48,16 +58,39 @@
   }
 
   var file = "Daily/" + d.slice(0, 7) + "/" + d;
-  var uri  = "obsidian://open?vault=" + encodeURIComponent(VAULT) +
-             "&file=" + encodeURIComponent(file);
+
+  // 슬래시는 살려 둔 인코딩. %2F 를 못 푸는 구현이 있어 경로 구분자는 그대로 둔다.
+  function enc(s) { return encodeURIComponent(s).replace(/%2F/g, "/"); }
+
+  var V = encodeURIComponent(VAULT);
+
+  // 1번을 기본으로 쓴다: vault 파라미터를 빼면 '마지막에 연 볼트'가 쓰여
+  // 폰 볼트 이름이 무엇이든 상관이 없어진다.
+  var CANDS = [
+    ["① 볼트 이름 없이",        "obsidian://open?file=" + enc(file)],
+    ["② 볼트 이름 + 슬래시",    "obsidian://open?vault=" + V + "&file=" + enc(file)],
+    ["③ 볼트 이름 + %2F",       "obsidian://open?vault=" + V + "&file=" + encodeURIComponent(file)],
+    ["④ .md 확장자까지",        "obsidian://open?vault=" + V + "&file=" + enc(file + ".md")],
+    ["⑤ 파일명만 (폴더 생략)",  "obsidian://open?file=" + encodeURIComponent(d)]
+  ];
+
+  var uri = CANDS[0][1];
 
   document.getElementById("date").textContent = d;
   document.getElementById("go").href = uri;
   document.getElementById("uri").textContent = uri;
 
-  // 자동 이동 시도. 브라우저가 사용자 제스처를 요구하면 무시되고,
-  // 그때는 위 버튼을 누르면 된다(탭 한 번 추가).
-  setTimeout(function () { location.href = uri; }, 400);
+  var alts = document.getElementById("alts");
+  CANDS.forEach(function (c) {
+    var a = document.createElement("a");
+    a.className = "alt";
+    a.href = c[1];
+    a.textContent = c[0];
+    alts.appendChild(a);
+  });
+
+  // 자동 이동은 넣지 않는다. 후보를 눌러 보려고 돌아왔는데
+  // 페이지가 곧바로 앱으로 튕겨 버리면 진단 자체가 불가능해진다.
 </script>
 </body>
 </html>

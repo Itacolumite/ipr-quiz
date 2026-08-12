@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>오늘 회고 열기</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin:0; background:#1c1c1c; color:#e5e7eb; min-height:100vh;
+         display:flex; align-items:center; justify-content:center;
+         font-family:-apple-system,BlinkMacSystemFont,'Malgun Gothic',sans-serif; }
+  .box { width:100%; max-width:420px; padding:28px 22px; text-align:center; }
+  h1 { font-size:19px; margin:0 0 6px; }
+  .date { color:#9ca3af; font-size:14px; margin-bottom:26px; }
+  a.go { display:block; background:#3b82f6; color:#fff; text-decoration:none;
+         padding:18px; border-radius:10px; font-size:18px; font-weight:700; }
+  .hint { color:#9ca3af; font-size:13px; margin-top:24px; line-height:1.7; }
+  code { display:block; background:#111; color:#93c5fd; padding:10px;
+         border-radius:6px; margin-top:8px; font-size:11px;
+         word-break:break-all; user-select:all; -webkit-user-select:all; }
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>🌙 오늘 회고</h1>
+  <div class="date" id="date"></div>
+  <a class="go" id="go" href="#">📝 옵시디언에서 열기</a>
+  <div class="hint">
+    버튼을 눌러도 앱이 안 열리면, 아래 주소를 길게 눌러 복사한 뒤
+    브라우저 주소창에 붙여넣으세요.
+    <code id="uri"></code>
+  </div>
+</div>
+<script>
+  // 볼트 이름이 폰에서 다르면 이 값만 바꾸면 된다.
+  var VAULT = "Verne";
+
+  function pad(n){ return (n < 10 ? "0" : "") + n; }
+
+  var q = new URLSearchParams(location.search).get("d");
+  var d;
+  if (q && /^\d{4}-\d{2}-\d{2}$/.test(q)) {
+    d = q;
+  } else {
+    var t = new Date();
+    d = t.getFullYear() + "-" + pad(t.getMonth() + 1) + "-" + pad(t.getDate());
+  }
+
+  var file = "Daily/" + d.slice(0, 7) + "/" + d;
+  var uri  = "obsidian://open?vault=" + encodeURIComponent(VAULT) +
+             "&file=" + encodeURIComponent(file);
+
+  document.getElementById("date").textContent = d;
+  document.getElementById("go").href = uri;
+  document.getElementById("uri").textContent = uri;
+
+  // 자동 이동 시도. 브라우저가 사용자 제스처를 요구하면 무시되고,
+  // 그때는 위 버튼을 누르면 된다(탭 한 번 추가).
+  setTimeout(function () { location.href = uri; }, 400);
+</script>
+</body>
+</html>

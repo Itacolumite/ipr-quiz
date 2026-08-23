@@ -1,0 +1,31 @@
+{
+  "name": "산업재산권법 조문 암기 퀴즈",
+  "short_name": "산재법 퀴즈",
+  "description": "변리사 1차 시험 대비 산업재산권법(특허·상표·디자인보호법) 조문 간격반복(SRS) 암기 웹앱",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F6F7FB",
+  "theme_color": "#3157C9",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

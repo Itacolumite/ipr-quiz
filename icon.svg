@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B66E8"/>
+      <stop offset="100%" stop-color="#1E3E9E"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFE494"/>
+      <stop offset="100%" stop-color="#F5B838"/>
+    </linearGradient>
+  </defs>
+  <!-- Rounded Squircle Background -->
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  
+  <!-- Subtle Inner Border -->
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="none" stroke="#ffffff" stroke-opacity="0.15" stroke-width="8"/>
+
+  <!-- Law Scales & Emblem -->
+  <g transform="translate(256, 220)" fill="none" stroke="#FFFFFF" stroke-width="18" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Center Pillar -->
+    <line x1="0" y1="-90" x2="0" y2="120"/>
+    <line x1="-50" y1="120" x2="50" y2="120"/>
+    <!-- Top Beam -->
+    <line x1="-120" y1="-50" x2="120" y2="-50"/>
+    <!-- Top Finial -->
+    <circle cx="0" cy="-90" r="14" fill="#FFFFFF"/>
+    
+    <!-- Left Scale Pan -->
+    <line x1="-120" y1="-50" x2="-160" y2="20" stroke-width="12"/>
+    <line x1="-120" y1="-50" x2="-80" y2="20" stroke-width="12"/>
+    <path d="M -180 20 Q -120 70 -60 20 Z" fill="url(#gold)" stroke="none"/>
+    <path d="M -180 20 Q -120 70 -60 20" stroke="#FFE494" stroke-width="10"/>
+
+    <!-- Right Scale Pan -->
+    <line x1="120" y1="-50" x2="80" y2="20" stroke-width="12"/>
+    <line x1="120" y1="-50" x2="160" y2="20" stroke-width="12"/>
+    <path d="M 60 20 Q 120 70 180 20 Z" fill="url(#gold)" stroke="none"/>
+    <path d="M 60 20 Q 120 70 180 20" stroke="#FFE494" stroke-width="10"/>
+  </g>
+
+  <!-- Law Text Badge -->
+  <rect x="156" y="385" width="200" height="54" rx="27" fill="#FFFFFF" fill-opacity="0.18"/>
+  <text x="256" y="423" font-family="'Noto Sans KR', system-ui, -apple-system, sans-serif" font-size="28" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="4">산재법 퀴즈</text>
+</svg>

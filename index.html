@@ -76,6 +76,8 @@ button,input,select{font:inherit}
 .hud-btns{display:flex;gap:6px;align-items:center}
 .hud-btn{border:1px solid #D9DEEA;background:#fff;border-radius:999px;width:28px;height:28px;font-weight:800;color:#596273;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:12px;padding:0}
 .badge.exam{background:#FFF0F5;color:#B43C5E;border:1px solid #F5C6CB}
+.badge.sure{background:#FDE8E8;color:#B02A2A;border:1px solid #F3B9B9}
+.conf-q{font-size:13px;font-weight:700;color:#596273;align-self:center;margin-right:2px}
 .exam-note{margin-top:8px;padding:8px 10px;background:#FFF0F5;border-left:3px solid #B43C5E;border-radius:4px;font-size:12.5px;color:#7A1E38;line-height:1.5}
 .sheet textarea{width:100%;height:75px;font-family:monospace;font-size:11.5px;padding:7px;border:1px solid #D9DEEA;border-radius:6px;resize:vertical;margin-top:6px;background:#F8F9FD;color:#20242C;box-sizing:border-box}
 .sheet-btns{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
@@ -108,6 +110,8 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
   .card{background:#1A1E27;border-color:#2A3040;box-shadow:0 3px 12px rgba(0,0,0,.35)}
   .badge.gray{background:#232838;color:#AEB6C6}
   .badge.exam{background:#2E1A24;color:#FF94B8;border-color:#5A2A3E}
+  .badge.sure{background:#3A1D1D;color:#FF9B9B;border-color:#5E2E2E}
+  .conf-q{color:#AEB6C6}
   .exam-note{background:#26151E;border-color:#B43C5E;color:#E8C5D2}
   .sheet textarea{background:#232838;color:#E6E8EE;border-color:#333A4C}
   .sheet-section{border-color:#2A3040}
@@ -344,7 +348,7 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
   var settings=loadJson(SETTINGS_KEY,{newPerDay:10});
   var articleIndex=buildArticleIndex();
 
-  function resetTab(t){state[t]={queue:null,idx:0,answered:false,hinted:false,hintStage:0,mcSel:-1};scores[t]={correct:0,total:0,wrong:[]};}
+  function resetTab(t){state[t]={queue:null,idx:0,answered:false,hinted:false,hintStage:0,mcSel:-1,needConf:false};scores[t]={correct:0,total:0,wrong:[]};}
   function st(){return state[TABS[tabIdx]];}
   function currentScore(){return scores[TABS[tabIdx]];}
 
@@ -364,8 +368,9 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
 
   // ── SM-2 lite 스케줄링: 성공 시 간격 확장, 실패·힌트 시 당일 재학습 ──
   function applyResult(q,field,pass){
-    var r=records[q.id]||{c:0,w:0,h:0,t:0,reps:0,iv:0,ef:2.5,due:todayKst()};
+    var r=records[q.id]||{c:0,w:0,h:0,t:0,reps:0,iv:0,ef:2.5,due:todayKst(),sw:0,uw:0};
     if(r.reps==null){r.reps=0;r.iv=0;r.ef=2.5;r.due=todayKst();} // v1 기록 마이그레이션
+    if(r.sw==null){r.sw=0;r.uw=0;} // v2 기록 마이그레이션 (확신도)
     r[field]++; r.t=Date.now();
     if(pass){
       r.reps++;
@@ -435,6 +440,8 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
     return allQuestions().filter(function(q){var r=rec(q.id);return !!r&&(r.w+r.h)>0;})
       .sort(function(a,b){
         var ra=rec(a.id),rb=rec(b.id);
+        var sa=(ra.sw||0)>0?1:0, sb=(rb.sw||0)>0?1:0;
+        if(sa!==sb)return sb-sa; // 확신하고 틀린 문항을 앞으로
         var wa=(ra.w+ra.h)/(ra.c+ra.w+ra.h),wb=(rb.w+rb.h)/(rb.c+rb.w+rb.h);
         return wb-wa||rb.t-ra.t;
       });
@@ -570,6 +577,7 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
     var stats=articleStats(q);
     var isNew=!isSeen(r);
     var recBadge=(stats.c+stats.wh>0)?'<span class="badge rec">이 조문: '+stats.c+'맞음 '+stats.wh+'틀림</span>':'';
+    if(r&&r.sw>0)recBadge+='<span class="badge sure">⚡ 확신 오답 '+r.sw+'</span>';
     var newBadge=isNew?'<span class="badge new">신규</span>':(r&&r.iv>0?'<span class="badge new">간격 '+r.iv+'일</span>':'');
     if(q.type==='cloze'&&q.role!=='enum_set'){
       var nb=clozeBlankCount(q);
@@ -614,6 +622,11 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
       +'<button id="skip" class="btn secondary">건너뛰기<small>Esc</small></button>'
       +'<button id="next" class="btn success" hidden>다음<small>Enter</small></button>'
       +'</div>'
+      +'<div class="actions" id="conf-row" hidden>'
+      +'<span class="conf-q">답이 확실했나요?</span>'
+      +'<button id="conf-sure" class="btn amber">⚡ 확신했는데 틀림<small>1</small></button>'
+      +'<button id="conf-unsure" class="btn secondary">몰랐음<small>2</small></button>'
+      +'</div>'
       +'<button id="src" class="hint-src">원문 보기 (답 확정 전엔 틀림으로 기록) — Ctrl+/</button><div id="hintbox" class="hintbox">'+esc(q.original||'')+'</div>'
       +'</section>';
     area.innerHTML=body;
@@ -621,6 +634,8 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
     document.getElementById('check').addEventListener('click',check);
     document.getElementById('skip').addEventListener('click',skip);
     document.getElementById('next').addEventListener('click',next);
+    document.getElementById('conf-sure').addEventListener('click',function(){rateWrong(true);});
+    document.getElementById('conf-unsure').addEventListener('click',function(){rateWrong(false);});
     document.getElementById('hint').addEventListener('click',useHint);
     document.getElementById('src').addEventListener('click',toggleSource);
     var pb=document.getElementById('picksbtn');
@@ -794,7 +809,8 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
       else setResult('bad','오답입니다. 오늘 큐에 다시 나옵니다.','정답: <strong>'+esc(q.answer)+'</strong>');
     }
     if(wasNew&&tabIdx!==REVIEW)bumpNewCount(q.law);
-    document.getElementById('next').hidden=false;
+    if(finalOk){document.getElementById('next').hidden=false;}
+    else{document.getElementById('conf-row').hidden=false;s.needConf=true;}
     paint();
   }
   function skip(){
@@ -812,8 +828,21 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
     }
     next();
   }
+  // 하이퍼커렉션: 확신하고 틀린 문항은 따로 세어 복습에서 앞으로 당긴다
+  function rateWrong(sure){
+    var s=st(); if(!s.needConf)return;
+    var q=list()[s.idx];
+    if(q&&records[q.id]){
+      var r=records[q.id];
+      if(r.sw==null){r.sw=0;r.uw=0;}
+      if(sure)r.sw++; else r.uw++;
+      saveRecords();
+    }
+    next();
+  }
   function next(){
     var s=st();
+    s.needConf=false;
     s.idx++; s.answered=false; s.hinted=false; s.hintStage=0; s.mcSel=-1;
     render();
   }
@@ -907,6 +936,9 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
       if(i<q.options.length){e.preventDefault();selectOption(i);}
       return;
     }
+    if(st().needConf&&(e.key==='1'||e.key==='2')&&!e.ctrlKey&&!e.altKey){
+      e.preventDefault();rateWrong(e.key==='1');return;
+    }
     if(e.key==='Enter'&&(e.target===document.body||e.target.tagName==='BUTTON'||q.type==='mc')){
       e.preventDefault();
       if(st().answered)next(); else check();
@@ -986,6 +1018,8 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
             records[k].c=Math.max(existing.c||0,incoming.c||0);
             records[k].w=Math.max(existing.w||0,incoming.w||0);
             records[k].h=Math.max(existing.h||0,incoming.h||0);
+            records[k].sw=Math.max(existing.sw||0,incoming.sw||0);
+            records[k].uw=Math.max(existing.uw||0,incoming.uw||0);
             records[k].reps=Math.max(existing.reps||0,incoming.reps||0);
             records[k].iv=Math.max(existing.iv||0,incoming.iv||0);
             records[k].ef=incoming.ef||existing.ef||2.5;

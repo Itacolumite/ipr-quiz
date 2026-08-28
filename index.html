@@ -143,7 +143,12 @@ body.browse .main{max-width:1180px}
 .hud-btn{border:1px solid #D9DEEA;background:#fff;border-radius:999px;width:28px;height:28px;font-weight:800;color:#596273;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:12px;padding:0}
 .badge.exam{background:#FFF0F5;color:#B43C5E;border:1px solid #F5C6CB}
 .badge.sure{background:#FDE8E8;color:#B02A2A;border:1px solid #F3B9B9}
-.conf-q{font-size:13px;font-weight:700;color:#596273;align-self:center;margin-right:2px}
+/* 확신 행은 위쪽 버튼들과 격자를 공유하면 안 된다. 질문 글자가 버튼 자리를
+   차지해 배치가 어긋난다. 질문은 한 줄로 올리고 버튼 두 개만 나란히 놓는다. */
+.confrow{margin-top:14px;padding-top:12px;border-top:1px dashed #E2E6EF}
+.confrow[hidden]{display:none}
+.conf-q{display:block;font-size:13px;font-weight:800;color:#596273;margin-bottom:8px}
+.conf-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .exam-note{margin-top:8px;padding:8px 10px;background:#FFF0F5;border-left:3px solid #B43C5E;border-radius:4px;font-size:12.5px;color:#7A1E38;line-height:1.5}
 .sheet textarea{width:100%;height:75px;font-family:monospace;font-size:11.5px;padding:7px;border:1px solid #D9DEEA;border-radius:6px;resize:vertical;margin-top:6px;background:#F8F9FD;color:#20242C;box-sizing:border-box}
 .sheet-btns{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
@@ -198,6 +203,7 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
   .badge.exam{background:#2E1A24;color:#FF94B8;border-color:#5A2A3E}
   .badge.sure{background:#3A1D1D;color:#FF9B9B;border-color:#5E2E2E}
   .conf-q{color:#AEB6C6}
+  .confrow{border-top-color:#2A3040}
   .exam-note{background:#26151E;border-color:#B43C5E;color:#E8C5D2}
   .sheet textarea{background:#232838;color:#E6E8EE;border-color:#333A4C}
   .sheet-section{border-color:#2A3040}
@@ -737,10 +743,12 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
       +'<button id="skip" class="btn secondary">건너뛰기<small>Esc</small></button>'
       +'<button id="next" class="btn success" hidden>다음<small>Enter</small></button>'
       +'</div>'
-      +'<div class="actions" id="conf-row" hidden>'
+      +'<div class="confrow" id="conf-row" hidden>'
       +'<span class="conf-q">답이 확실했나요?</span>'
+      +'<div class="conf-btns">'
       +'<button id="conf-sure" class="btn amber">⚡ 확신했는데 틀림<small>1</small></button>'
       +'<button id="conf-unsure" class="btn secondary">몰랐음<small>2</small></button>'
+      +'</div>'
       +'</div>'
       +'<button id="src" class="hint-src">원문 보기 (답 확정 전엔 틀림으로 기록) — Ctrl+/</button><div id="hintbox" class="hintbox">'+esc(q.original||'')+'</div>'
       +'</section>';

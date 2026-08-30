@@ -1483,7 +1483,7 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
   var oxShown={},oxOrder={};
   var EXAM_KEY='ipquiz.exammode.v1';
   var examBound=false;
-  var exam=loadJson(EXAM_KEY,{law:'특허법',round:null,shown:20,filter:'all'});
+  var exam=loadJson(EXAM_KEY,{law:'특허법',round:null,shown:20,filter:'all',pol:'',kind:''});
   function gradeOx(id,pick){
     oxLog[id]={pick:pick,t:Date.now()};
     saveJson(OX_KEY,oxLog);
@@ -1595,6 +1595,10 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
       if(exam.filter==='todo')return !rec;
       if(exam.filter==='wrong')return rec&&rec.pick!==q.a;
       return true;
+    }).filter(function(q){
+      if(exam.pol&&q.p!==exam.pol)return false;
+      if(exam.kind&&q.k!==exam.kind)return false;
+      return true;
     });
     var shown=exam.shown||20;
     var html='<div class="lawseg">'+LAWS.map(function(l){
@@ -1613,6 +1617,20 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
         .map(function(o){
           return '<button type="button" data-efilter="'+o[0]+'" class="'+(exam.filter===o[0]?'active':'')+'">'+esc(o[1])+'</button>';
         }).join('')+'</div>';
+    // 극성·유형 필터. 값은 데이터에 이미 들어 있다.
+    function seg(field,label,vals){
+      return '<div class="starseg" style="flex-wrap:wrap"><span>'+label+'</span>'
+        +[['','전체']].concat(vals.map(function(v){return [v,v];})).map(function(o){
+            return '<button type="button" data-e'+field+'="'+esc(o[0])+'" class="'
+              +(exam[field]===o[0]?'active':'')+'">'+esc(o[1])+'</button>';
+          }).join('')+'</div>';
+    }
+    var pols=[],kinds=[];
+    all.forEach(function(q){
+      if(q.p&&pols.indexOf(q.p)<0)pols.push(q.p);
+      if(q.k&&kinds.indexOf(q.k)<0)kinds.push(q.k);
+    });
+    html+=seg('pol','극성',pols)+seg('kind','유형',kinds);
     html+='<div class="card"><div class="exhead">제'+exam.round+'회 정오문제 '
       +'<span class="pill q">'+list.length+'건</span>'
       +(done.length?'<span class="pill '+(right===done.length?'ok':'wh')+'">'+right+'/'+done.length+' 정답</span>':'')
@@ -1629,6 +1647,10 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
       if(mode!=='exam')return;
       var lb=e.target.closest('[data-elaw]');
       if(lb){exam.law=lb.getAttribute('data-elaw');exam.round=null;exam.shown=20;saveJson(EXAM_KEY,exam);render();return;}
+      var pb=e.target.closest('[data-epol]');
+      if(pb){exam.pol=pb.getAttribute('data-epol');exam.shown=20;saveJson(EXAM_KEY,exam);render();return;}
+      var kb=e.target.closest('[data-ekind]');
+      if(kb){exam.kind=kb.getAttribute('data-ekind');exam.shown=20;saveJson(EXAM_KEY,exam);render();return;}
       var fb=e.target.closest('[data-efilter]');
       if(fb){exam.filter=fb.getAttribute('data-efilter');exam.shown=20;saveJson(EXAM_KEY,exam);render();return;}
       var rb=e.target.closest('[data-eround]');

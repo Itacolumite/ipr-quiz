@@ -1108,6 +1108,7 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
       version: 1,
       exportedAt: new Date().toISOString(),
       records: records,
+      ox: oxLog,          // 기출 정오문제 풀이 기록. 빠뜨리면 기기를 옮길 때 사라진다.
       settings: settings,
       newday: newdayInfo()
     };
@@ -1170,6 +1171,20 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
         records=backup.records;
         count=Object.keys(records).length;
       }
+      // 정오문제 기록. 병합은 나중에 푼 것을 남긴다.
+      var oxCount=0;
+      if(backup.ox&&typeof backup.ox==='object'){
+        if(isMerge){
+          Object.keys(backup.ox).forEach(function(k){
+            var inc=backup.ox[k],cur=oxLog[k];
+            if(!cur||(inc.t||0)>(cur.t||0)){oxLog[k]=inc;oxCount++;}
+          });
+        }else{
+          oxLog=backup.ox;
+          oxCount=Object.keys(oxLog).length;
+        }
+        saveJson(OX_KEY,oxLog);
+      }
       if(backup.settings&&typeof backup.settings==='object'){
         if(backup.settings.newPerDay!=null)settings.newPerDay=backup.settings.newPerDay;
         if(backup.settings.chFilter)settings.chFilter=backup.settings.chFilter;
@@ -1180,7 +1195,8 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
       updateDataSummary();
       render();
       paint();
-      showDataMsg('ok',(isMerge?'안전 병합':'전체 덮어쓰기')+' 완료! '+count+'개 문항 기록이 반영되었습니다.');
+      showDataMsg('ok',(isMerge?'안전 병합':'전체 덮어쓰기')+' 완료! 문항 기록 '+count+'개'
+        +(oxCount?', 정오문제 기록 '+oxCount+'개':'')+'가 반영되었습니다.');
     }catch(err){
       showDataMsg('err','복원 중 JSON 파싱 오류가 발생했습니다: '+err.message);
     }
@@ -1467,7 +1483,7 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
   var oxShown={},oxOrder={};
   var EXAM_KEY='ipquiz.exammode.v1';
   var examBound=false;
-  var exam=loadJson(EXAM_KEY,{law:'특허법',round:null,shown:20});
+  var exam=loadJson(EXAM_KEY,{law:'특허법',round:null,shown:20,filter:'all'});
   function gradeOx(id,pick){
     oxLog[id]={pick:pick,t:Date.now()};
     saveJson(OX_KEY,oxLog);
@@ -1569,9 +1585,17 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
   function renderExam(){
     var db=OXDB[exam.law]||{},rounds=Object.keys(db.byRound||{}).map(Number).sort(function(a,b){return b-a;});
     if(exam.round===null||rounds.indexOf(exam.round)<0)exam.round=rounds[0]||null;
-    var list=(db.byRound&&db.byRound[String(exam.round)])||[];
-    var done=list.filter(function(q){return oxLog[q.i];});
+    var all=(db.byRound&&db.byRound[String(exam.round)])||[];
+    var done=all.filter(function(q){return oxLog[q.i];});
     var right=done.filter(function(q){return oxLog[q.i].pick===q.a;}).length;
+    var wrong=done.length-right;
+    // 필터: 전체 / 아직 안 푼 것 / 틀린 것
+    var list=all.filter(function(q){
+      var rec=oxLog[q.i];
+      if(exam.filter==='todo')return !rec;
+      if(exam.filter==='wrong')return rec&&rec.pick!==q.a;
+      return true;
+    });
     var shown=exam.shown||20;
     var html='<div class="lawseg">'+LAWS.map(function(l){
         var n=((OXDB[l]||{}).total)||0;
@@ -1584,10 +1608,16 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
           var t=db.byRound[String(r)].length;
           return '<button type="button" data-eround="'+r+'" class="'+(r===exam.round?'active':'')+'">'+r+'회 <span style="opacity:.7">'+t+'</span></button>';
         }).join('')+'</div>';
+    html+='<div class="starseg" style="flex-wrap:wrap"><span>보기</span>'
+      +[['all','전체 '+all.length],['todo','안 푼 것 '+(all.length-done.length)],['wrong','틀린 것 '+wrong]]
+        .map(function(o){
+          return '<button type="button" data-efilter="'+o[0]+'" class="'+(exam.filter===o[0]?'active':'')+'">'+esc(o[1])+'</button>';
+        }).join('')+'</div>';
     html+='<div class="card"><div class="exhead">제'+exam.round+'회 정오문제 '
       +'<span class="pill q">'+list.length+'건</span>'
       +(done.length?'<span class="pill '+(right===done.length?'ok':'wh')+'">'+right+'/'+done.length+' 정답</span>':'')
       +'</div>'
+      +(list.length?'':'<div class="empty">해당하는 문항이 없습니다.</div>')
       +'<div class="oxlist">'+list.slice(0,shown).map(oxItemHtml).join('')+'</div>'
       +(shown<list.length?'<button type="button" class="oxmore" data-emore="1">더 보기 ('+(list.length-shown)+'건 남음)</button>':'')
       +'</div>';
@@ -1599,6 +1629,8 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
       if(mode!=='exam')return;
       var lb=e.target.closest('[data-elaw]');
       if(lb){exam.law=lb.getAttribute('data-elaw');exam.round=null;exam.shown=20;saveJson(EXAM_KEY,exam);render();return;}
+      var fb=e.target.closest('[data-efilter]');
+      if(fb){exam.filter=fb.getAttribute('data-efilter');exam.shown=20;saveJson(EXAM_KEY,exam);render();return;}
       var rb=e.target.closest('[data-eround]');
       if(rb){exam.round=Number(rb.getAttribute('data-eround'));exam.shown=20;saveJson(EXAM_KEY,exam);render();return;}
       if(e.target.closest('[data-emore]')){exam.shown=(exam.shown||20)+20;saveJson(EXAM_KEY,exam);render();return;}

@@ -140,6 +140,14 @@ details[open]>summary>.theme-chevron{transform:rotate(90deg);color:var(--accent)
 body.dark .oxlink-btn{background:rgba(147,197,253,0.12);color:#93C5FD;border-color:#60A5FA}
 body.dark .oxcase-btn{background:#2E1065;color:#D8B4FE;border-color:#6B21A8}
 body.dark .oxcase-btn:hover{background:#9333EA;color:#fff;border-color:#9333EA}
+.exam-case-banner{display:flex;justify-content:space-between;align-items:center;background:#FAF5FF;border:1px solid #D8B4FE;border-radius:8px;padding:9px 13px;margin-bottom:12px;gap:8px;flex-wrap:wrap}
+.exam-case-banner-info{font-size:13px;font-weight:800;color:#6B21A8}
+.exam-case-banner-clear{border:1px solid #C084FC;background:#fff;color:#7E22CE;font-size:11.5px;font-weight:800;padding:3px 9px;border-radius:999px;cursor:pointer;transition:all .15s}
+.exam-case-banner-clear:hover{background:#7E22CE;color:#fff}
+body.dark .exam-case-banner{background:#2E1065;border-color:#6B21A8}
+body.dark .exam-case-banner-info{color:#E9D5FF}
+body.dark .exam-case-banner-clear{background:#1A1E27;color:#D8B4FE;border-color:#7E22CE}
+body.dark .exam-case-banner-clear:hover{background:#9333EA;color:#fff}
 .oxmore{width:100%;margin-top:9px;border:1px solid #D9DEEA;background:#fff;border-radius:8px;padding:10px;font-size:12.5px;font-weight:800;color:#596273;cursor:pointer}
 .stars{color:#E8A400;font-size:11px;flex:none;letter-spacing:-1px}
 .crumb{font-size:12px;font-weight:800;color:var(--accent);margin-bottom:7px}
@@ -2245,7 +2253,12 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
     var right=done.filter(function(q){return oxLog[q.i].pick===q.a;}).length;
     var wrong=done.length-right;
     // 필터: 전체 / 아직 안 푼 것 / 틀린 것
+    var normCase = exam.case ? exam.case.replace(/\s+/g, '') : null;
     var list=all.filter(function(q){
+      if(normCase){
+        var matched = (q.cs || []).some(function(c){ return c.replace(/\s+/g, '') === normCase; });
+        if(!matched) return false;
+      }
       var rec=oxLog[q.i];
       if(exam.filter==='todo')return !rec;
       if(exam.filter==='wrong')return rec&&rec.pick!==q.a;
@@ -2286,11 +2299,19 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
       if(q.k&&kinds.indexOf(q.k)<0)kinds.push(q.k);
     });
     html+=seg('pol','극성',pols)+seg('kind','유형',kinds);
-    html+='<div class="card"><div class="exhead">제'+exam.round+'회 정오문제 '
+    var caseBanner = exam.case ? (
+      '<div class="exam-case-banner">'
+      + '<div class="exam-case-banner-info">⚖️ 판례 <b>' + esc(exam.case) + '</b> 인용 기출 정오 (' + list.length + '문항)</div>'
+      + '<button type="button" class="exam-case-banner-clear" id="clear-case-filter">✕ 전체 문제 보기</button>'
+      + '</div>'
+    ) : '';
+    html+='<div class="card">'
+      + caseBanner
+      + '<div class="exhead">제'+exam.round+'회 정오문제 '
       +'<span class="pill q">'+list.length+'건</span>'
       +(done.length?'<span class="pill '+(right===done.length?'ok':'wh')+'">'+right+'/'+done.length+' 정답</span>':'')
       +'</div>'
-      +(list.length?'':'<div class="empty">해당하는 문항이 없습니다.</div>')
+      +(list.length?'':'<div class="empty">해당하는 문항이 없습니다.' + (exam.case ? ' <button type="button" class="exam-case-banner-clear" id="clear-case-filter" style="margin-left:6px">전체 문제 보기</button>' : '') + '</div>')
       +'<div class="oxlist">'+list.slice(0,shown).map(oxItemHtml).join('')+'</div>'
       +(shown<list.length?'<button type="button" class="oxmore" data-emore="1">더 보기 ('+(list.length-shown)+'건 남음)</button>':'')
       +'</div>';
@@ -2300,16 +2321,22 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
     examBound=true;
     area.addEventListener('click',function(e){
       if(mode!=='exam')return;
+      if(e.target.closest('#clear-case-filter') || e.target.closest('.exam-case-banner-clear')){
+        delete exam.case;
+        saveJson(EXAM_KEY, exam);
+        renderExam();
+        return;
+      }
       var lb=e.target.closest('[data-elaw]');
-      if(lb){exam.law=lb.getAttribute('data-elaw');exam.round=null;exam.shown=20;saveJson(EXAM_KEY,exam);render();return;}
+      if(lb){delete exam.case; exam.law=lb.getAttribute('data-elaw');exam.round=null;exam.shown=20;saveJson(EXAM_KEY,exam);render();return;}
       var pb=e.target.closest('[data-epol]');
       if(pb){exam.pol=pb.getAttribute('data-epol');exam.shown=20;saveJson(EXAM_KEY,exam);render();return;}
       var kb=e.target.closest('[data-ekind]');
       if(kb){exam.kind=kb.getAttribute('data-ekind');exam.shown=20;saveJson(EXAM_KEY,exam);render();return;}
       var fb=e.target.closest('[data-efilter]');
-      if(fb){exam.filter=fb.getAttribute('data-efilter');exam.shown=20;saveJson(EXAM_KEY,exam);render();return;}
+      if(fb){delete exam.case; exam.filter=fb.getAttribute('data-efilter');exam.shown=20;saveJson(EXAM_KEY,exam);render();return;}
       var rb=e.target.closest('[data-eround]');
-      if(rb){exam.round=Number(rb.getAttribute('data-eround'));exam.shown=20;saveJson(EXAM_KEY,exam);render();return;}
+      if(rb){delete exam.case; exam.round=Number(rb.getAttribute('data-eround'));exam.shown=20;saveJson(EXAM_KEY,exam);render();return;}
       if(e.target.closest('[data-emore]')){exam.shown=(exam.shown||20)+20;saveJson(EXAM_KEY,exam);render();return;}
       var ob=e.target.closest('[data-ox]');
       if(ob){oxLog[ob.getAttribute('data-ox')]={pick:ob.getAttribute('data-pick'),t:Date.now()};saveJson(OX_KEY,oxLog);syncSchedulePush();renderExam();return;}
@@ -2344,7 +2371,13 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
       for (var r in byR) {
         byR[r].forEach(function(q){
           (q.cs || []).forEach(function(cNum){
-            (idx[cNum] = idx[cNum] || []).push({ law: l, round: q.r, q: q.q, o: q.o, id: q.i });
+            var raw = (cNum || '').trim();
+            var norm = raw.replace(/\s+/g, '');
+            if(!raw) return;
+            (idx[raw] = idx[raw] || []).push({ law: l, round: q.r, q: q.q, o: q.o, id: q.i });
+            if(norm !== raw){
+              (idx[norm] = idx[norm] || []).push({ law: l, round: q.r, q: q.q, o: q.o, id: q.i });
+            }
           });
         });
       }
@@ -2373,11 +2406,11 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
       if(casesFilter.onlyEnBanc && !c.enbanc) return false;
 
       if(casesFilter.search){
-        var q = casesFilter.search.toLowerCase().replace(/s+/g,'');
-        var num = (c.num||'').toLowerCase().replace(/s+/g,'');
-        var nick = (c.nick||'').toLowerCase().replace(/s+/g,'');
-        var title = (c.title||'').toLowerCase().replace(/s+/g,'');
-        var type = (c.type||'').toLowerCase().replace(/s+/g,'');
+        var q = casesFilter.search.toLowerCase().replace(/\s+/g,'');
+        var num = (c.num||'').toLowerCase().replace(/\s+/g,'');
+        var nick = (c.nick||'').toLowerCase().replace(/\s+/g,'');
+        var title = (c.title||'').toLowerCase().replace(/\s+/g,'');
+        var type = (c.type||'').toLowerCase().replace(/\s+/g,'');
         if(num.indexOf(q)<0 && nick.indexOf(q)<0 && title.indexOf(q)<0 && type.indexOf(q)<0) return false;
       }
       return true;
@@ -2407,8 +2440,7 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
       var typeHtml = c.type ? '<span class="cases-type">' + esc(c.type) + '</span>' : '';
       var nickHtml = c.nick ? '<span class="cases-nick">' + esc(c.nick) + '</span>' : '';
       var exam1Html = (c.exam1||[]).map(function(yr){ return '<span class="cases-exam1">1차 ' + yr + '</span>'; }).join('');
-      var exam2Html = (c.exam2||[]).map(function(yr){ return '<span class="cases-exam2">2차 ' + yr + '</span>'; }).join('');
-      var oxList = CASE_TO_OX[c.num] || [];
+      var oxList = CASE_TO_OX[c.num] || CASE_TO_OX[(c.num || '').replace(/\s+/g, '')] || [];
       var oxBadges = oxList.length
         ? '<button type="button" class="oxcase-btn" data-c-ox="' + esc(c.num) + '" title="이 판례가 인용된 기출 정오문제 ' + oxList.length + '건 풀기" style="margin-left:0;margin-top:3px">🎯 기출 정오 ' + oxList.length + '문항</button>'
         : '';
@@ -2467,7 +2499,7 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
     var html = '<div class="cases-wrap">'
       + '<div class="cases-head-card">'
       +   '<div class="cases-head-title">'
-      +     '<span class="pill q" style="font-size:11.5px;padding:3px 9px">LIDAM IP EDU</span>'
+      +     '<span class="pill q" style="font-size:11.5px;padding:3px 9px">변리사 1차 대비</span>'
       +     '<h2>특허법 핵심 판례 383선</h2>'
       +   '</div>'
       +   '<div class="cases-stats">'
@@ -2577,11 +2609,14 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
       var oxBtn = e.target.closest('[data-c-ox]');
       if(oxBtn){
         var cNum = oxBtn.getAttribute('data-c-ox');
-        var match = CASE_TO_OX[cNum];
+        var match = CASE_TO_OX[cNum] || CASE_TO_OX[(cNum || '').replace(/\s+/g, '')];
         if(match && match.length){
           mode = 'exam';
           exam.law = match[0].law;
           exam.round = match[0].round;
+          exam.case = cNum;
+          exam.filter = 'all';
+          exam.shown = 20;
           saveJson(EXAM_KEY, exam);
           render();
           window.scrollTo({top: 0, behavior: 'smooth'});

@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta name="robots" content="noindex,nofollow">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>산업재산권법 퀴즈</title>
@@ -415,6 +414,18 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
         <button id="import-overwrite" type="button" class="btn amber" style="padding:7px 12px;font-size:12px">⚠️ 전체 덮어쓰기 복원</button>
       </div>
     </div>
+    <div class="sheet-section">
+      <h3>☁️ 기기 간 동기화 (Firebase)</h3>
+      <p style="font-size:12px;color:#596273;margin-bottom:6px">폰과 태블릿의 기록을 한곳에 모읍니다. 두 기기에 <b>같은 주소와 같은 동기화 코드</b>를 넣으십시오.</p>
+      <input type="text" id="sync-url" placeholder="Realtime Database 주소 (https://....firebasedatabase.app)" style="font-size:12px;margin-bottom:6px;width:100%;padding:7px;border:1px solid #d5d9e2;border-radius:6px">
+      <input type="text" id="sync-code" placeholder="동기화 코드 (아무 문자열이나, 두 기기에 똑같이)" style="font-size:12px;margin-bottom:6px;width:100%;padding:7px;border:1px solid #d5d9e2;border-radius:6px">
+      <div class="sheet-btns">
+        <button id="sync-save" type="button" class="btn primary" style="padding:7px 12px;font-size:12px">💾 저장하고 연결</button>
+        <button id="sync-now" type="button" class="btn secondary" style="padding:7px 12px;font-size:12px">🔄 지금 동기화</button>
+        <button id="sync-off" type="button" class="btn secondary" style="padding:7px 12px;font-size:12px">연결 끊기</button>
+      </div>
+      <p id="sync-state" style="font-size:12px;color:#596273;margin-top:6px"></p>
+    </div>
     <div id="data-msg" class="sheet-msg"></div>
     <div style="margin-top:14px;text-align:right">
       <button id="data-close" type="button" class="btn secondary" style="padding:7px 14px;font-size:12px">닫기</button>
@@ -479,7 +490,7 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
 
   function rec(id){return records[id]||null;}
   function isSeen(r){return !!r&&(r.c+r.w+r.h)>0;}
-  function saveRecords(){saveJson(STORE_KEY,records);}
+  function saveRecords(){saveJson(STORE_KEY,records);syncSchedulePush();}
 
   // ── SM-2 lite 스케줄링: 성공 시 간격 확장, 실패·힌트 시 당일 재학습 ──
   function applyResult(q,field,pass){
@@ -775,7 +786,15 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
     if(tabIdx===REVIEW){
       var rbtn=document.getElementById('reset-rec');
       if(rbtn)rbtn.addEventListener('click',function(){
-        if(confirm('누적 풀이 기록(간격 일정 포함)을 모두 삭제할까요?')){records={};saveRecords();localStorage.removeItem(NEWDAY_KEY);invalidateQueues();render();}
+        // 실수로 눌러 기록을 통째로 날리는 일이 있었다. 지우기 전에 백업을
+        // 자동으로 내려받고, 글자를 직접 입력해야만 지워지게 한다.
+        var n=Object.keys(records).length;
+        if(!n){alert('지울 기록이 없습니다.');return;}
+        var typed=prompt('누적 풀이 기록 '+n+'개가 모두 사라집니다.\n정말 지우려면 아래에 삭제 라고 입력하십시오.\n(지우기 직전에 백업 파일이 자동으로 내려받아집니다.)');
+        if(typed===null)return;
+        if(typed.trim()!=='삭제'){alert('입력이 달라서 지우지 않았습니다.');return;}
+        downloadBackup();
+        records={};saveRecords();localStorage.removeItem(NEWDAY_KEY);invalidateQueues();render();
       });
     }
     if(q.type==='mc'||q.type==='compare'||q.type==='ox'){
@@ -1114,7 +1133,7 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
     };
   }
 
-  document.getElementById('export-download').addEventListener('click',function(){
+  function downloadBackup(){
     var data=JSON.stringify(getBackupPayload(),null,2);
     var blob=new Blob([data],{type:'application/json'});
     var url=URL.createObjectURL(blob);
@@ -1122,6 +1141,10 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
     a.href=url; a.download='ipr_quiz_backup_'+todayKst()+'.json';
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     URL.revokeObjectURL(url);
+  }
+
+  document.getElementById('export-download').addEventListener('click',function(){
+    downloadBackup();
     showDataMsg('ok','백업 파일 다운로드가 시작되었습니다.');
   });
 
@@ -1140,6 +1163,101 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
     }
   });
 
+  // 한 문항의 기록 둘을 합친다. 센 값은 큰 쪽을, 일정은 나중에 푼 쪽을 남긴다.
+  function mergeRecords(incomingAll){
+    var count=0;
+    Object.keys(incomingAll||{}).forEach(function(k){
+      var incoming=incomingAll[k];
+      var existing=records[k];
+      if(!existing){records[k]=incoming;count++;return;}
+      existing.c=Math.max(existing.c||0,incoming.c||0);
+      existing.w=Math.max(existing.w||0,incoming.w||0);
+      existing.h=Math.max(existing.h||0,incoming.h||0);
+      existing.sw=Math.max(existing.sw||0,incoming.sw||0);
+      existing.uw=Math.max(existing.uw||0,incoming.uw||0);
+      existing.reps=Math.max(existing.reps||0,incoming.reps||0);
+      existing.iv=Math.max(existing.iv||0,incoming.iv||0);
+      existing.ef=incoming.ef||existing.ef||2.5;
+      existing.due=((incoming.t||0)>(existing.t||0))?(incoming.due||existing.due):existing.due;
+      existing.t=Math.max(existing.t||0,incoming.t||0);
+      count++;
+    });
+    return count;
+  }
+  // 정오문제 기록. 병합은 나중에 푼 것을 남긴다.
+  function mergeOx(incomingAll){
+    var count=0;
+    Object.keys(incomingAll||{}).forEach(function(k){
+      var inc=incomingAll[k],cur=oxLog[k];
+      if(!cur||(inc.t||0)>(cur.t||0)){oxLog[k]=inc;count++;}
+    });
+    return count;
+  }
+
+  // ── 기기 간 동기화 ──────────────────────────────────────────────
+  // Firebase Realtime Database에 REST로 붙는다. SDK를 싣지 않으므로 앱은
+  // 여전히 파일 하나로 돌아간다. 올릴 때는 늘 먼저 내려받아 합친 뒤 올려서,
+  // 다른 기기가 먼저 올려 둔 기록을 덮어쓰지 않는다.
+  var SYNC_KEY='ipquiz.sync.v1';
+  var sync=loadJson(SYNC_KEY,{url:'',code:''});
+  var syncTimer=null, syncBusy=false;
+
+  function syncOn(){return !!(sync.url&&sync.code);}
+  function syncEndpoint(){
+    return sync.url.replace(/\/+$/,'')+'/ipq/'+encodeURIComponent(sync.code)+'.json';
+  }
+  function setSyncState(text){
+    var el=document.getElementById('sync-state');
+    if(el)el.textContent=text;
+  }
+  function syncSchedulePush(){
+    if(!syncOn())return;
+    if(syncTimer)clearTimeout(syncTimer);
+    syncTimer=setTimeout(function(){syncTimer=null;syncNow(true);},4000);
+  }
+  // quiet: 조용히 돌린다. 사용자가 버튼을 누른 경우에만 말을 건다.
+  function syncNow(quiet){
+    if(!syncOn()){if(!quiet)showDataMsg('err','동기화 주소와 코드를 먼저 저장하십시오.');return;}
+    if(syncBusy)return;
+    if(typeof fetch!=='function'){setSyncState('이 브라우저는 동기화를 지원하지 않습니다.');return;}
+    syncBusy=true;
+    setSyncState('동기화 중...');
+    fetch(syncEndpoint(),{cache:'no-store'})
+      .then(function(res){
+        if(!res.ok)throw new Error('내려받기 실패 ('+res.status+')');
+        return res.json();
+      })
+      .then(function(remote){
+        var got=0,gotOx=0;
+        if(remote&&typeof remote==='object'){
+          got=mergeRecords(remote.records);
+          gotOx=mergeOx(remote.ox);
+          saveJson(OX_KEY,oxLog);
+          saveJson(STORE_KEY,records);   // 여기서는 다시 올리지 않는다
+        }
+        return fetch(syncEndpoint(),{
+          method:'PUT',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify(getBackupPayload())
+        }).then(function(res){
+          if(!res.ok)throw new Error('올리기 실패 ('+res.status+')');
+          return {got:got,gotOx:gotOx};
+        });
+      })
+      .then(function(r){
+        syncBusy=false;
+        setSyncState('마지막 동기화 '+new Date().toLocaleTimeString('ko-KR')
+          +' · 내려받아 합친 기록 '+r.got+'개'+(r.gotOx?' (정오 '+r.gotOx+'개)':''));
+        if(r.got||r.gotOx){invalidateQueues();updateDataSummary();render();paint();}
+        if(!quiet)showDataMsg('ok','동기화했습니다. 내려받아 합친 기록 '+r.got+'개입니다.');
+      })
+      .catch(function(err){
+        syncBusy=false;
+        setSyncState('동기화 실패: '+err.message);
+        if(!quiet)showDataMsg('err','동기화 실패: '+err.message);
+      });
+  }
+
   function performImport(jsonText,isMerge){
     try{
       var backup=JSON.parse(jsonText);
@@ -1149,36 +1267,15 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
       }
       var count=0;
       if(isMerge){
-        Object.keys(backup.records).forEach(function(k){
-          var incoming=backup.records[k];
-          var existing=records[k];
-          if(!existing){records[k]=incoming;count++;}
-          else{
-            records[k].c=Math.max(existing.c||0,incoming.c||0);
-            records[k].w=Math.max(existing.w||0,incoming.w||0);
-            records[k].h=Math.max(existing.h||0,incoming.h||0);
-            records[k].sw=Math.max(existing.sw||0,incoming.sw||0);
-            records[k].uw=Math.max(existing.uw||0,incoming.uw||0);
-            records[k].reps=Math.max(existing.reps||0,incoming.reps||0);
-            records[k].iv=Math.max(existing.iv||0,incoming.iv||0);
-            records[k].ef=incoming.ef||existing.ef||2.5;
-            records[k].t=Math.max(existing.t||0,incoming.t||0);
-            records[k].due=(incoming.t>(existing.t||0))?(incoming.due||existing.due):existing.due;
-            count++;
-          }
-        });
+        count=mergeRecords(backup.records);
       }else{
         records=backup.records;
         count=Object.keys(records).length;
       }
-      // 정오문제 기록. 병합은 나중에 푼 것을 남긴다.
       var oxCount=0;
       if(backup.ox&&typeof backup.ox==='object'){
         if(isMerge){
-          Object.keys(backup.ox).forEach(function(k){
-            var inc=backup.ox[k],cur=oxLog[k];
-            if(!cur||(inc.t||0)>(cur.t||0)){oxLog[k]=inc;oxCount++;}
-          });
+          oxCount=mergeOx(backup.ox);
         }else{
           oxLog=backup.ox;
           oxCount=Object.keys(oxLog).length;
@@ -1226,6 +1323,45 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
       performImport(txt,false);
     }
   });
+
+  // ── 동기화 설정 화면 ──
+  (function(){
+    var urlEl=document.getElementById('sync-url');
+    var codeEl=document.getElementById('sync-code');
+    if(!urlEl||!codeEl)return;
+    // 기기마다 주소를 손으로 치지 않도록 미리 채워 둔다. 동기화 코드는
+    // 사실상 열쇠이므로 앱에 심지 않고 직접 넣게 한다.
+    urlEl.value=sync.url||'https://ipr-quiz-sync-default-rtdb.asia-southeast1.firebasedatabase.app';
+    codeEl.value=sync.code||'';
+    setSyncState(syncOn()?'연결됨. 앱을 켤 때와 문제를 풀 때 자동으로 합칩니다.':'아직 연결되지 않았습니다.');
+    document.getElementById('sync-save').addEventListener('click',function(){
+      var u=urlEl.value.trim(), c=codeEl.value.trim();
+      if(!u||!c){showDataMsg('err','주소와 동기화 코드를 모두 채우십시오.');return;}
+      if(!/^https:\/\//.test(u)){showDataMsg('err','주소는 https:// 로 시작해야 합니다.');return;}
+      sync={url:u,code:c};
+      saveJson(SYNC_KEY,sync);
+      showDataMsg('ok','연결했습니다. 곧바로 첫 동기화를 시작합니다.');
+      syncNow(false);
+    });
+    document.getElementById('sync-now').addEventListener('click',function(){syncNow(false);});
+    document.getElementById('sync-off').addEventListener('click',function(){
+      sync={url:'',code:''};
+      saveJson(SYNC_KEY,sync);
+      urlEl.value='';codeEl.value='';
+      setSyncState('연결을 끊었습니다. 기록은 이 기기에만 쌓입니다.');
+    });
+  })();
+
+  // 저장소를 지우지 말라고 브라우저에 요청한다. 이걸 하지 않으면 안드로이드
+  // 크롬이 저장 공간이 빠듯할 때 이 앱의 기록을 통째로 지운다.
+  if(navigator.storage&&navigator.storage.persist){
+    navigator.storage.persisted().then(function(already){
+      if(!already)return navigator.storage.persist();
+    }).catch(function(){});
+  }
+  // 앱을 켤 때 한 번 합친다.
+  if(syncOn())syncNow(true);
+  window.addEventListener('online',function(){if(syncOn())syncNow(true);});
 
 
   // ══ 조문 열람(체계도) 모듈 ══
@@ -1486,7 +1622,7 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
   var exam=loadJson(EXAM_KEY,{law:'특허법',round:null,shown:20,filter:'all',pol:'',kind:''});
   function gradeOx(id,pick){
     oxLog[id]={pick:pick,t:Date.now()};
-    saveJson(OX_KEY,oxLog);
+    saveJson(OX_KEY,oxLog);syncSchedulePush();
     paintDetail();
   }
   function paintTree(){
@@ -1574,7 +1710,7 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
       var more=e.target.closest('[data-more]');
       if(more){var k=more.getAttribute('data-more');oxShown[k]=(oxShown[k]||5)+10;paintDetail();return;}
       var again=e.target.closest('[data-again]');
-      if(again){delete oxLog[again.getAttribute('data-again')];saveJson(OX_KEY,oxLog);paintDetail();return;}
+      if(again){delete oxLog[again.getAttribute('data-again')];saveJson(OX_KEY,oxLog);syncSchedulePush();paintDetail();return;}
       var mv=e.target.closest('[data-move]');
       if(mv&&!mv.disabled&&mv.getAttribute('data-move')){openArticle(mv.getAttribute('data-move'));return;}
       if(e.target.closest('#bt-back')){browse.art=null;saveBrowse();render();}
@@ -1657,9 +1793,9 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
       if(rb){exam.round=Number(rb.getAttribute('data-eround'));exam.shown=20;saveJson(EXAM_KEY,exam);render();return;}
       if(e.target.closest('[data-emore]')){exam.shown=(exam.shown||20)+20;saveJson(EXAM_KEY,exam);render();return;}
       var ob=e.target.closest('[data-ox]');
-      if(ob){oxLog[ob.getAttribute('data-ox')]={pick:ob.getAttribute('data-pick'),t:Date.now()};saveJson(OX_KEY,oxLog);renderExam();return;}
+      if(ob){oxLog[ob.getAttribute('data-ox')]={pick:ob.getAttribute('data-pick'),t:Date.now()};saveJson(OX_KEY,oxLog);syncSchedulePush();renderExam();return;}
       var ag=e.target.closest('[data-again]');
-      if(ag){delete oxLog[ag.getAttribute('data-again')];saveJson(OX_KEY,oxLog);renderExam();return;}
+      if(ag){delete oxLog[ag.getAttribute('data-again')];saveJson(OX_KEY,oxLog);syncSchedulePush();renderExam();return;}
     });
   }
 

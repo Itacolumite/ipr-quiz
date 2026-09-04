@@ -2440,6 +2440,7 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
       var typeHtml = c.type ? '<span class="cases-type">' + esc(c.type) + '</span>' : '';
       var nickHtml = c.nick ? '<span class="cases-nick">' + esc(c.nick) + '</span>' : '';
       var exam1Html = (c.exam1||[]).map(function(yr){ return '<span class="cases-exam1">1차 ' + yr + '</span>'; }).join('');
+      var exam2Html = (c.exam2||[]).map(function(yr){ return '<span class="cases-exam2">2차 ' + yr + '</span>'; }).join('');
       var oxList = CASE_TO_OX[c.num] || CASE_TO_OX[(c.num || '').replace(/\s+/g, '')] || [];
       var oxBadges = oxList.length
         ? '<button type="button" class="oxcase-btn" data-c-ox="' + esc(c.num) + '" title="이 판례가 인용된 기출 정오문제 ' + oxList.length + '건 풀기" style="margin-left:0;margin-top:3px">🎯 기출 정오 ' + oxList.length + '문항</button>'

@@ -127,7 +127,21 @@ details[open]>summary>.theme-chevron{transform:rotate(90deg);color:var(--accent)
 .ox-scenario-title{font-size:11.5px;font-weight:800;color:#4F46E5;margin-bottom:6px;display:flex;align-items:center;gap:4px}
 body.dark .ox-scenario{background:#1E293B;border-left-color:#818CF8;color:#CBD5E1}
 body.dark .ox-scenario-title{color:#A5B4FC}
-.oxtags{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.oxtags{display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap;margin-top:8px}
+.oxtags-left{display:flex;align-items:center;gap:5px;flex-wrap:wrap;flex:1}
+.ox-star-btn{background:transparent;border:1px solid #D9DEEA;color:#94A3B8;font-size:15px;line-height:1;width:28px;height:28px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;padding:0;user-select:none;flex-shrink:0}
+.ox-star-btn:hover{background:#F1F5F9;border-color:#CBD5E1;color:#F59E0B;transform:scale(1.08)}
+.ox-star-btn.active{background:#FEF3C7;border-color:#FCD34D;color:#D97706;box-shadow:0 1px 3px rgba(217,119,6,.15)}
+.quiz-star-btn{background:transparent;border:1px solid #D9DEEA;color:#64748B;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:6px;display:inline-flex;align-items:center;gap:4px;cursor:pointer;transition:all .15s;margin-left:auto;flex-shrink:0}
+.quiz-star-btn:hover{background:#F1F5F9;color:#F59E0B;border-color:#CBD5E1}
+.quiz-star-btn.active{background:#FEF3C7;border-color:#FCD34D;color:#D97706}
+.fav-round-btn{background:#FFFBEB;border-color:#FCD34D;color:#B45309;font-weight:800}
+.fav-round-btn:hover{background:#FEF3C7}
+.fav-round-btn.active{background:#F59E0B;border-color:#D97706;color:#fff}
+.revbar-left{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.revbar-filter{border:1px solid #D9DEEA;background:#fff;border-radius:6px;padding:3px 8px;font-size:11px;font-weight:700;color:#64748B;cursor:pointer;transition:all .15s}
+.revbar-filter:hover{background:#F1F5F9;color:#334155}
+.revbar-filter.active{background:#3157C9;color:#fff;border-color:#3157C9}
 .oxbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}
 .oxbtn{border:1px solid #D9DEEA;background:#fff;border-radius:8px;padding:11px;font-size:16px;font-weight:800;color:#3A4050;cursor:pointer}
 .oxbtn:active{background:#EEF2FF}
@@ -136,7 +150,11 @@ body.dark .ox-scenario-title{color:#A5B4FC}
 .oxres.no{background:#FDF0F0;color:#CF2F2F}
 .oxagain{margin-left:8px;border:1px solid currentColor;background:transparent;border-radius:999px;padding:2px 9px;font-size:11px;font-weight:800;color:inherit;cursor:pointer}
 .oxstem{margin-top:7px;font-size:11.5px;color:#8A93A6;line-height:1.7}
-.oxexpl{margin-top:8px;background:#F4F6FB;border:1px solid #E2E6EF;border-radius:7px;padding:9px 10px;font-size:12.5px;color:#3A4050;line-height:1.75;word-break:keep-all}
+.oxexpl{margin-top:8px;background:#F4F6FB;border:1px solid #E2E6EF;border-radius:8px;padding:10px 12px;font-size:13px;color:#2D3748;line-height:1.75;word-break:keep-all}
+.oxexpl strong,.oxexpl b,.expl strong,.expl b{font-weight:800;color:#1E40AF}
+.ox-underline{text-decoration:underline;text-decoration-thickness:2.2px;text-underline-offset:3.5px;text-decoration-color:#2563EB;font-weight:700}
+.ox-mark,mark.ox-mark{background:#FEF08A;color:#713F12;padding:1px 4px;border-radius:4px;font-weight:700}
+.ox-del,del.ox-del{color:#EF4444;text-decoration:line-through;text-decoration-thickness:1.8px}
 .oxlink-btn{background:rgba(37,99,235,0.08);color:var(--accent);border:1px dashed var(--accent);border-radius:999px;font-size:11px;font-weight:800;padding:2px 8px;cursor:pointer;line-height:1.3;vertical-align:middle;transition:all .15s}
 .oxlink-btn:hover{background:rgba(37,99,235,0.2)}
 .oxcase-btn{background:#FAF5FF;color:#7E22CE;border:1px solid #D8B4FE;border-radius:999px;font-size:11px;font-weight:800;padding:2px 8px;cursor:pointer;line-height:1.3;vertical-align:middle;transition:all .15s;margin-left:4px}
@@ -333,6 +351,21 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
   .oxres.ok{background:#16281F;color:#4FBF87}.oxres.no{background:#241818;color:#E77}
   .oxstem{color:#8A93A6}
   .oxexpl{background:#161A22;border-color:#2A3040;color:#C7CDDA}
+body.dark .oxexpl strong,body.dark .oxexpl b,body.dark .expl strong,body.dark .expl b{color:#93C5FD}
+body.dark .ox-underline{text-decoration-color:#60A5FA;color:#F8FAFC}
+body.dark .ox-mark,body.dark mark.ox-mark{background:#78350F;color:#FEF08A}
+body.dark .ox-del,body.dark del.ox-del{color:#F87171}
+body.dark .ox-star-btn{border-color:#333A4C;color:#64748B}
+body.dark .ox-star-btn:hover{background:#232838;color:#FBBF24}
+body.dark .ox-star-btn.active{background:#78350F;border-color:#B45309;color:#FBBF24}
+body.dark .quiz-star-btn{border-color:#333A4C;color:#94A3B8}
+body.dark .quiz-star-btn:hover{background:#232838;color:#FBBF24}
+body.dark .quiz-star-btn.active{background:#78350F;border-color:#B45309;color:#FBBF24}
+body.dark .fav-round-btn{background:#451A03;border-color:#92400E;color:#FDE68A}
+body.dark .fav-round-btn.active{background:#D97706;border-color:#F59E0B;color:#fff}
+body.dark .revbar-filter{background:#1A1E27;border-color:#333A4C;color:#94A3B8}
+body.dark .revbar-filter:hover{background:#232838;color:#F8FAFC}
+body.dark .revbar-filter.active{background:#4F46E5;border-color:#6366F1;color:#fff}
   .oxmore{background:#1A1E27;border-color:#2A3040;color:#96A0B4}
   .tab{background:#1A1E27;color:#8B93A6}
   .tab.active{color:var(--accent)}
@@ -570,6 +603,7 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
       <tr><td><kbd>Ctrl</kbd>+<kbd>/</kbd></td><td>원문 보기 (답 전엔 틀림으로 기록)</td></tr>
       <tr><td><kbd>Ctrl</kbd>+<kbd>←</kbd>/<kbd>→</kbd></td><td>법령·복습 탭 전환</td></tr>
       <tr><td><kbd>Alt</kbd>+<kbd>↑</kbd>/<kbd>↓</kbd></td><td>하루 신규 문항 수 조절</td></tr>
+      <tr><td><kbd>Ctrl</kbd>+<kbd>B</kbd></td><td>현재 문항 즐겨찾기(⭐) 토글</td></tr>
       <tr><td><kbd>?</kbd></td><td>이 도움말 열기/닫기</td></tr>
     </table>
     <p style="margin-top:12px;font-size:12px;color:#596273;line-height:1.6">간격 반복: 맞히면 1일→3일→그 이상으로 복습 간격이 늘고, 틀리면 오늘 안에 다시 나옵니다. 매일 기한이 된 복습 + 신규 문항이 자동으로 큐에 쌓입니다.</p>
@@ -664,6 +698,20 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
   var oxLog=loadJson(OX_KEY,{});
   var OXLINKS_KEY='ipquiz.oxlinks.v1';
   var customLinks=loadJson(OXLINKS_KEY,{});
+  var BM_KEY='ipquiz.bookmarks.v1';
+  var bookmarks=loadJson(BM_KEY,{});
+  function isBookmarked(id){ return !!(id && bookmarks[id]); }
+  function toggleBookmark(id){
+    if(!id) return false;
+    if(bookmarks[id]){
+      delete bookmarks[id];
+    }else{
+      bookmarks[id]=Date.now();
+    }
+    saveJson(BM_KEY,bookmarks);
+    syncSchedulePush();
+    return !!bookmarks[id];
+  }
   var BROWSE_KEY='ipquiz.browse.v1';
   var mode='quiz';
   var browse=loadJson(BROWSE_KEY,{law:'특허법',art:null,open:{},q:'',minStar:0,view:'text',treeMode:'theme'});
@@ -831,7 +879,11 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
     var budget=Math.max(0,settings.newPerDay-used);
     return b.due.concat(b.fresh.slice(0,budget));
   }
+  var revFilterMode = 'wrong';
   function buildReviewQueue(){
+    if(revFilterMode==='fav'){
+      return allQuestions().filter(function(q){return !!bookmarks[q.id];});
+    }
     return allQuestions().filter(function(q){var r=rec(q.id);return !!r&&(r.w+r.h)>0;})
       .sort(function(a,b){
         var ra=rec(a.id),rb=rec(b.id);
@@ -894,6 +946,22 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
   });
 
   function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  function renderExplain(txt){
+    if(!txt)return '';
+    var s=esc(txt);
+    s=s.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+    s=s.replace(/&lt;u&gt;([\s\S]*?)&lt;\/u&gt;/gi,'<span class="ox-underline">$1</span>');
+    s=s.replace(/__([^_]+)__/g,'<span class="ox-underline">$1</span>');
+    s=s.replace(/==([^=]+)==/g,'<mark class="ox-mark">$1</mark>');
+    s=s.replace(/&lt;mark&gt;([\s\S]*?)&lt;\/mark&gt;/gi,'<mark class="ox-mark">$1</mark>');
+    s=s.replace(/~~([^~]+)~~/g,'<del class="ox-del">$1</del>');
+    s=s.replace(/&lt;del&gt;([\s\S]*?)&lt;\/del&gt;/gi,'<del class="ox-del">$1</del>');
+    s=s.replace(/&lt;s&gt;([\s\S]*?)&lt;\/s&gt;/gi,'<del class="ox-del">$1</del>');
+    s=s.replace(/&lt;b&gt;([\s\S]*?)&lt;\/b&gt;/gi,'<strong>$1</strong>');
+    s=s.replace(/&lt;strong&gt;([\s\S]*?)&lt;\/strong&gt;/gi,'<strong>$1</strong>');
+    s=s.replace(/\n/g,'<br>');
+    return s;
+  }
 
   TABS.forEach(function(t,i){
     var btn=document.createElement('button');
@@ -1006,7 +1074,14 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
       :(q.type==='compare'?'3법 비교'
       :(q.role==='structure'?'목차'
       :(q.role==='title_recall'?'제목 회상':(q.role==='참조제목'?'참조조문 제목':'빈칸'))))));
-    var revbar=tabIdx===REVIEW?'<div class="revbar"><span>틀린 문항 '+items.length+'개 — 오답률 순</span><button id="reset-rec" type="button">기록 초기화</button></div>':'';
+    var wrongQCount = allQuestions().filter(function(x){var rx=rec(x.id);return !!rx&&(rx.w+rx.h)>0;}).length;
+    var favQCount = allQuestions().filter(function(x){return !!bookmarks[x.id];}).length;
+    var revbar=tabIdx===REVIEW?'<div class="revbar">'
+      +'<div class="revbar-left">'
+      +'<button type="button" class="revbar-filter '+(revFilterMode==='wrong'?'active':'')+'" id="rev-filter-wrong">오답순 '+wrongQCount+'</button>'
+      +'<button type="button" class="revbar-filter '+(revFilterMode==='fav'?'active':'')+'" id="rev-filter-fav">⭐ 즐겨찾기 '+favQCount+'</button>'
+      +'</div>'
+      +'<button id="reset-rec" type="button">기록 초기화</button></div>':'';
 
     // 정답과 일치하는 식별 배지는 숨긴다(제목회상=title, 목차역방향=label, 3법비교=law 누설 방지)
     var labelText=q.label||('제'+(q.num||q.article)+'조');
@@ -1017,8 +1092,11 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
     if(labelText!==q.answer&&q.type!=='compare')meta+='<span class="badge gray">'+esc(labelText)+'</span>';
     if(q.title!==q.answer)meta+='<span class="badge gray">'+esc(q.title)+'</span>';
     meta+='<span class="badge gray">'+typeName+'</span>'+newBadge+recBadge+examBadge;
+    var isBm=isBookmarked(q.id);
+    var quizBmBtn='<button type="button" class="quiz-star-btn '+(isBm?'active':'')+'" id="quiz-star-btn" data-bm="'+esc(q.id)+'" title="'+(isBm?'즐겨찾기 해제':'즐겨찾기 추가')+'">'
+      +(isBm?'★ 즐겨찾기됨':'☆ 즐겨찾기')+'</button>';
     var body='<section class="card">'+revbar
-      +'<div class="meta">'+meta+'</div>'
+      +'<div class="meta"><div class="meta-left">'+meta+'</div>'+quizBmBtn+'</div>'
       +'<div class="question" id="qtext">'+questionHtml(q)+'</div>'
       +examNoteHtml;
 
@@ -1059,7 +1137,20 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
     document.getElementById('src').addEventListener('click',toggleSource);
     var pb=document.getElementById('picksbtn');
     if(pb)pb.addEventListener('click',showPicks);
+    var qsBtn=document.getElementById('quiz-star-btn');
+    if(qsBtn){
+      qsBtn.addEventListener('click',function(){
+        var curActive=toggleBookmark(q.id);
+        qsBtn.classList.toggle('active',curActive);
+        qsBtn.textContent=curActive?'★ 즐겨찾기됨':'☆ 즐겨찾기';
+        qsBtn.title=curActive?'즐겨찾기 해제':'즐겨찾기 추가';
+      });
+    }
     if(tabIdx===REVIEW){
+      var rfw=document.getElementById('rev-filter-wrong');
+      if(rfw)rfw.addEventListener('click',function(){if(revFilterMode!=='wrong'){revFilterMode='wrong';st().queue=null;render();}});
+      var rff=document.getElementById('rev-filter-fav');
+      if(rff)rff.addEventListener('click',function(){if(revFilterMode!=='fav'){revFilterMode='fav';st().queue=null;render();}});
       var rbtn=document.getElementById('reset-rec');
       if(rbtn)rbtn.addEventListener('click',function(){
         // 실수로 눌러 기록을 통째로 날리는 일이 있었다. 지우기 전에 백업을
@@ -1215,7 +1306,7 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
     }
 
     var exq=document.getElementById('expl'); // 해설(mc·compare·두문자) 공개
-    if(q.explanation){exq.textContent=q.explanation;exq.style.display='block';}
+    if(q.explanation){exq.innerHTML=renderExplain(q.explanation);exq.style.display='block';}
 
     var wasNew=!isSeen(rec(q.id));
     s.answered=true;
@@ -1361,6 +1452,20 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
     if(e.ctrlKey&&e.key==='.'){e.preventDefault();useHint();return;}
     if(e.ctrlKey&&e.key==='/'){e.preventDefault();toggleSource();return;}
     if(e.ctrlKey&&e.key===','){e.preventDefault();showPicks();return;}
+    if(e.ctrlKey&&(e.key==='b'||e.key==='B')){
+      e.preventDefault();
+      var curQ=list()[st().idx];
+      if(curQ){
+        var curActive=toggleBookmark(curQ.id);
+        var qsBtn=document.getElementById('quiz-star-btn');
+        if(qsBtn){
+          qsBtn.classList.toggle('active',curActive);
+          qsBtn.textContent=curActive?'★ 즐겨찾기됨':'☆ 즐겨찾기';
+          qsBtn.title=curActive?'즐겨찾기 해제':'즐겨찾기 추가';
+        }
+      }
+      return;
+    }
     var items=list();
     if(!items.length||st().idx>=items.length)return;
     var q=items[st().idx];
@@ -1388,7 +1493,8 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
     var total=Object.keys(records).length;
     var correct=0,wrong=0;
     Object.keys(records).forEach(function(k){correct+=records[k].c||0;wrong+=(records[k].w||0)+(records[k].h||0);});
-    document.getElementById('data-summary').textContent='현재 보관된 학습 문항: '+total+'개 (누적 정답: '+correct+', 오답/힌트: '+wrong+')';
+    var bmTotal=Object.keys(bookmarks).length;
+    document.getElementById('data-summary').textContent='현재 보관된 학습 문항: '+total+'개 (누적 정답: '+correct+', 오답/힌트: '+wrong+', ⭐ 즐겨찾기: '+bmTotal+'개)';
   }
   function toggleDataModal(){
     var open=dataModal.classList.toggle('open');
@@ -1405,6 +1511,7 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
       records: records,
       ox: oxLog,          // 기출 정오문제 풀이 기록. 빠뜨리면 기기를 옮길 때 사라진다.
       oxLinks: customLinks, // 사용자가 직접 지정한 기출문제 조문 연결 매핑
+      bookmarks: bookmarks, // 즐겨찾기(별표) 문항 보존
       settings: settings,
       newday: newdayInfo()
     };
@@ -1516,6 +1623,12 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
             saveJson(OXLINKS_KEY,customLinks);
             applyCustomLinks();
           }
+          if(remote.bookmarks&&typeof remote.bookmarks==='object'){
+            Object.keys(remote.bookmarks).forEach(function(k){
+              if(!bookmarks[k]||(remote.bookmarks[k]>bookmarks[k]))bookmarks[k]=remote.bookmarks[k];
+            });
+            saveJson(BM_KEY,bookmarks);
+          }
           saveJson(OX_KEY,oxLog);
           saveJson(STORE_KEY,records);   // 여기서는 다시 올리지 않는다
         }
@@ -1574,6 +1687,14 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
         }
         saveJson(OXLINKS_KEY,customLinks);
         applyCustomLinks();
+      }
+      if(backup.bookmarks&&typeof backup.bookmarks==='object'){
+        if(isMerge){
+          Object.keys(backup.bookmarks).forEach(function(k){ bookmarks[k]=backup.bookmarks[k]; });
+        }else{
+          bookmarks=backup.bookmarks;
+        }
+        saveJson(BM_KEY,bookmarks);
       }
       if(backup.settings&&typeof backup.settings==='object'){
         if(backup.settings.newPerDay!=null)settings.newPerDay=backup.settings.newPerDay;
@@ -2114,7 +2235,9 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
     } else {
       qBody = '<div class="oxq">' + esc(q.t) + '</div>';
     }
-    var body = qBody + '<div class="oxtags">' + tags + '</div>';
+    var isBm=isBookmarked(q.i);
+    var bmBtn='<button type="button" class="ox-star-btn '+(isBm?'active':'')+'" data-bm="'+esc(q.i)+'" title="'+(isBm?'즐겨찾기 해제':'즐겨찾기 추가')+'" aria-label="즐겨찾기">'+(isBm?'★':'☆')+'</button>';
+    var body = qBody + '<div class="oxtags"><div class="oxtags-left">' + tags + '</div>' + bmBtn + '</div>';
     if(!rec){
       body+='<div class="oxbtns"><button type="button" class="oxbtn" data-ox="'+esc(q.i)+'" data-pick="O">O</button>'
         +'<button type="button" class="oxbtn" data-ox="'+esc(q.i)+'" data-pick="X">X</button></div>';
@@ -2123,7 +2246,7 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
       body+='<div class="oxres '+(right?'ok':'no')+'">'
         +(right?'맞혔습니다':'틀렸습니다')+' · 이 서술은 '+(q.a==='O'?'맞음':'틀림')
         +' <button type="button" class="oxagain" data-again="'+esc(q.i)+'">다시</button></div>'
-        +(q.e?'<div class="oxexpl">'+esc(q.e)+'</div>':'')
+        +(q.e?'<div class="oxexpl">'+renderExplain(q.e)+'</div>':'')
         +'<div class="oxstem">출처 — '+esc(q.s)+'</div>';
     }
     return '<div class="oxitem">'+body+'</div>';
@@ -2273,6 +2396,8 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
         launchArticleQuiz(browse.law,browse.art,kinds);
         return;
       }
+      var bmb=e.target.closest('[data-bm]');
+      if(bmb){toggleBookmark(bmb.getAttribute('data-bm'));paintDetail();return;}
       var oxb=e.target.closest('[data-ox]');
       if(oxb){gradeOx(oxb.getAttribute('data-ox'),oxb.getAttribute('data-pick'));return;}
       var more=e.target.closest('[data-more]');
@@ -2300,12 +2425,25 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
   // 회차별 기출 정오문제 화면. 조문에 연결되지 않은 문항까지 전부 여기서 풀 수 있다.
   function renderExam(){
     var db=OXDB[exam.law]||{},rounds=Object.keys(db.byRound||{}).map(Number).sort(function(a,b){return b-a;});
-    if(exam.round===null||rounds.indexOf(exam.round)<0)exam.round=rounds[0]||null;
-    var all=(db.byRound&&db.byRound[String(exam.round)])||[];
+    if(exam.round!=='fav'&&(exam.round===null||rounds.indexOf(exam.round)<0))exam.round=rounds[0]||null;
+    var totalFavCount=0;
+    for(var rk in (db.byRound||{})){
+      (db.byRound[rk]||[]).forEach(function(q){if(bookmarks[q.i])totalFavCount++;});
+    }
+    var all=[];
+    if(exam.round==='fav'){
+      for(var rk in (db.byRound||{})){
+        (db.byRound[rk]||[]).forEach(function(q){if(bookmarks[q.i])all.push(q);});
+      }
+      all.sort(function(a,b){return (b.r-a.r)||(a.q-b.q)||(a.o-b.o);});
+    }else{
+      all=(db.byRound&&db.byRound[String(exam.round)])||[];
+    }
     var done=all.filter(function(q){return oxLog[q.i];});
     var right=done.filter(function(q){return oxLog[q.i].pick===q.a;}).length;
     var wrong=done.length-right;
-    // 필터: 전체 / 아직 안 푼 것 / 틀린 것
+    var favCount=all.filter(function(q){return bookmarks[q.i];}).length;
+    // 필터: 전체 / 아직 안 푼 것 / 틀린 것 / 즐겨찾기
     var normCase = exam.case ? exam.case.replace(/\s+/g, '') : null;
     var list=all.filter(function(q){
       if(normCase){
@@ -2315,6 +2453,7 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
       var rec=oxLog[q.i];
       if(exam.filter==='todo')return !rec;
       if(exam.filter==='wrong')return rec&&rec.pick!==q.a;
+      if(exam.filter==='fav')return !!bookmarks[q.i];
       return true;
     }).filter(function(q){
       if(exam.pol&&q.p!==exam.pol)return false;
@@ -2332,10 +2471,15 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
       +rounds.map(function(r){
           var t=db.byRound[String(r)].length;
           return '<button type="button" data-eround="'+r+'" class="'+(r===exam.round?'active':'')+'">'+r+'회 <span style="opacity:.7">'+t+'</span></button>';
-        }).join('')+'</div>';
+        }).join('')
+      +'<button type="button" data-eround="fav" class="fav-round-btn '+(exam.round==='fav'?'active':'')+'">⭐ 전체 즐겨찾기 <span style="opacity:.8">'+totalFavCount+'</span></button>'
+      +'</div>';
+    var filterOptions=[['all','전체 '+all.length],['todo','안 푼 것 '+(all.length-done.length)],['wrong','틀린 것 '+wrong]];
+    if(exam.round!=='fav'){
+      filterOptions.push(['fav','⭐ 즐겨찾기 '+favCount]);
+    }
     html+='<div class="starseg" style="flex-wrap:wrap"><span>보기</span>'
-      +[['all','전체 '+all.length],['todo','안 푼 것 '+(all.length-done.length)],['wrong','틀린 것 '+wrong]]
-        .map(function(o){
+      +filterOptions.map(function(o){
           return '<button type="button" data-efilter="'+o[0]+'" class="'+(exam.filter===o[0]?'active':'')+'">'+esc(o[1])+'</button>';
         }).join('')+'</div>';
     // 극성·유형 필터. 값은 데이터에 이미 들어 있다.
@@ -2358,13 +2502,15 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
       + '<button type="button" class="exam-case-banner-clear" id="clear-case-filter">✕ 전체 문제 보기</button>'
       + '</div>'
     ) : '';
+    var headTitle=(exam.round==='fav')?('⭐ '+esc(exam.law)+' 전체 즐겨찾기 모아보기 '):('제'+exam.round+'회 정오문제 ');
+    var emptyMsg=(exam.filter==='fav'||exam.round==='fav')?'⭐ 즐겨찾기한 문항이 없습니다. 문제 카드의 별(☆) 아이콘을 눌러 추가해보세요!':'해당하는 문항이 없습니다.';
     html+='<div class="card">'
       + caseBanner
-      + '<div class="exhead">제'+exam.round+'회 정오문제 '
+      + '<div class="exhead">'+headTitle
       +'<span class="pill q">'+list.length+'건</span>'
       +(done.length?'<span class="pill '+(right===done.length?'ok':'wh')+'">'+right+'/'+done.length+' 정답</span>':'')
       +'</div>'
-      +(list.length?'':'<div class="empty">해당하는 문항이 없습니다.' + (exam.case ? ' <button type="button" class="exam-case-banner-clear" id="clear-case-filter" style="margin-left:6px">전체 문제 보기</button>' : '') + '</div>')
+      +(list.length?'':'<div class="empty">'+emptyMsg + (exam.case ? ' <button type="button" class="exam-case-banner-clear" id="clear-case-filter" style="margin-left:6px">전체 문제 보기</button>' : '') + '</div>')
       +'<div class="oxlist">'+list.slice(0,shown).map(oxItemHtml).join('')+'</div>'
       +(shown<list.length?'<button type="button" class="oxmore" data-emore="1">더 보기 ('+(list.length-shown)+'건 남음)</button>':'')
       +'</div>';
@@ -2386,10 +2532,20 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
       if(pb){exam.pol=pb.getAttribute('data-epol');exam.shown=20;saveJson(EXAM_KEY,exam);render();return;}
       var kb=e.target.closest('[data-ekind]');
       if(kb){exam.kind=kb.getAttribute('data-ekind');exam.shown=20;saveJson(EXAM_KEY,exam);render();return;}
+      var bmb=e.target.closest('[data-bm]');
+      if(bmb){toggleBookmark(bmb.getAttribute('data-bm'));renderExam();return;}
       var fb=e.target.closest('[data-efilter]');
       if(fb){delete exam.case; exam.filter=fb.getAttribute('data-efilter');exam.shown=20;saveJson(EXAM_KEY,exam);render();return;}
       var rb=e.target.closest('[data-eround]');
-      if(rb){delete exam.case; exam.round=Number(rb.getAttribute('data-eround'));exam.shown=20;saveJson(EXAM_KEY,exam);render();return;}
+      if(rb){
+        delete exam.case;
+        var rVal=rb.getAttribute('data-eround');
+        exam.round=(rVal==='fav')?'fav':Number(rVal);
+        exam.shown=20;
+        saveJson(EXAM_KEY,exam);
+        render();
+        return;
+      }
       if(e.target.closest('[data-emore]')){exam.shown=(exam.shown||20)+20;saveJson(EXAM_KEY,exam);render();return;}
       var ob=e.target.closest('[data-ox]');
       if(ob){oxLog[ob.getAttribute('data-ox')]={pick:ob.getAttribute('data-pick'),t:Date.now()};saveJson(OX_KEY,oxLog);syncSchedulePush();renderExam();return;}

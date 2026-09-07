@@ -123,12 +123,15 @@ details[open]>summary>.theme-chevron{transform:rotate(90deg);color:var(--accent)
 .oxlist{display:flex;flex-direction:column;gap:9px}
 .oxitem{border:1px solid #E7E9F0;border-radius:9px;padding:11px 12px;background:#fff}
 .oxq{font-size:14px;line-height:1.85;word-break:keep-all;white-space:pre-line}
-.ox-scenario{background:#F1F5F9;border-left:3.5px solid #6366F1;border-radius:6px;padding:10px 13px;font-size:13px;color:#334155;line-height:1.75;margin-bottom:14px;word-break:keep-all;white-space:pre-line}
+.oxlist{display:flex;flex-direction:column;gap:9px;min-width:0;max-width:100%}
+.oxitem{border:1px solid #E7E9F0;border-radius:9px;padding:11px 12px;background:#fff;min-width:0;max-width:100%;box-sizing:border-box;overflow:hidden}
+.ox-scenario{background:#F1F5F9;border-left:3.5px solid #6366F1;border-radius:6px;padding:10px 13px;font-size:13px;color:#334155;line-height:1.75;margin-bottom:12px;word-break:break-word;overflow-wrap:break-word;white-space:pre-line;min-width:0;max-width:100%;box-sizing:border-box}
 .ox-scenario-title{font-size:11.5px;font-weight:800;color:#4F46E5;margin-bottom:6px;display:flex;align-items:center;gap:4px}
 body.dark .ox-scenario{background:#1E293B;border-left-color:#818CF8;color:#CBD5E1}
 body.dark .ox-scenario-title{color:#A5B4FC}
-.oxtags{display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap;margin-top:8px}
-.oxtags-left{display:flex;align-items:center;gap:5px;flex-wrap:wrap;flex:1}
+.oxq{font-size:14px;line-height:1.85;word-break:break-word;overflow-wrap:break-word;white-space:pre-line;min-width:0;max-width:100%;box-sizing:border-box}
+.oxtags{display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap;margin-top:8px;min-width:0;max-width:100%;box-sizing:border-box}
+.oxtags-left{display:flex;align-items:center;gap:5px;flex-wrap:wrap;flex:1;min-width:0}
 .ox-star-btn{background:transparent;border:1px solid #D9DEEA;color:#94A3B8;font-size:15px;line-height:1;width:28px;height:28px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;padding:0;user-select:none;flex-shrink:0}
 .ox-star-btn:hover{background:#F1F5F9;border-color:#CBD5E1;color:#F59E0B;transform:scale(1.08)}
 .ox-star-btn.active{background:#FEF3C7;border-color:#FCD34D;color:#D97706;box-shadow:0 1px 3px rgba(217,119,6,.15)}
@@ -142,8 +145,8 @@ body.dark .ox-scenario-title{color:#A5B4FC}
 .revbar-filter{border:1px solid #D9DEEA;background:#fff;border-radius:6px;padding:3px 8px;font-size:11px;font-weight:700;color:#64748B;cursor:pointer;transition:all .15s}
 .revbar-filter:hover{background:#F1F5F9;color:#334155}
 .revbar-filter.active{background:#3157C9;color:#fff;border-color:#3157C9}
-.oxbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}
-.oxbtn{border:1px solid #D9DEEA;background:#fff;border-radius:8px;padding:11px;font-size:16px;font-weight:800;color:#3A4050;cursor:pointer}
+.oxbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px;min-width:0;width:100%;box-sizing:border-box}
+.oxbtn{border:1px solid #D9DEEA;background:#fff;border-radius:8px;padding:11px;font-size:16px;font-weight:800;color:#3A4050;cursor:pointer;min-width:0;width:100%;box-sizing:border-box;text-align:center}
 .oxbtn:active{background:#EEF2FF}
 .oxres{margin-top:9px;font-size:12.5px;font-weight:800;border-radius:7px;padding:8px 10px}
 .oxres.ok{background:#E8F6EE;color:#168A4A}
@@ -775,7 +778,7 @@ body.dark .revbar-filter.active{background:#4F46E5;border-color:#6366F1;color:#f
       : (it ? (it.c || it.orig_c || '') : '');
     var next=prompt('이 기출문제를 연결할 조문 번호를 입력하세요 (예: 33, 42의2 / 비우면 연결 해제):', cur);
     if(next!==null){
-      next=next.replace(/^제/,'').replace(/조$/,'').trim();
+      next=next.replace(/^(특허법|상표법|디자인보호법)s*/,'').replace(/^제s*/,'').replace(/s*조$/,'').trim();
       if(it && next===(it.orig_c||'')){
         delete customLinks[qid];
       }else if(next){
@@ -2217,23 +2220,33 @@ body.dark .revbar-filter.active{background:#4F46E5;border-color:#6366F1;color:#f
     var rec=oxLog[q.i];
     var hasCustom=Object.prototype.hasOwnProperty.call(customLinks, q.i);
     var curArt=hasCustom ? customLinks[q.i] : (q.c || '');
+    var artDisplay='';
+    if(curArt){
+      var clean=String(curArt).replace(/^(특허법|상표법|디자인보호법)[ 	]*/,'').replace(/^제[ 	]*/,'').replace(/[ 	]*조$/,'').trim();
+      artDisplay='제'+clean+'조';
+    }
     var linkBtn=curArt
-      ? '<span class="pill q" style="cursor:pointer" title="조문 변경 (탭하여 수정)" data-link-edit="'+esc(q.i)+'">제'+esc(curArt)+'조 ✎</span>'
+      ? '<span class="pill q" style="cursor:pointer" title="조문 변경 (탭하여 수정)" data-link-edit="'+esc(q.i)+'">'+esc(artDisplay)+' ✎</span>'
       : '<button type="button" class="oxlink-btn" data-link-edit="'+esc(q.i)+'">+ 조문 지정</button>';
     var casesBtns = (q.cs || []).map(function(cNum){
       return '<button type="button" class="oxcase-btn" data-case-jump="'+esc(cNum)+'" title="판례 383선에서 확인">판례 '+esc(cNum)+'</button>';
     }).join('');
     var tags='<span class="chip">'+q.r+'회 '+q.q+'번</span>'
-      +'<span class="pill">'+esc(q.p)+'</span><span class="pill">'+esc(q.k)+'</span>'
+      +(q.p ? '<span class="pill">'+esc(q.p)+'</span>' : '')
+      +(q.k ? '<span class="pill">'+esc(q.k)+'</span>' : '')
       +linkBtn
       +casesBtns;
     var qBody = '';
-    var scMatch = (q.t || '').match(/^[사례[:s]?s*([^]]+)]s*([sS]*)$/);
-    if (scMatch) {
-      qBody = '<div class="ox-scenario"><div class="ox-scenario-title">📋 [사례 사실관계]</div>' + esc(scMatch[1].trim()) + '</div>'
-            + '<div class="oxq"><b>' + esc(scMatch[2].trim()) + '</b></div>';
+    var rawText = (q.t || '').trim();
+    var dnl = String.fromCharCode(10) + String.fromCharCode(10);
+    if (rawText.indexOf('[사례') === 0 && rawText.indexOf(dnl) > 0) {
+      var splitIdx = rawText.indexOf(dnl);
+      var scenarioText = rawText.slice(0, splitIdx).replace(/^[?사례[: 	]?s*/,'').replace(/][ 	]*$/,'').trim();
+      var questionText = rawText.slice(splitIdx + 2).trim();
+      qBody = '<div class="ox-scenario"><div class="ox-scenario-title">📋 [사례 사실관계]</div>' + esc(scenarioText) + '</div>'
+            + '<div class="oxq"><b>' + esc(questionText) + '</b></div>';
     } else {
-      qBody = '<div class="oxq">' + esc(q.t) + '</div>';
+      qBody = '<div class="oxq">' + esc(rawText) + '</div>';
     }
     var isBm=isBookmarked(q.i);
     var bmBtn='<button type="button" class="ox-star-btn '+(isBm?'active':'')+'" data-bm="'+esc(q.i)+'" title="'+(isBm?'즐겨찾기 해제':'즐겨찾기 추가')+'" aria-label="즐겨찾기">'+(isBm?'★':'☆')+'</button>';

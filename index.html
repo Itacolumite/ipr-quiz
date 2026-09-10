@@ -194,6 +194,9 @@ body.dark .ox-scenario-title{color:#A5B4FC}
 .note-round-btn{background:#FEF9C3;border-color:#FDE047;color:#854D0E;font-weight:800}
 .note-round-btn:hover{background:#FEF08A}
 .note-round-btn.active{background:#D97706;border-color:#B45309;color:#fff}
+.wrong-round-btn{background:#FFF1F2;border-color:#FECDD3;color:#E11D48;font-weight:800}
+.wrong-round-btn:hover{background:#FFE4E6}
+.wrong-round-btn.active{background:#E11D48!important;border-color:#BE123C!important;color:#fff!important}
 .revbar-left{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .revbar-filter{border:1px solid #D9DEEA;background:#fff;border-radius:6px;padding:3px 8px;font-size:11px;font-weight:700;color:#64748B;cursor:pointer;transition:all .15s}
 .revbar-filter:hover{background:#F1F5F9;color:#334155}
@@ -562,6 +565,9 @@ body.dark .revbar-filter.active{background:#4F46E5;border-color:#6366F1;color:#f
 body.dark .note-round-btn{background:#382F13;border-color:#534015;color:#FDE047}
 body.dark .note-round-btn:hover{background:#4D3F18}
 body.dark .note-round-btn.active{background:#D97706;border-color:#F59E0B;color:#fff}
+body.dark .wrong-round-btn{background:#4C111A;border-color:#881337;color:#FDA4AF}
+body.dark .wrong-round-btn:hover{background:#5F1521}
+body.dark .wrong-round-btn.active{background:#E11D48!important;border-color:#F43F5E!important;color:#fff!important}
 body.dark .oxnote-box{background:#231E0F;border-color:#534015;border-left-color:#EAB308;color:#FEF08A}
 body.dark .oxnote-head{color:#FDE047}
 body.dark .oxnote-btn{background:#382F13;border-color:#534015;color:#FDE047}
@@ -3208,12 +3214,14 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
   // 회차별 기출 정오문제 화면. 조문에 연결되지 않은 문항까지 전부 여기서 풀 수 있다.
   function renderExam(){
     var db=OXDB[exam.law]||{},rounds=Object.keys(db.byRound||{}).map(Number).sort(function(a,b){return b-a;});
-    if(exam.round!=='fav'&&exam.round!=='note'&&(exam.round===null||rounds.indexOf(exam.round)<0))exam.round=rounds[0]||null;
-    var totalFavCount=0, totalNoteCount=0;
+    if(exam.round!=='fav'&&exam.round!=='note'&&exam.round!=='wrong'&&(exam.round===null||rounds.indexOf(exam.round)<0))exam.round=rounds[0]||null;
+    var totalFavCount=0, totalNoteCount=0, totalWrongCount=0;
     for(var rk in (db.byRound||{})){
       (db.byRound[rk]||[]).forEach(function(q){
         if(bookmarks[q.i])totalFavCount++;
         if(hasNote(q.i))totalNoteCount++;
+        var rec=oxLog[q.i];
+        if(rec && rec.pick !== q.a) totalWrongCount++;
       });
     }
     var all=[];
@@ -3234,6 +3242,14 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
     }else if(exam.round==='note'){
       for(var rk in (db.byRound||{})){
         (db.byRound[rk]||[]).forEach(function(q){if(hasNote(q.i))all.push(q);});
+      }
+      all.sort(function(a,b){return (b.r-a.r)||(a.q-b.q)||(a.o-b.o);});
+    }else if(exam.round==='wrong'){
+      for(var rk in (db.byRound||{})){
+        (db.byRound[rk]||[]).forEach(function(q){
+          var rec=oxLog[q.i];
+          if(rec && rec.pick !== q.a) all.push(q);
+        });
       }
       all.sort(function(a,b){return (b.r-a.r)||(a.q-b.q)||(a.o-b.o);});
     }else{
@@ -3284,9 +3300,14 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
         }).join('')
       +'<button type="button" data-eround="fav" class="fav-round-btn '+(exam.matrixDrill ? '' : (exam.round==='fav'?'active':''))+'">⭐ 전체 즐겨찾기 <span style="opacity:.8">'+totalFavCount+'</span></button>'
       +'<button type="button" data-eround="note" class="note-round-btn '+(exam.matrixDrill ? '' : (exam.round==='note'?'active':''))+'">📝 전체 메모 <span style="opacity:.8">'+totalNoteCount+'</span></button>'
+      +'<button type="button" data-eround="wrong" class="wrong-round-btn '+(exam.matrixDrill ? '' : (exam.round==='wrong'?'active':''))+'">❌ 전체 오답 <span style="opacity:.8">'+totalWrongCount+'</span></button>'
       +(exam.matrixDrill ? '<button type="button" class="fav-round-btn active" style="background:#DC2626;border-color:#DC2626;color:#fff">🎯 약점 집중 공략 (' + esc(exam.matrixDrill.drillType) + ')</button>' : '')
       +'</div>';
-    var filterOptions=[['all','전체 '+all.length],['todo','안 푼 것 '+(all.length-done.length)],['wrong','틀린 것 '+wrong]];
+    var filterOptions=[['all','전체 '+all.length]];
+    if(exam.round!=='wrong'){
+      filterOptions.push(['todo','안 푼 것 '+(all.length-done.length)]);
+      filterOptions.push(['wrong','틀린 것 '+wrong]);
+    }
     if(exam.round!=='fav'){
       filterOptions.push(['fav','⭐ 즐겨찾기 '+favCount]);
     }
@@ -3325,8 +3346,14 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
     ) : '';
     var headTitle = exam.matrixDrill
       ? ('🎯 약점 집중 공략 (' + esc(exam.matrixDrill.catTitle) + ' · ' + esc(exam.matrixDrill.drillType) + ') ')
-      : ((exam.round==='fav')?('⭐ '+esc(exam.law)+' 전체 즐겨찾기 모아보기 '):((exam.round==='note')?('📝 '+esc(exam.law)+' 전체 메모 모아보기 '):('제'+exam.round+'회 정오문제 ')));
-    var emptyMsg = (exam.filter==='fav'||exam.round==='fav')?'⭐ 즐겨찾기한 문항이 없습니다. 문제 카드의 별(☆) 아이콘을 눌러 추가해보세요!':((exam.filter==='note'||exam.round==='note')?'📝 작성된 나만의 메모가 없습니다. 문제 카드의 [✏️ 메모작성] 버튼을 눌러 나만의 요약 노트를 남겨보세요!':'해당하는 문항이 없습니다.');
+      : ((exam.round==='fav')?('⭐ '+esc(exam.law)+' 전체 즐겨찾기 모아보기 '):((exam.round==='note')?('📝 '+esc(exam.law)+' 전체 메모 모아보기 '):((exam.round==='wrong')?('❌ '+esc(exam.law)+' 전체 오답 모아보기 '):('제'+exam.round+'회 정오문제 '))));
+    var emptyMsg = (exam.filter==='fav'||exam.round==='fav')
+      ? '⭐ 즐겨찾기한 문항이 없습니다. 문제 카드의 별(☆) 아이콘을 눌러 추가해보세요!'
+      : ((exam.filter==='note'||exam.round==='note')
+        ? '📝 작성된 나만의 메모가 없습니다. 문제 카드의 [✏️ 메모작성] 버튼을 눌러 나만의 요약 노트를 남겨보세요!'
+        : ((exam.filter==='wrong'||exam.round==='wrong')
+          ? '<div style="padding:22px 16px;text-align:center"><div style="font-size:32px;margin-bottom:8px">🎉</div><div style="font-size:15px;font-weight:800;color:#1E293B;margin-bottom:6px">틀린 기출문제가 없습니다!</div><div style="font-size:13px;color:#64748B;margin-bottom:14px">기출문제를 풀다가 틀린 지문이 생기면 이곳에 자동으로 모여 집중 복습할 수 있습니다.</div><button type="button" class="btn primary" id="exam-go-solve" style="padding:9px 20px;font-size:13px;font-weight:800;background:var(--accent);color:#fff;border-radius:8px;border:none;cursor:pointer">📝 최신 ' + (rounds[0]||63) + '회 기출 풀러 가기 →</button></div>'
+          : '해당하는 문항이 없습니다.'));
 
     var splitContainerHtml = '';
     if(list.length){
@@ -3464,6 +3491,18 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
         }
         return;
       }
+      if(e.target.closest('#exam-go-solve')){
+        delete exam.case;
+        delete exam.matrixDrill;
+        var lRounds = Object.keys((OXDB[exam.law]||{}).byRound||{}).map(Number).sort(function(a,b){return b-a;});
+        exam.round = lRounds[0] || 63;
+        exam.filter = 'all';
+        exam.shown = 20;
+        saveJson(EXAM_KEY, exam);
+        render();
+        window.scrollTo(0,0);
+        return;
+      }
       var lb=e.target.closest('[data-elaw]');
       if(lb){delete exam.case; delete exam.matrixDrill; exam.law=lb.getAttribute('data-elaw');exam.round=null;exam.shown=20;saveJson(EXAM_KEY,exam);render();return;}
       var pb=e.target.closest('[data-epol]');
@@ -3480,7 +3519,7 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
         delete exam.case;
         delete exam.matrixDrill;
         var rVal=rb.getAttribute('data-eround');
-        exam.round=(rVal==='fav'||rVal==='note')?rVal:Number(rVal);
+        exam.round=(rVal==='fav'||rVal==='note'||rVal==='wrong')?rVal:Number(rVal);
         exam.shown=20;
         saveJson(EXAM_KEY,exam);
         render();
@@ -4506,11 +4545,11 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
       + '<span class="today-primary-badge">최우선</span>'
       + '<span class="today-primary-count">오늘 복습 ' + totalReviewCount + '개</span>'
       + '</div>'
-      + '<div class="today-primary-title">복습 주기가 도래한 문항을 가장 먼저 점검하세요</div>'
-      + '<div class="today-primary-desc">망각곡선(SRS) 간격 주기가 도래한 조문 퀴즈(' + dueCount + '개)와 기출 정오 오답 지문(' + wrongCount + '개)이 대기 중입니다.</div>'
+      + '<div class="today-primary-title">' + (totalReviewCount > 0 ? '복습 주기가 도래한 문항을 가장 먼저 점검하세요' : '현재 대기 중인 복습 문항이 없습니다!') + '</div>'
+      + '<div class="today-primary-desc">' + (totalReviewCount > 0 ? ('망각곡선(SRS) 간격 주기가 도래한 조문 퀴즈(' + dueCount + '개)와 기출 정오 오답 지문(' + wrongCount + '개)이 대기 중입니다.') : '망각곡선(SRS) 주기 만료 문항이나 틀린 기출문제가 없습니다. 아래 오늘의 맞춤 학습 5개를 먼저 진행해보세요!') + '</div>'
       + '<div class="today-primary-actions">'
       + '<button type="button" class="today-btn-primary" id="today-start-review">지금 시작 →</button>'
-      + '<button type="button" class="today-btn-subtle" id="today-exam-wrong">기출 오답 복습</button>'
+      + '<button type="button" class="today-btn-subtle" id="today-exam-wrong">기출 오답 복습' + (wrongCount > 0 ? (' (' + wrongCount + '개)') : '') + '</button>'
       + '</div>'
       + '</div>'
 
@@ -4600,10 +4639,46 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
 
         if(e.target.closest('#today-start-review')){
           var curDue = allDueQuestionsCount();
+          var curWrong = allWrongExamCount();
           if(curDue > 0){
+            var targetTab = REVIEW;
+            for(var li=0; li<CONTENT.length; li++){
+              var b = lawBuckets(CONTENT[li]);
+              if(b && b.due && b.due.length > 0){
+                targetTab = li;
+                break;
+              }
+            }
             mode = 'quiz';
-            tabIdx = REVIEW; // 4
-            resetTab(TABS[REVIEW]);
+            tabIdx = targetTab;
+            resetTab(TABS[targetTab]);
+            render();
+            window.scrollTo(0,0);
+          } else if(curWrong > 0){
+            var targetLaw = '특허법';
+            var maxWrong = 0;
+            LAWS.forEach(function(l){
+              var ldb = OXDB[l] || {};
+              var lWrong = 0;
+              for(var rk in (ldb.byRound || {})){
+                (ldb.byRound[rk] || []).forEach(function(q){
+                  var rec = oxLog[q.i];
+                  if(rec && rec.pick !== q.a) lWrong++;
+                });
+              }
+              if(lWrong > maxWrong){
+                maxWrong = lWrong;
+                targetLaw = l;
+              }
+            });
+            mode = 'exam';
+            exam.law = targetLaw;
+            delete exam.matrixDrill;
+            delete exam.case;
+            exam.round = 'wrong';
+            exam.filter = 'all';
+            exam.shown = 20;
+            saveJson(EXAM_KEY, exam);
             render();
             window.scrollTo(0,0);
           } else {
@@ -4620,10 +4695,27 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
 
         if(e.target.closest('#today-exam-wrong')){
           mode = 'exam';
-          exam.law = '특허법';
+          var targetLaw2 = '특허법';
+          var maxWrong2 = 0;
+          LAWS.forEach(function(l){
+            var ldb = OXDB[l] || {};
+            var lWrong2 = 0;
+            for(var rk in (ldb.byRound || {})){
+              (ldb.byRound[rk] || []).forEach(function(q){
+                var rec = oxLog[q.i];
+                if(rec && rec.pick !== q.a) lWrong2++;
+              });
+            }
+            if(lWrong2 > maxWrong2){
+              maxWrong2 = lWrong2;
+              targetLaw2 = l;
+            }
+          });
+          exam.law = targetLaw2;
           delete exam.matrixDrill;
           delete exam.case;
-          exam.filter = 'wrong';
+          exam.round = 'wrong';
+          exam.filter = 'all';
           exam.shown = 20;
           saveJson(EXAM_KEY, exam);
           render();

@@ -32,14 +32,63 @@ button,input,select{font:inherit}
 .tab .cnt{display:inline-block;min-width:18px;margin-left:4px;font-size:11px;background:#EEF2FF;color:#3157C9;border-radius:999px;padding:1px 5px;vertical-align:1px}
 .main{max-width:760px;margin:0 auto;padding:18px 16px 32px}
 /* ── 조문 열람(체계도) 및 판례 화면 ── */
-.modebar{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;background:#fff;border-bottom:1px solid #E7E9F0;padding:6px 10px}
-.modebtn{border:1px solid #D9DEEA;background:#fff;border-radius:999px;padding:8px 6px;font-size:13px;font-weight:800;color:#767E8E;cursor:pointer;white-space:nowrap}
+.modebar{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;background:#fff;border-bottom:1px solid #E7E9F0;padding:6px 10px}
+.modebtn{border:1px solid #D9DEEA;background:#fff;border-radius:999px;padding:8px 6px;font-size:13px;font-weight:800;color:#767E8E;cursor:pointer;white-space:nowrap;transition:all .15s}
 .modebtn.active{background:var(--accent);border-color:var(--accent);color:#fff}
 body.browse .tabs,body.browse #new-sel,body.browse #ch-sel,body.browse .meter,body.browse .score,
 body.cases .tabs,body.cases #new-sel,body.cases #ch-sel,body.cases .meter,body.cases .score,
-body.matrix .tabs,body.matrix #new-sel,body.matrix #ch-sel,body.matrix .meter,body.matrix .score{display:none}
-body.browse .modebar,body.cases .modebar,body.matrix .modebar{max-width:1480px;margin:0 auto;padding:8px 24px}
+body.matrix .tabs,body.matrix #new-sel,body.matrix #ch-sel,body.matrix .meter,body.matrix .score,
+body.today .tabs,body.today #new-sel,body.today #ch-sel,body.today .meter,body.today .score{display:none}
+body.browse .modebar,body.cases .modebar,body.matrix .modebar,body.today .modebar{max-width:1480px;margin:0 auto;padding:8px 24px}
 body.browse .main,body.cases .main,body.matrix .main{max-width:1480px;width:100%;padding:18px 24px 40px}
+body.today .main{max-width:920px;width:100%;margin:0 auto;padding:18px 16px 40px}
+/* ── 오늘 할 일 (Today Dashboard) ── */
+.today-container{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+.today-head-card{background:#fff;border:1px solid #E2E8F0;border-radius:14px;padding:20px 24px;box-shadow:0 2px 6px rgba(15,23,42,.04)}
+.today-head-sub{font-size:13px;font-weight:700;color:#6366F1;display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.today-head-row{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.today-head-title{font-size:24px;font-weight:900;color:#0F172A;letter-spacing:-.02em;margin:0}
+.today-head-date{font-size:14px;font-weight:700;color:#64748B}
+.today-progress-card{background:#fff;border:1px solid #E2E8F0;border-radius:14px;padding:16px 20px;box-shadow:0 2px 6px rgba(15,23,42,.03)}
+.today-progress-header{display:flex;justify-content:space-between;align-items:center;font-size:13.5px;font-weight:800;color:#1E293B;margin-bottom:8px}
+.today-progress-track{height:10px;background:#F1F5F9;border-radius:999px;overflow:hidden}
+.today-progress-fill{height:100%;background:linear-gradient(90deg,#4F46E5,#6366F1);border-radius:999px;transition:width .3s ease}
+.today-primary-card{background:linear-gradient(135deg,#FFF1F2 0%,#FFE4E6 100%);border:1px solid #FECDD3;border-radius:14px;padding:18px 22px;display:flex;flex-direction:column;gap:10px}
+.today-primary-head{display:flex;align-items:center;gap:8px}
+.today-primary-badge{background:#F43F5E;color:#fff;font-size:11.5px;font-weight:800;padding:2px 8px;border-radius:999px}
+.today-primary-count{background:#fff;color:#E11D48;font-size:12px;font-weight:800;padding:2px 9px;border-radius:999px;border:1px solid #FDA4AF}
+.today-primary-title{font-size:16px;font-weight:800;color:#881337}
+.today-primary-desc{font-size:13px;color:#9F1239;line-height:1.5}
+.today-primary-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.today-btn-primary{background:#E11D48;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:800;cursor:pointer;transition:background .15s}
+.today-btn-primary:hover{background:#BE123C}
+.today-btn-subtle{background:rgba(255,255,255,.8);color:#9F1239;border:1px solid #FDA4AF;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;transition:background .15s}
+.today-btn-subtle:hover{background:#fff}
+.today-section-header{display:flex;justify-content:space-between;align-items:center;padding:0 4px}
+.today-section-title{font-size:17px;font-weight:900;color:#0F172A;display:flex;align-items:center;gap:6px}
+.today-section-est{font-size:13px;font-weight:700;color:#6366F1;background:#EEF2FF;padding:3px 10px;border-radius:999px}
+.today-tasks{display:flex;flex-direction:column;gap:10px}
+.today-task-card{background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:14px;transition:border-color .15s,box-shadow .15s}
+.today-task-card:hover{border-color:#CBD5E1;box-shadow:0 3px 10px rgba(15,23,42,.04)}
+.today-task-card.is-done{background:#F8FAFC;border-color:#E2E8F0;opacity:.78}
+.today-task-card.is-done .today-task-title{text-decoration:line-through;color:#64748B}
+.today-task-check{background:transparent;border:none;cursor:pointer;padding:4px;font-size:20px;line-height:1;display:flex;align-items:center;justify-content:center;color:#CBD5E1;transition:transform .15s}
+.today-task-check:hover{transform:scale(1.15);color:#6366F1}
+.today-task-check.checked{color:#10B981}
+.today-task-main{flex:1;min-width:0}
+.today-task-badges{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.today-badge{font-size:11px;font-weight:800;padding:2px 7px;border-radius:5px}
+.today-badge.p-high{background:#FFE4E6;color:#E11D48}
+.today-badge.p-rec{background:#EEF2FF;color:#4F46E5}
+.today-badge.p-add{background:#F1F5F9;color:#475569}
+.today-badge.time{background:#F8FAFC;border:1px solid #E2E8F0;color:#64748B}
+.today-task-title{font-size:15px;font-weight:800;color:#1E293B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
+.today-task-desc{font-size:12.5px;color:#64748B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.today-task-action{border:1px solid #E2E8F0;background:#fff;border-radius:8px;padding:8px 14px;font-size:12.5px;font-weight:800;color:#334155;cursor:pointer;white-space:nowrap;transition:all .15s}
+.today-task-action:hover{background:#F8FAFC;border-color:#6366F1;color:#4F46E5}
+.today-footer{text-align:center;padding:12px 0}
+.today-reset-btn{background:transparent;border:none;color:#94A3B8;font-size:12px;font-weight:700;cursor:pointer;text-decoration:underline;padding:6px 12px}
+.today-reset-btn:hover{color:#64748B}
 .lawseg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:9px}
 .lawseg button{border:1px solid #D9DEEA;background:#fff;border-radius:8px;padding:9px 4px;font-size:13px;font-weight:800;color:#596273;cursor:pointer}
 .lawseg button.active{background:var(--accent);border-color:var(--accent);color:#fff}
@@ -453,7 +502,7 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
 .matrix-legend-dot.medium{background:#FFFBEB;border:1px solid #FDE68A}
 .matrix-legend-dot.good{background:#ECFDF5;border:1px solid #A7F3D0}
 .matrix-legend-dot.empty{background:#F8FAFC;border:1px solid #E2E8F0}
-@media (max-width:520px){.hud{grid-template-columns:1fr auto auto}.meter{grid-column:1/-1}.actions{grid-template-columns:1fr 1fr}.tabs{grid-template-columns:1fr 1fr 1fr .58fr .58fr}.tab{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:2px;padding-right:2px}.tab .cnt{margin-left:2px;padding:1px 3px;font-size:9px}.card{padding:15px}.modebar{grid-template-columns:repeat(5,1fr);padding:6px 4px;gap:3px}.modebtn{font-size:10px;padding:6px 1px}}
+@media (max-width:560px){.hud{grid-template-columns:1fr auto auto}.meter{grid-column:1/-1}.actions{grid-template-columns:1fr 1fr}.tabs{grid-template-columns:1fr 1fr 1fr .58fr .58fr}.tab{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:2px;padding-right:2px}.tab .cnt{margin-left:2px;padding:1px 3px;font-size:9px}.card{padding:15px}.modebar{display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:6px 8px;gap:5px}.modebar::-webkit-scrollbar{display:none}.modebtn{flex:0 0 auto;font-size:11.5px;padding:7px 11px}}
 /* 터치 기기: 키보드 단축키 표기 숨김(누를 수 없음) + 터치 안내 노출 */
 .touch-only{display:none}
 @media (pointer:coarse){.btn small{display:none}#help table{display:none}.touch-only{display:block}}
@@ -621,6 +670,31 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
   .matrix-legend-dot.medium{background:rgba(245,158,11,.25);border-color:rgba(245,158,11,.4)}
   .matrix-legend-dot.good{background:rgba(16,185,129,.25);border-color:rgba(16,185,129,.4)}
   .matrix-legend-dot.empty{background:#1E232F;border-color:#2A3040}
+  /* 다크모드 today dashboard */
+  .today-head-card,.today-progress-card,.today-task-card{background:#1A1E27;border-color:#2A3040}
+  .today-head-title,.today-task-title,.today-progress-header{color:#F1F5F9}
+  .today-head-date,.today-task-desc{color:#8C96A8}
+  .today-head-sub{color:#818CF8}
+  .today-progress-track{background:#232936}
+  .today-primary-card{background:linear-gradient(135deg,#2D1217 0%,#3F1722 100%);border-color:#5B1D2A}
+  .today-primary-title{color:#FDA4AF}
+  .today-primary-desc{color:#FECDD3}
+  .today-primary-count{background:#1E1417;border-color:#5B1D2A;color:#FDA4AF}
+  .today-btn-subtle{background:rgba(26,30,39,.7);color:#FDA4AF;border-color:#5B1D2A}
+  .today-btn-subtle:hover{background:#1A1E27}
+  .today-section-title{color:#F1F5F9}
+  .today-section-est{background:#232838;color:#A5B4FC}
+  .today-task-card:hover{border-color:#3B4254}
+  .today-task-card.is-done{background:#151821;border-color:#232836}
+  .today-task-card.is-done .today-task-title{color:#64748B}
+  .today-badge.p-high{background:#4C111A;color:#FDA4AF}
+  .today-badge.p-rec{background:#1E2640;color:#A5B4FC}
+  .today-badge.p-add{background:#232936;color:#94A3B8}
+  .today-badge.time{background:#151821;border-color:#2A3040;color:#94A3B8}
+  .today-task-action{background:#202634;border-color:#2A3040;color:#CBD5E1}
+  .today-task-action:hover{background:#283042;border-color:#818CF8;color:#A5B4FC}
+  .today-task-check{color:#475569}
+  .today-task-check.checked{color:#34D399}
 }
 </style>
 </head>
@@ -766,7 +840,8 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
   </div>
 </div>
 <div class="modebar">
-  <button id="mode-quiz" class="modebtn active" type="button">📝 문제 풀기</button>
+  <button id="mode-today" class="modebtn active" type="button">🎯 오늘 할 일</button>
+  <button id="mode-quiz" class="modebtn" type="button">📝 문제 풀기</button>
   <button id="mode-browse" class="modebtn" type="button">📖 조문 열람</button>
   <button id="mode-exam" class="modebtn" type="button">📋 기출 정오</button>
   <button id="mode-cases" class="modebtn" type="button">⚖️ 판례 383</button>
@@ -921,7 +996,8 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
     return !!(n&&n.text&&n.text.trim());
   }
   var BROWSE_KEY='ipquiz.browse.v1';
-  var mode='quiz';
+  var MODE_KEY='ipquiz.mode.v1';
+  var mode=loadJson(MODE_KEY,'today');
   var browse=loadJson(BROWSE_KEY,{law:'특허법',art:null,open:{},q:'',minStar:0,view:'text',treeMode:'theme'});
   if(LAWS.indexOf(browse.law)<0)browse.law=LAWS[0];
   if(!browse.open)browse.open={};
@@ -1241,15 +1317,23 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
   }
 
   function render(){
-    document.body.classList.toggle('browse',mode==='browse'||mode==='exam'||mode==='cases'||mode==='matrix');
+    saveJson(MODE_KEY,mode);
+    document.body.classList.toggle('browse',mode==='browse'||mode==='exam'||mode==='cases'||mode==='matrix'||mode==='today');
     document.body.classList.toggle('cases',mode==='cases');
     document.body.classList.toggle('matrix',mode==='matrix');
+    document.body.classList.toggle('today',mode==='today');
     document.body.classList.toggle('has-art',mode==='browse'&&!!browse.art);
+    document.getElementById('mode-today').classList.toggle('active',mode==='today');
     document.getElementById('mode-quiz').classList.toggle('active',mode==='quiz');
     document.getElementById('mode-browse').classList.toggle('active',mode==='browse');
     document.getElementById('mode-exam').classList.toggle('active',mode==='exam');
     document.getElementById('mode-cases').classList.toggle('active',mode==='cases');
     document.getElementById('mode-matrix').classList.toggle('active',mode==='matrix');
+    if(mode==='today'){
+      document.documentElement.style.setProperty('--accent','#4F46E5');
+      renderTodayDashboard();
+      return;
+    }
     if(mode==='matrix'){
       document.documentElement.style.setProperty('--accent',COLORS[Math.max(0,LAWS.indexOf(matrixState.law))]);
       renderMatrix();
@@ -4198,6 +4282,369 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
     });
   }
 
+  // ── 🎯 오늘 할 일 대시보드 (Today Dashboard) ──
+  var TODAY_KEY = 'ipquiz.today.v1';
+  var todayBound = false;
+
+  function simpleHash(str){
+    var hash = 0;
+    for (var i = 0; i < str.length; i++) {
+      hash = ((hash << 5) - hash) + str.charCodeAt(i);
+      hash |= 0;
+    }
+    return Math.abs(hash);
+  }
+
+  function getTodayState(){
+    var today = todayKst();
+    var st = loadJson(TODAY_KEY, null);
+    if(!st || st.date !== today){
+      st = { date: today, completed: {} };
+      saveJson(TODAY_KEY, st);
+    }
+    return st;
+  }
+
+  function allDueQuestionsCount(){
+    var today = todayKst();
+    var count = 0;
+    allQuestions().forEach(function(q){
+      var r = rec(q.id);
+      if(isSeen(r) && (r.due || today) <= today){
+        count++;
+      }
+    });
+    return count;
+  }
+
+  function allWrongExamCount(){
+    var count = 0;
+    for(var law in OXDB){
+      var db = OXDB[law] || {};
+      for(var r in (db.byRound || {})){
+        (db.byRound[r] || []).forEach(function(q){
+          var record = oxLog[q.i];
+          if(record && record.pick !== q.a){
+            count++;
+          }
+        });
+      }
+    }
+    return count;
+  }
+
+  function getDailyTasks(){
+    var today = todayKst();
+    var tasks = [];
+
+    // 1. 복습 과제 (Task 1)
+    var dueList = [];
+    allQuestions().forEach(function(q){
+      var r = rec(q.id);
+      if(isSeen(r) && (r.due || today) <= today){
+        dueList.push(q);
+      }
+    });
+    if(dueList.length > 0){
+      var q = dueList[simpleHash(today + '_due') % dueList.length];
+      tasks.push({
+        id: 'task_srs',
+        priority: 'high',
+        pLabel: '우선',
+        time: '3분',
+        icon: '🎯',
+        title: '복습 예정 — 제' + q.article + '조 ' + (q.title || ''),
+        desc: q.law + ' 제' + q.article + '조 — SM-2 간격 복습 주기 도래 (' + dueList.length + '문항 대기)',
+        actionLabel: '복습 풀기 →',
+        actionType: 'quiz_art',
+        law: q.law,
+        art: q.article
+      });
+    } else {
+      var patArts = (ART['특허법'] || []).filter(function(a){ return (a[3] || 0) >= 2; });
+      var a = patArts[simpleHash(today + '_fallback_due') % Math.max(1, patArts.length)] || ['29', '특허요건', '', 3];
+      tasks.push({
+        id: 'task_srs',
+        priority: 'high',
+        pLabel: '우선',
+        time: '3분',
+        icon: '🎯',
+        title: '복습 예정 — 제' + a[0] + '조 ' + (a[1] || ''),
+        desc: '특허법 제' + a[0] + '조 — 오늘 핵심 조문 복습 권장',
+        actionLabel: '복습 풀기 →',
+        actionType: 'quiz_art',
+        law: '특허법',
+        art: String(a[0])
+      });
+    }
+
+    // 2. 판례 과제 (Task 2)
+    var starCases = CASES_383.filter(function(c){
+      return (c.star && c.star >= 2) || c.enbanc || (c.exam1 && c.exam1.length);
+    });
+    var sc = starCases[simpleHash(today + '_case') % Math.max(1, starCases.length)];
+    var cTitle = sc ? ((sc.nick || sc.title) + (sc.court ? ' (' + sc.court + ')' : '')) : '핵심 판례';
+    var cSub = sc ? (sc.num + ' · ' + (sc.articles && sc.articles.length ? ('관련 조문: 제' + sc.articles.join(', ') + '조') : '특허법 판례')) : '';
+    tasks.push({
+      id: 'task_case',
+      priority: 'rec',
+      pLabel: '권장',
+      time: '5분',
+      icon: '⚖️',
+      title: '중요 판례 정독 — ' + cTitle,
+      desc: cSub,
+      actionLabel: '판례 보기 →',
+      actionType: 'case_jump',
+      caseNum: sc ? sc.num : ''
+    });
+
+    // 3. 빈칸 과제 (Task 3)
+    var impArts = (ART['특허법'] || []).filter(function(a){ return (a[3] || 0) >= 2; });
+    var clozeArt = impArts[simpleHash(today + '_cloze') % Math.max(1, impArts.length)] || ['42', '특허출원', '', 3];
+    tasks.push({
+      id: 'task_cloze',
+      priority: 'rec',
+      pLabel: '권장',
+      time: '5분',
+      icon: '✏️',
+      title: '빈칸 학습 — 제' + clozeArt[0] + '조 ' + (clozeArt[1] || ''),
+      desc: '특허법 제' + clozeArt[0] + '조 — 핵심 법조문 클로즈/괄호 채우기 훈련',
+      actionLabel: '빈칸 풀기 →',
+      actionType: 'quiz_cloze',
+      law: '특허법',
+      art: String(clozeArt[0])
+    });
+
+    // 4. 조문 열람 과제 (Task 4)
+    var browseArt = impArts[simpleHash(today + '_browse') % Math.max(1, impArts.length)] || ['62', '특허거절결정', '', 3];
+    tasks.push({
+      id: 'task_browse',
+      priority: 'rec',
+      pLabel: '권장',
+      time: '5분',
+      icon: '🔄',
+      title: '조문 복습 — 제' + browseArt[0] + '조 ' + (browseArt[1] || ''),
+      desc: '특허법 제' + browseArt[0] + '조 — 조문 체계도 및 전문 정독 · 연혁 대조',
+      actionLabel: '조문 열람 →',
+      actionType: 'browse_art',
+      law: '특허법',
+      art: String(browseArt[0])
+    });
+
+    // 5. 기출 정오 5선 과제 (Task 5)
+    var examList = [];
+    var pOx = OXDB['특허법'] || {};
+    for (var r in (pOx.byRound || {})) {
+      examList = examList.concat(pOx.byRound[r] || []);
+    }
+    var unattempted = examList.filter(function(q){ return !oxLog[q.i]; });
+    var examPool = unattempted.length >= 5 ? unattempted : examList;
+    var startIdx = simpleHash(today + '_exam') % Math.max(1, examPool.length - 5);
+    var pickedExam5 = examPool.slice(startIdx, startIdx + 5);
+    var qids = pickedExam5.map(function(q){ return q.i; });
+    tasks.push({
+      id: 'task_exam',
+      priority: 'add',
+      pLabel: '추가',
+      time: '15분',
+      icon: '✨',
+      title: '새 기출 정오 5문항',
+      desc: '특허법 최신 기출 지문 5문항 미니 드릴 집중 풀기',
+      actionLabel: '5문항 풀기 →',
+      actionType: 'exam_drill',
+      qids: qids
+    });
+
+    return tasks;
+  }
+
+  function formatKoreanToday(){
+    var days = ['일', '월', '화', '수', '목', '금', '토'];
+    var kstStr = todayKst();
+    var parts = kstStr.split('-');
+    var y = parseInt(parts[0], 10);
+    var m = parseInt(parts[1], 10);
+    var d = parseInt(parts[2], 10);
+    var dt = new Date(y, m - 1, d);
+    var dayName = days[dt.getDay()];
+    return y + '년 ' + m + '월 ' + d + '일 (' + dayName + ')';
+  }
+
+  function renderTodayDashboard(){
+    var todayState = getTodayState();
+    var tasks = getDailyTasks();
+    var doneCount = tasks.filter(function(t){ return !!todayState.completed[t.id]; }).length;
+    var pct = Math.round((doneCount / tasks.length) * 100);
+    var dueCount = allDueQuestionsCount();
+    var wrongCount = allWrongExamCount();
+    var totalReviewCount = dueCount + wrongCount;
+    var dateLabel = formatKoreanToday();
+
+    var html = '<div class="today-container">'
+      + '<div class="today-head-card">'
+      + '<div class="today-head-sub"><span>📚</span> 학습 관리</div>'
+      + '<div class="today-head-row">'
+      + '<h1 class="today-head-title">오늘 할 일</h1>'
+      + '<div class="today-head-date">' + esc(dateLabel) + '</div>'
+      + '</div>'
+      + '</div>'
+
+      + '<div class="today-progress-card">'
+      + '<div class="today-progress-header">'
+      + '<span>오늘 학습 ' + tasks.length + '개 중 ' + doneCount + '개 완료</span>'
+      + '<span style="color:#4F46E5;font-weight:900">' + pct + '%</span>'
+      + '</div>'
+      + '<div class="today-progress-track">'
+      + '<div class="today-progress-fill" style="width:' + pct + '%"></div>'
+      + '</div>'
+      + (pct === 100 ? '<div style="margin-top:10px;font-size:12.5px;color:#059669;font-weight:800;display:flex;align-items:center;gap:6px"><span>🎉</span> 오늘의 모든 학습 목표를 완수했습니다! 훌륭합니다.</div>' : '')
+      + '</div>'
+
+      + '<div class="today-primary-card">'
+      + '<div class="today-primary-head">'
+      + '<span style="font-size:18px">🔄</span>'
+      + '<span class="today-primary-badge">최우선</span>'
+      + '<span class="today-primary-count">오늘 복습 ' + totalReviewCount + '개</span>'
+      + '</div>'
+      + '<div class="today-primary-title">복습 주기가 도래한 문항을 가장 먼저 점검하세요</div>'
+      + '<div class="today-primary-desc">망각곡선(SRS) 간격 주기가 도래한 조문 퀴즈(' + dueCount + '개)와 기출 정오 오답 지문(' + wrongCount + '개)이 대기 중입니다.</div>'
+      + '<div class="today-primary-actions">'
+      + '<button type="button" class="today-btn-primary" id="today-start-review">지금 시작 →</button>'
+      + '<button type="button" class="today-btn-subtle" id="today-exam-wrong">기출 오답 복습</button>'
+      + '</div>'
+      + '</div>'
+
+      + '<div class="today-section-header">'
+      + '<div class="today-section-title"><span>✨</span> 오늘의 맞춤 학습 ' + tasks.length + '개</div>'
+      + '<div class="today-section-est">⏱️ 예상 33분</div>'
+      + '</div>'
+
+      + '<div class="today-tasks">'
+      + tasks.map(function(task, idx){
+          var isDone = !!todayState.completed[task.id];
+          return '<div class="today-task-card ' + (isDone ? 'is-done' : '') + '">'
+            + '<button type="button" class="today-task-check ' + (isDone ? 'checked' : '') + '" data-task-check="' + esc(task.id) + '" title="' + (isDone ? '완료 취소' : '완료 체크') + '">'
+            + (isDone ? '✅' : '⚪')
+            + '</button>'
+            + '<div class="today-task-main">'
+            + '<div class="today-task-badges">'
+            + '<span class="today-badge p-' + esc(task.priority) + '">[' + esc(task.pLabel) + ']</span>'
+            + '<span class="today-badge time">[' + esc(task.time) + ']</span>'
+            + '</div>'
+            + '<div class="today-task-title">' + task.icon + ' ' + esc(task.title) + '</div>'
+            + '<div class="today-task-desc">' + esc(task.desc) + '</div>'
+            + '</div>'
+            + '<button type="button" class="today-task-action" data-task-action="' + idx + '">'
+            + esc(task.actionLabel)
+            + '</button>'
+            + '</div>';
+        }).join('')
+      + '</div>'
+
+      + '<div class="today-footer">'
+      + '<button type="button" class="today-reset-btn" id="today-reset-all">오늘 학습 진행 체크 초기화</button>'
+      + '</div>'
+      + '</div>';
+
+    area.innerHTML = html;
+
+    if(!todayBound){
+      todayBound = true;
+      area.addEventListener('click', function(e){
+        if(mode !== 'today') return;
+
+        var chk = e.target.closest('[data-task-check]');
+        if(chk){
+          var tState = getTodayState();
+          var tId = chk.getAttribute('data-task-check');
+          tState.completed[tId] = !tState.completed[tId];
+          saveJson(TODAY_KEY, tState);
+          renderTodayDashboard();
+          return;
+        }
+
+        var act = e.target.closest('[data-task-action]');
+        if(act){
+          var idx = parseInt(act.getAttribute('data-task-action'), 10);
+          var curTasks = getDailyTasks();
+          var task = curTasks[idx];
+          if(!task) return;
+
+          var tState2 = getTodayState();
+          tState2.completed[task.id] = true;
+          saveJson(TODAY_KEY, tState2);
+
+          if(task.actionType === 'quiz_art'){
+            launchArticleQuiz(task.law, task.art);
+          } else if(task.actionType === 'case_jump'){
+            mode = 'cases';
+            casesFilter.search = task.caseNum;
+            saveJson('ipquiz.casesfilter.v1', casesFilter);
+            render();
+            window.scrollTo(0,0);
+          } else if(task.actionType === 'quiz_cloze'){
+            launchArticleQuiz(task.law, task.art, ['blank', 'cloze']);
+          } else if(task.actionType === 'browse_art'){
+            mode = 'browse';
+            browse.law = task.law;
+            browse.art = task.art;
+            saveBrowse();
+            render();
+            openArticle(task.art);
+            window.scrollTo({top:0, behavior:'smooth'});
+          } else if(task.actionType === 'exam_drill'){
+            startMatrixDrill('특허법', '오늘의 학습', '기출 5선', task.qids);
+          }
+          return;
+        }
+
+        if(e.target.closest('#today-start-review')){
+          var curDue = allDueQuestionsCount();
+          if(curDue > 0){
+            mode = 'quiz';
+            tabIdx = REVIEW; // 4
+            resetTab(TABS[REVIEW]);
+            render();
+            window.scrollTo(0,0);
+          } else {
+            var dTasks = getDailyTasks();
+            if(dTasks[0] && dTasks[0].art){
+              launchArticleQuiz(dTasks[0].law, dTasks[0].art);
+            } else {
+              mode = 'quiz';
+              render();
+            }
+          }
+          return;
+        }
+
+        if(e.target.closest('#today-exam-wrong')){
+          mode = 'exam';
+          exam.law = '특허법';
+          delete exam.matrixDrill;
+          delete exam.case;
+          exam.filter = 'wrong';
+          exam.shown = 20;
+          saveJson(EXAM_KEY, exam);
+          render();
+          window.scrollTo(0,0);
+          return;
+        }
+
+        if(e.target.closest('#today-reset-all')){
+          if(confirm('오늘의 학습 완료 체크를 초기화하시겠습니까?')){
+            var tState3 = getTodayState();
+            tState3.completed = {};
+            saveJson(TODAY_KEY, tState3);
+            renderTodayDashboard();
+          }
+          return;
+        }
+      });
+    }
+  }
+
+  document.getElementById('mode-today').addEventListener('click',function(){mode='today';render();});
   document.getElementById('mode-exam').addEventListener('click',function(){mode='exam';render();});
   document.getElementById('mode-quiz').addEventListener('click',function(){mode='quiz';render();});
   document.getElementById('mode-browse').addEventListener('click',function(){mode='browse';render();});

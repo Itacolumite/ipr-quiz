@@ -32,13 +32,14 @@ button,input,select{font:inherit}
 .tab .cnt{display:inline-block;min-width:18px;margin-left:4px;font-size:11px;background:#EEF2FF;color:#3157C9;border-radius:999px;padding:1px 5px;vertical-align:1px}
 .main{max-width:760px;margin:0 auto;padding:18px 16px 32px}
 /* ── 조문 열람(체계도) 및 판례 화면 ── */
-.modebar{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:#fff;border-bottom:1px solid #E7E9F0;padding:6px 10px}
+.modebar{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;background:#fff;border-bottom:1px solid #E7E9F0;padding:6px 10px}
 .modebtn{border:1px solid #D9DEEA;background:#fff;border-radius:999px;padding:8px 6px;font-size:13px;font-weight:800;color:#767E8E;cursor:pointer;white-space:nowrap}
 .modebtn.active{background:var(--accent);border-color:var(--accent);color:#fff}
 body.browse .tabs,body.browse #new-sel,body.browse #ch-sel,body.browse .meter,body.browse .score,
-body.cases .tabs,body.cases #new-sel,body.cases #ch-sel,body.cases .meter,body.cases .score{display:none}
-body.browse .modebar,body.cases .modebar{max-width:1480px;margin:0 auto;padding:8px 24px}
-body.browse .main,body.cases .main{max-width:1480px;width:100%;padding:18px 24px 40px}
+body.cases .tabs,body.cases #new-sel,body.cases #ch-sel,body.cases .meter,body.cases .score,
+body.matrix .tabs,body.matrix #new-sel,body.matrix #ch-sel,body.matrix .meter,body.matrix .score{display:none}
+body.browse .modebar,body.cases .modebar,body.matrix .modebar{max-width:1480px;margin:0 auto;padding:8px 24px}
+body.browse .main,body.cases .main,body.matrix .main{max-width:1480px;width:100%;padding:18px 24px 40px}
 .lawseg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:9px}
 .lawseg button{border:1px solid #D9DEEA;background:#fff;border-radius:8px;padding:9px 4px;font-size:13px;font-weight:800;color:#596273;cursor:pointer}
 .lawseg button.active{background:var(--accent);border-color:var(--accent);color:#fff}
@@ -404,7 +405,55 @@ kbd{background:#F1F3F7;border:1px solid #D9DEEA;border-bottom-width:2px;border-r
 .cases-item-head{font-weight:800;font-size:13px;color:#3730A3;margin-bottom:5px;line-height:1.45}
 .cases-item-text{font-size:12.5px;line-height:1.7;color:#334155;word-break:keep-all}
 .cases-empty{padding:40px 20px;text-align:center;color:#64748B;font-size:14px;font-weight:700}
-@media (max-width:520px){.hud{grid-template-columns:1fr auto auto}.meter{grid-column:1/-1}.actions{grid-template-columns:1fr 1fr}.tabs{grid-template-columns:1fr 1fr 1fr .58fr .58fr}.tab{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:2px;padding-right:2px}.tab .cnt{margin-left:2px;padding:1px 3px;font-size:9px}.card{padding:15px}.modebar{grid-template-columns:repeat(4,1fr);padding:6px 6px;gap:4px}.modebtn{font-size:11.5px;padding:7px 2px}}
+/* 📊 약점 진단 2차원 매트릭스 스타일 */
+.matrix-wrap{display:flex;flex-direction:column;gap:16px}
+.matrix-head-card{background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:16px 20px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,.03)}
+.matrix-head-title{display:flex;flex-direction:column;gap:4px}
+.matrix-head-title h2{font-size:18px;font-weight:800;color:#0F172A;margin:0}
+.matrix-head-title p{font-size:12.5px;color:#64748B;margin:0}
+.matrix-kpis{display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:14px}
+.matrix-kpi-card{background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.03);display:flex;flex-direction:column;gap:10px}
+.matrix-kpi-title{font-size:13px;font-weight:800;color:#475569;display:flex;align-items:center;justify-content:space-between}
+.matrix-kpi-val{font-size:22px;font-weight:900;color:#0F172A;letter-spacing:-.5px}
+.matrix-progress-bar{height:10px;background:#F1F5F9;border-radius:999px;overflow:hidden;display:flex;width:100%}
+.matrix-bar-seg{height:100%;transition:width .3s}
+.matrix-bar-seg.good{background:#10B981}
+.matrix-bar-seg.bad{background:#EF4444}
+.matrix-type-bars{display:flex;flex-direction:column;gap:8px}
+.matrix-type-row{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700}
+.matrix-type-label{width:65px;flex-shrink:0;color:#334155}
+.matrix-type-track{flex:1;height:8px;background:#F1F5F9;border-radius:999px;overflow:hidden;position:relative}
+.matrix-type-fill{height:100%;background:#3B82F6;border-radius:999px}
+.matrix-type-score{width:60px;text-align:right;color:#64748B;font-family:monospace;font-size:11.5px}
+.matrix-top3-list{display:flex;flex-direction:column;gap:6px}
+.matrix-top3-item{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 10px;border-radius:8px;background:#F8FAFC;border:1px solid #E2E8F0;font-size:12px}
+.matrix-top3-btn{padding:2px 8px;border-radius:6px;background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE;font-size:11px;font-weight:800;cursor:pointer}
+.matrix-top3-btn:hover{background:#DBEAFE}
+.matrix-table-card{background:#fff;border:1px solid #E2E8F0;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.03)}
+.matrix-table-meta{padding:10px 14px;background:#F8FAFC;border-bottom:1px solid #E2E8F0;font-size:12px;display:flex;justify-content:space-between;color:#64748B;font-weight:700;flex-wrap:wrap;gap:8px}
+.matrix-table{width:100%;border-collapse:collapse;text-align:center;font-size:13px}
+.matrix-table th{background:#F8FAFC;color:#64748B;font-size:12px;font-weight:800;padding:12px 10px;border-bottom:1px solid #E2E8F0;user-select:none;white-space:nowrap}
+.matrix-table td{padding:10px 8px;border-bottom:1px solid #F1F5F9;border-right:1px solid #F8FAFC}
+.matrix-table td:last-child{border-right:none}
+.matrix-cat-title{text-align:left;font-weight:700;color:#1E293B;padding-left:14px!important;max-width:260px;word-break:keep-all}
+.matrix-cell{cursor:pointer;transition:all .15s;border-radius:6px;padding:6px 4px;margin:2px}
+.matrix-cell:hover{transform:translateY(-1px);box-shadow:0 2px 5px rgba(0,0,0,.08);filter:brightness(.97)}
+.matrix-cell.cell-empty{background:#F8FAFC;color:#94A3B8;border:1px solid #E2E8F0}
+.matrix-cell.cell-weak{background:#FEF2F2;color:#DC2626;border:1px solid #FECACA}
+.matrix-cell.cell-medium{background:#FFFBEB;color:#D97706;border:1px solid #FDE68A}
+.matrix-cell.cell-good{background:#ECFDF5;color:#059669;border:1px solid #A7F3D0}
+.matrix-cell-rate{font-weight:900;font-size:13.5px;display:block;line-height:1.2}
+.matrix-cell-sub{font-size:10.5px;opacity:.8;display:block;margin-top:2px;font-family:monospace}
+.matrix-total-row{background:#F8FAFC;font-weight:800}
+.matrix-total-row td{border-top:2px solid #E2E8F0;border-bottom:none}
+.matrix-legend{display:flex;align-items:center;flex-wrap:wrap;gap:14px;padding:12px 16px;background:#F8FAFC;border-top:1px solid #E2E8F0;font-size:12px;color:#475569}
+.matrix-legend-item{display:flex;align-items:center;gap:5px}
+.matrix-legend-dot{width:12px;height:12px;border-radius:3px}
+.matrix-legend-dot.weak{background:#FEF2F2;border:1px solid #FECACA}
+.matrix-legend-dot.medium{background:#FFFBEB;border:1px solid #FDE68A}
+.matrix-legend-dot.good{background:#ECFDF5;border:1px solid #A7F3D0}
+.matrix-legend-dot.empty{background:#F8FAFC;border:1px solid #E2E8F0}
+@media (max-width:520px){.hud{grid-template-columns:1fr auto auto}.meter{grid-column:1/-1}.actions{grid-template-columns:1fr 1fr}.tabs{grid-template-columns:1fr 1fr 1fr .58fr .58fr}.tab{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:2px;padding-right:2px}.tab .cnt{margin-left:2px;padding:1px 3px;font-size:9px}.card{padding:15px}.modebar{grid-template-columns:repeat(5,1fr);padding:6px 4px;gap:3px}.modebtn{font-size:10px;padding:6px 1px}}
 /* 터치 기기: 키보드 단축키 표기 숨김(누를 수 없음) + 터치 안내 노출 */
 .touch-only{display:none}
 @media (pointer:coarse){.btn small{display:none}#help table{display:none}.touch-only{display:block}}
@@ -554,6 +603,24 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
   .cases-item-head{color:#A5B4FC}
   .cases-item-text{color:#CBD5E1}
   .cases-arts-row{color:#94A3B8}
+  /* 다크모드 matrix */
+  .matrix-head-card,.matrix-kpi-card,.matrix-table-card{background:#1A1E27;border-color:#2A3040}
+  .matrix-head-title h2,.matrix-kpi-val{color:#F1F5F9}
+  .matrix-head-title p,.matrix-kpi-title{color:#8C96A8}
+  .matrix-progress-bar,.matrix-type-track{background:#232936}
+  .matrix-top3-item{background:#202634;border-color:#2A3040;color:#CBD5E1}
+  .matrix-table-meta,.matrix-table th,.matrix-total-row,.matrix-legend{background:#151821;border-color:#2A3040;color:#8C96A8}
+  .matrix-table td{border-color:#232936}
+  .matrix-cat-title{color:#E2E8F0}
+  .matrix-type-label{color:#94A3B8}
+  .matrix-cell.cell-empty{background:#1E232F;border-color:#2A3040;color:#64748B}
+  .matrix-cell.cell-weak{background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.35);color:#FCA5A5}
+  .matrix-cell.cell-medium{background:rgba(245,158,11,.15);border-color:rgba(245,158,11,.35);color:#FCD34D}
+  .matrix-cell.cell-good{background:rgba(16,185,129,.15);border-color:rgba(16,185,129,.35);color:#6EE7B7}
+  .matrix-legend-dot.weak{background:rgba(239,68,68,.25);border-color:rgba(239,68,68,.4)}
+  .matrix-legend-dot.medium{background:rgba(245,158,11,.25);border-color:rgba(245,158,11,.4)}
+  .matrix-legend-dot.good{background:rgba(16,185,129,.25);border-color:rgba(16,185,129,.4)}
+  .matrix-legend-dot.empty{background:#1E232F;border-color:#2A3040}
 }
 </style>
 </head>
@@ -703,6 +770,7 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
   <button id="mode-browse" class="modebtn" type="button">📖 조문 열람</button>
   <button id="mode-exam" class="modebtn" type="button">📋 기출 정오</button>
   <button id="mode-cases" class="modebtn" type="button">⚖️ 판례 383</button>
+  <button id="mode-matrix" class="modebtn" type="button">📊 약점 진단</button>
 </div>
 <div class="tabs" id="tabs"></div>
 <main class="main"><div id="area"></div></main>
@@ -1173,13 +1241,20 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
   }
 
   function render(){
-    document.body.classList.toggle('browse',mode==='browse'||mode==='exam'||mode==='cases');
+    document.body.classList.toggle('browse',mode==='browse'||mode==='exam'||mode==='cases'||mode==='matrix');
     document.body.classList.toggle('cases',mode==='cases');
+    document.body.classList.toggle('matrix',mode==='matrix');
     document.body.classList.toggle('has-art',mode==='browse'&&!!browse.art);
     document.getElementById('mode-quiz').classList.toggle('active',mode==='quiz');
     document.getElementById('mode-browse').classList.toggle('active',mode==='browse');
     document.getElementById('mode-exam').classList.toggle('active',mode==='exam');
     document.getElementById('mode-cases').classList.toggle('active',mode==='cases');
+    document.getElementById('mode-matrix').classList.toggle('active',mode==='matrix');
+    if(mode==='matrix'){
+      document.documentElement.style.setProperty('--accent',COLORS[Math.max(0,LAWS.indexOf(matrixState.law))]);
+      renderMatrix();
+      return;
+    }
     if(mode==='cases'){
       document.documentElement.style.setProperty('--accent',COLORS[0]);
       renderCases();
@@ -3058,7 +3133,16 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
       });
     }
     var all=[];
-    if(exam.round==='fav'){
+    if(exam.matrixDrill && exam.matrixDrill.qids && exam.matrixDrill.qids.length){
+      var drillSet = {};
+      exam.matrixDrill.qids.forEach(function(id){ drillSet[id] = true; });
+      for(var rk in (db.byRound||{})){
+        (db.byRound[rk]||[]).forEach(function(q){
+          if(drillSet[q.i]) all.push(q);
+        });
+      }
+      all.sort(function(a,b){return (b.r-a.r)||(a.q-b.q)||(a.o-b.o);});
+    }else if(exam.round==='fav'){
       for(var rk in (db.byRound||{})){
         (db.byRound[rk]||[]).forEach(function(q){if(bookmarks[q.i])all.push(q);});
       }
@@ -3112,10 +3196,11 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
     html+='<div class="starseg" style="flex-wrap:wrap"><span>회차</span>'
       +rounds.map(function(r){
           var t=db.byRound[String(r)].length;
-          return '<button type="button" data-eround="'+r+'" class="'+(r===exam.round?'active':'')+'">'+r+'회 <span style="opacity:.7">'+t+'</span></button>';
+          return '<button type="button" data-eround="'+r+'" class="'+(exam.matrixDrill ? '' : (r===exam.round?'active':''))+'">'+r+'회 <span style="opacity:.7">'+t+'</span></button>';
         }).join('')
-      +'<button type="button" data-eround="fav" class="fav-round-btn '+(exam.round==='fav'?'active':'')+'">⭐ 전체 즐겨찾기 <span style="opacity:.8">'+totalFavCount+'</span></button>'
-      +'<button type="button" data-eround="note" class="note-round-btn '+(exam.round==='note'?'active':'')+'">📝 전체 메모 <span style="opacity:.8">'+totalNoteCount+'</span></button>'
+      +'<button type="button" data-eround="fav" class="fav-round-btn '+(exam.matrixDrill ? '' : (exam.round==='fav'?'active':''))+'">⭐ 전체 즐겨찾기 <span style="opacity:.8">'+totalFavCount+'</span></button>'
+      +'<button type="button" data-eround="note" class="note-round-btn '+(exam.matrixDrill ? '' : (exam.round==='note'?'active':''))+'">📝 전체 메모 <span style="opacity:.8">'+totalNoteCount+'</span></button>'
+      +(exam.matrixDrill ? '<button type="button" class="fav-round-btn active" style="background:#DC2626;border-color:#DC2626;color:#fff">🎯 약점 집중 공략 (' + esc(exam.matrixDrill.drillType) + ')</button>' : '')
       +'</div>';
     var filterOptions=[['all','전체 '+all.length],['todo','안 푼 것 '+(all.length-done.length)],['wrong','틀린 것 '+wrong]];
     if(exam.round!=='fav'){
@@ -3133,7 +3218,7 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
       return '<div class="starseg" style="flex-wrap:wrap"><span>'+label+'</span>'
         +[['','전체']].concat(vals.map(function(v){return [v,v];})).map(function(o){
             return '<button type="button" data-e'+field+'="'+esc(o[0])+'" class="'
-              +(exam[field]===o[0]?'active':'')+'">'+esc(o[1])+'</button>';
+               +(exam[field]===o[0]?'active':'')+'">'+esc(o[1])+'</button>';
           }).join('')+'</div>';
     }
     var pols=[],kinds=[];
@@ -3148,8 +3233,16 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
       + '<button type="button" class="exam-case-banner-clear" id="clear-case-filter">✕ 전체 문제 보기</button>'
       + '</div>'
     ) : '';
-    var headTitle=(exam.round==='fav')?('⭐ '+esc(exam.law)+' 전체 즐겨찾기 모아보기 '):((exam.round==='note')?('📝 '+esc(exam.law)+' 전체 메모 모아보기 '):('제'+exam.round+'회 정오문제 '));
-    var emptyMsg=(exam.filter==='fav'||exam.round==='fav')?'⭐ 즐겨찾기한 문항이 없습니다. 문제 카드의 별(☆) 아이콘을 눌러 추가해보세요!':((exam.filter==='note'||exam.round==='note')?'📝 작성된 나만의 메모가 없습니다. 문제 카드의 [✏️ 메모작성] 버튼을 눌러 나만의 요약 노트를 남겨보세요!':'해당하는 문항이 없습니다.');
+    var matrixBanner = exam.matrixDrill ? (
+      '<div class="exam-case-banner" style="background:#FEF2F2;border-color:#FCA5A5;color:#991B1B">'
+      + '<div class="exam-case-banner-info">🎯 약점 집중 공략: <b>' + esc(exam.matrixDrill.catTitle) + ' · ' + esc(exam.matrixDrill.drillType) + '</b> (' + list.length + '문항)</div>'
+      + '<button type="button" class="exam-case-banner-clear" id="clear-matrix-drill" style="color:#991B1B;border-color:#FCA5A5">✕ 공략 해제 (전체 회차)</button>'
+      + '</div>'
+    ) : '';
+    var headTitle = exam.matrixDrill
+      ? ('🎯 약점 집중 공략 (' + esc(exam.matrixDrill.catTitle) + ' · ' + esc(exam.matrixDrill.drillType) + ') ')
+      : ((exam.round==='fav')?('⭐ '+esc(exam.law)+' 전체 즐겨찾기 모아보기 '):((exam.round==='note')?('📝 '+esc(exam.law)+' 전체 메모 모아보기 '):('제'+exam.round+'회 정오문제 ')));
+    var emptyMsg = (exam.filter==='fav'||exam.round==='fav')?'⭐ 즐겨찾기한 문항이 없습니다. 문제 카드의 별(☆) 아이콘을 눌러 추가해보세요!':((exam.filter==='note'||exam.round==='note')?'📝 작성된 나만의 메모가 없습니다. 문제 카드의 [✏️ 메모작성] 버튼을 눌러 나만의 요약 노트를 남겨보세요!':'해당하는 문항이 없습니다.');
 
     var splitContainerHtml = '';
     if(list.length){
@@ -3165,11 +3258,12 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
         + '</aside>'
         + '</div>';
     } else {
-      splitContainerHtml = '<div class="empty">'+emptyMsg + (exam.case ? ' <button type="button" class="exam-case-banner-clear" id="clear-case-filter" style="margin-left:6px">전체 문제 보기</button>' : '') + '</div>';
+      splitContainerHtml = '<div class="empty">'+emptyMsg + (exam.case ? ' <button type="button" class="exam-case-banner-clear" id="clear-case-filter" style="margin-left:6px">전체 문제 보기</button>' : '') + (exam.matrixDrill ? ' <button type="button" class="exam-case-banner-clear" id="clear-matrix-drill" style="margin-left:6px">공략 해제</button>' : '') + '</div>';
     }
 
     html+='<div class="card">'
       + caseBanner
+      + matrixBanner
       + '<div class="exhead" style="justify-content:space-between;align-items:center;flex-wrap:wrap">'
       + '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">'
       + headTitle
@@ -3199,8 +3293,15 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
     examBound=true;
     area.addEventListener('click',function(e){
       if(mode!=='exam')return;
+      if(e.target.closest('#clear-matrix-drill')){
+        delete exam.matrixDrill;
+        saveJson(EXAM_KEY, exam);
+        renderExam();
+        return;
+      }
       if(e.target.closest('#clear-case-filter') || e.target.closest('.exam-case-banner-clear')){
         delete exam.case;
+        delete exam.matrixDrill;
         saveJson(EXAM_KEY, exam);
         renderExam();
         return;
@@ -3280,7 +3381,7 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
         return;
       }
       var lb=e.target.closest('[data-elaw]');
-      if(lb){delete exam.case; exam.law=lb.getAttribute('data-elaw');exam.round=null;exam.shown=20;saveJson(EXAM_KEY,exam);render();return;}
+      if(lb){delete exam.case; delete exam.matrixDrill; exam.law=lb.getAttribute('data-elaw');exam.round=null;exam.shown=20;saveJson(EXAM_KEY,exam);render();return;}
       var pb=e.target.closest('[data-epol]');
       if(pb){exam.pol=pb.getAttribute('data-epol');exam.shown=20;saveJson(EXAM_KEY,exam);render();return;}
       var kb=e.target.closest('[data-ekind]');
@@ -3293,6 +3394,7 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
       var rb=e.target.closest('[data-eround]');
       if(rb){
         delete exam.case;
+        delete exam.matrixDrill;
         var rVal=rb.getAttribute('data-eround');
         exam.round=(rVal==='fav'||rVal==='note')?rVal:Number(rVal);
         exam.shown=20;
@@ -3629,10 +3731,478 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
     });
   }
 
+  // 📊 약점 진단 2차원 매트릭스 (단원 × 지식유형 히트맵)
+  var MATRIX_KEY = 'ipquiz.matrix.v1';
+  var matrixState = loadJson(MATRIX_KEY, { law: '특허법' });
+  var matrixBound = false;
+
+  function classifyKnowledgeType(q){
+    var text = q.t || '';
+    var kind = q.k || '';
+    var expl = q.e || '';
+    var cases = q.cs || [];
+    if (text.indexOf('[사례') >= 0 || kind.indexOf('사례') >= 0 || /\[(사례|발명|전제)/.test(text) || (text.indexOf('甲') >= 0 && text.indexOf('乙') >= 0)) {
+      return '사례';
+    }
+    if (cases.length > 0 || /(판례|대법원|특허법원|선고|후[0-9]+|다[0-9]+|허[0-9]+)/.test(text) || /(판례|대법원|특허법원|선고|후[0-9]+|다[0-9]+|허[0-9]+)/.test(expl)) {
+      return '판례';
+    }
+    return '조문';
+  }
+
+  function cleanArticleNum(c){
+    if(!c) return '';
+    return String(c)
+      .replace(/^(특허법|상표법|디자인보호법)[ 	]*/, '')
+      .replace(/^제[ 	]*/, '')
+      .replace(/조의/g, '의')
+      .replace(/제?[0-9]+항.*/, '')
+      .replace(/제?[0-9]+호.*/, '')
+      .replace(/[ 	]*조$/, '')
+      .trim();
+  }
+
+  function buildArticleToCatMap(taxCategories){
+    var map = {};
+    (taxCategories || []).forEach(function(cat, catIdx){
+      (cat.children || []).forEach(function(child){
+        (child.articles || []).forEach(function(art){
+          map[art] = catIdx;
+        });
+      });
+    });
+    return map;
+  }
+
+  function startMatrixDrill(law, catTitle, drillType, qids){
+    if(!qids || !qids.length){
+      alert('선택하신 조건에 해당하는 문항이 없습니다.');
+      return;
+    }
+    mode = 'exam';
+    exam.law = law;
+    exam.matrixDrill = {
+      catTitle: catTitle,
+      drillType: drillType,
+      qids: qids
+    };
+    exam.filter = 'all';
+    exam.shown = 20;
+    saveJson(EXAM_KEY, exam);
+    render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function renderMatrix(){
+    var law = matrixState.law || '특허법';
+    var taxCategories = TAXONOMY[law] || [];
+    var catMap = buildArticleToCatMap(taxCategories);
+    var db = OXDB[law] || {};
+    var allQuestions = [];
+    var byRound = db.byRound || {};
+    for (var r in byRound) {
+      allQuestions.push.apply(allQuestions, byRound[r]);
+    }
+
+    // Law buttons
+    var lawBtns = '<div class="lawseg">' + LAWS.map(function(l){
+      var n = ((OXDB[l]||{}).total) || 0;
+      return '<button type="button" data-m-law="' + esc(l) + '" class="' + (l === law ? 'active' : '') + '">'
+        + esc(l) + (n ? ' <span class="pill q">' + n + '</span>' : '') + '</button>';
+    }).join('') + '</div>';
+
+    if(!allQuestions.length){
+      area.innerHTML = '<div class="matrix-wrap">'
+        + lawBtns
+        + '<div class="card"><div class="empty">' + esc(law) + '은 아직 기출 정오문제가 준비되지 않았습니다.</div></div>'
+        + '</div>';
+      return;
+    }
+
+    // Initialize data structures
+    var catRows = taxCategories.map(function(c, idx){
+      return {
+        id: idx,
+        title: c.title,
+        types: {
+          '조문': { total: 0, done: 0, right: 0, wrong: 0, qids: [] },
+          '판례': { total: 0, done: 0, right: 0, wrong: 0, qids: [] },
+          '사례': { total: 0, done: 0, right: 0, wrong: 0, qids: [] }
+        },
+        total: 0,
+        done: 0,
+        right: 0,
+        wrong: 0,
+        allQids: []
+      };
+    });
+
+    var otherRow = {
+      id: 'other',
+      title: '기타 / 종합 (공통·통칙)',
+      types: {
+        '조문': { total: 0, done: 0, right: 0, wrong: 0, qids: [] },
+        '판례': { total: 0, done: 0, right: 0, wrong: 0, qids: [] },
+        '사례': { total: 0, done: 0, right: 0, wrong: 0, qids: [] }
+      },
+      total: 0,
+      done: 0,
+      right: 0,
+      wrong: 0,
+      allQids: []
+    };
+
+    var grandTypes = {
+      '조문': { total: 0, done: 0, right: 0, wrong: 0, qids: [] },
+      '판례': { total: 0, done: 0, right: 0, wrong: 0, qids: [] },
+      '사례': { total: 0, done: 0, right: 0, wrong: 0, qids: [] }
+    };
+    var grandTotal = 0, grandDone = 0, grandRight = 0, grandWrong = 0, grandAllQids = [];
+
+    // Tally questions
+    allQuestions.forEach(function(q){
+      var type = classifyKnowledgeType(q);
+      var artClean = cleanArticleNum(q.c);
+      var catIdx = (artClean && catMap[artClean] !== undefined) ? catMap[artClean] : 'other';
+      var row = catIdx === 'other' ? otherRow : catRows[catIdx];
+      if(!row) row = otherRow;
+
+      var rec = oxLog[q.i];
+      var isDone = !!rec;
+      var isRight = rec && (rec.pick === q.a);
+      var isWrong = rec && !isRight;
+
+      // Type cell
+      var cell = row.types[type];
+      cell.total++;
+      cell.qids.push(q.i);
+      if(isDone) cell.done++;
+      if(isRight) cell.right++;
+      if(isWrong) cell.wrong++;
+
+      // Row total
+      row.total++;
+      row.allQids.push(q.i);
+      if(isDone) row.done++;
+      if(isRight) row.right++;
+      if(isWrong) row.wrong++;
+
+      // Grand type
+      var gType = grandTypes[type];
+      gType.total++;
+      gType.qids.push(q.i);
+      if(isDone) gType.done++;
+      if(isRight) gType.right++;
+      if(isWrong) gType.wrong++;
+
+      // Grand total
+      grandTotal++;
+      grandAllQids.push(q.i);
+      if(isDone) grandDone++;
+      if(isRight) grandRight++;
+      if(isWrong) grandWrong++;
+    });
+
+    var allRows = catRows.slice();
+    if(otherRow.total > 0){
+      allRows.push(otherRow);
+    }
+
+    // Top KPI 1: 전체 진도 및 정답률
+    var progRate = grandTotal ? Math.round(grandDone / grandTotal * 100) : 0;
+    var accRate = grandDone ? Math.round(grandRight / grandDone * 100) : 0;
+    var rightPct = grandTotal ? (grandRight / grandTotal * 100).toFixed(1) : 0;
+    var wrongPct = grandTotal ? (grandWrong / grandTotal * 100).toFixed(1) : 0;
+
+    var kpi1 = '<div class="matrix-kpi-card">'
+      + '<div class="matrix-kpi-title"><span>전체 진도 및 정답률</span><span class="pill q" style="font-size:11px">누적 풀이</span></div>'
+      + '<div class="matrix-kpi-val">' + accRate + '<span style="font-size:15px;font-weight:700;color:#64748B">% 정답률</span>'
+      + '<span style="font-size:13px;font-weight:600;color:#8A93A6;margin-left:8px">(' + grandRight + '/' + grandDone + '문항)</span>'
+      + '</div>'
+      + '<div class="matrix-progress-bar" title="진도율 ' + progRate + '% (맞음 ' + grandRight + ' · 틀림 ' + grandWrong + ' · 미풀이 ' + (grandTotal - grandDone) + ')">'
+      +   '<div class="matrix-bar-seg good" style="width:' + rightPct + '%"></div>'
+      +   '<div class="matrix-bar-seg bad" style="width:' + wrongPct + '%"></div>'
+      + '</div>'
+      + '<div style="display:flex;justify-content:space-between;font-size:11.5px;color:#64748B;font-weight:600">'
+      +   '<span>진도율 ' + progRate + '% (' + grandDone + '/' + grandTotal + ')</span>'
+      +   '<span>🟢 정답 ' + grandRight + ' · 🔴 오답 ' + grandWrong + '</span>'
+      + '</div>'
+      + '</div>';
+
+    // Top KPI 2: 3대 지식 유형 밸런스
+    var typeKeys = ['조문', '판례', '사례'];
+    var typeIcons = { '조문': '📜', '판례': '⚖️', '사례': '💡' };
+    var typeRates = {};
+    var typeHtml = typeKeys.map(function(tk){
+      var tObj = grandTypes[tk];
+      var tRate = tObj.done ? Math.round(tObj.right / tObj.done * 100) : null;
+      typeRates[tk] = tRate;
+      var tPct = tObj.total ? Math.round(tObj.done / tObj.total * 100) : 0;
+      var rateText = tRate !== null ? (tRate + '%') : '-';
+      var fillWidth = tRate !== null ? tRate : 0;
+      var fillCol = tRate !== null ? (tRate < 60 ? '#EF4444' : (tRate < 80 ? '#F59E0B' : '#10B981')) : '#CBD5E1';
+      return '<div class="matrix-type-row">'
+        + '<span class="matrix-type-label">' + typeIcons[tk] + ' ' + tk + '형</span>'
+        + '<div class="matrix-type-track" title="' + tk + '형: ' + tObj.done + '/' + tObj.total + ' 풀이, 정답 ' + tObj.right + '건">'
+        +   '<div class="matrix-type-fill" style="width:' + fillWidth + '%;background:' + fillCol + '"></div>'
+        + '</div>'
+        + '<span class="matrix-type-score"><b>' + rateText + '</b> <span style="font-size:10px;opacity:.8">(' + tObj.done + '/' + tObj.total + ')</span></span>'
+        + '</div>';
+    }).join('');
+
+    // Weakest type tip
+    var attemptedTypes = typeKeys.filter(function(tk){ return typeRates[tk] !== null; });
+    var typeTip = '';
+    if(attemptedTypes.length){
+      attemptedTypes.sort(function(a,b){ return typeRates[a] - typeRates[b]; });
+      var worstType = attemptedTypes[0];
+      if(typeRates[worstType] < 70){
+        typeTip = '<div style="font-size:11.5px;color:#DC2626;font-weight:700;margin-top:2px">⚠️ <b>' + worstType + '형</b>의 정답률(' + typeRates[worstType] + '%)이 가장 취약합니다!</div>';
+      } else {
+        typeTip = '<div style="font-size:11.5px;color:#059669;font-weight:700;margin-top:2px">✨ 3대 지식 유형이 비교적 고르게 정돈되어 있습니다.</div>';
+      }
+    } else {
+      typeTip = '<div style="font-size:11.5px;color:#64748B;margin-top:2px">문제를 풀면 유형별 취약 지점이 실시간 분석됩니다.</div>';
+    }
+
+    var kpi2 = '<div class="matrix-kpi-card">'
+      + '<div class="matrix-kpi-title"><span>3대 지식 유형 밸런스</span><span class="pill" style="font-size:11px">유형 분석</span></div>'
+      + '<div class="matrix-type-bars">' + typeHtml + '</div>'
+      + typeTip
+      + '</div>';
+
+    // Top KPI 3: 최우선 보완 취약 단원 TOP 3
+    var weakCats = allRows.filter(function(r){ return r.total > 0; }).map(function(r){
+      var rRate = r.done ? Math.round(r.right / r.done * 100) : null;
+      var score = (r.wrong * 3) + ((100 - (rRate !== null ? rRate : 50)) * 0.5);
+      return { row: r, rate: rRate, wrong: r.wrong, score: score };
+    });
+    weakCats.sort(function(a,b){
+      if(b.wrong !== a.wrong) return b.wrong - a.wrong;
+      if(a.rate !== null && b.rate !== null) return a.rate - b.rate;
+      return (a.rate !== null ? -1 : 1);
+    });
+    var top3 = weakCats.slice(0, 3);
+    var top3Html = '';
+    if(top3.length && top3[0].wrong > 0){
+      top3Html = top3.map(function(item, idx){
+        var r = item.row;
+        var rText = item.rate !== null ? (item.rate + '%') : '-';
+        return '<div class="matrix-top3-item">'
+          + '<div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px">'
+          +   '<b>' + (idx + 1) + '.</b> ' + esc(r.title)
+          +   ' <span style="font-size:10.5px;color:#EF4444;font-weight:700">(' + r.wrong + '오답 · ' + rText + ')</span>'
+          + '</div>'
+          + '<button type="button" class="matrix-top3-btn" data-m-drill="cat|' + esc(r.title) + '|' + r.id + '">공략 🎯</button>'
+          + '</div>';
+      }).join('');
+    } else {
+      top3Html = '<div style="font-size:12px;color:#64748B;padding:12px 0;text-align:center">아직 오답이 누적된 단원이 없습니다.<br>문제를 풀며 약점을 발견해보세요!</div>';
+    }
+
+    var kpi3 = '<div class="matrix-kpi-card">'
+      + '<div class="matrix-kpi-title"><span>최우선 보완 취약 단원 TOP 3</span><span class="pill" style="background:#FEF2F2;color:#DC2626;border:1px solid #FECACA;font-size:11px">집중 공략</span></div>'
+      + '<div class="matrix-top3-list">' + top3Html + '</div>'
+      + '</div>';
+
+    // 2D Matrix Table Rows
+    function renderCell(catTitle, catId, typeName, cellObj){
+      if(!cellObj || !cellObj.total){
+        return '<td><div class="matrix-cell cell-empty" style="cursor:default;opacity:.4"><span class="matrix-cell-rate">-</span><span class="matrix-cell-sub">0</span></div></td>';
+      }
+      var total = cellObj.total;
+      var done = cellObj.done;
+      var right = cellObj.right;
+      var wrong = cellObj.wrong;
+      var rate = done ? Math.round(right / done * 100) : null;
+
+      var cls = 'cell-empty';
+      var rateStr = '-';
+      if(done > 0){
+        rateStr = rate + '%';
+        if(rate < 60) cls = 'cell-weak';
+        else if(rate < 80) cls = 'cell-medium';
+        else cls = 'cell-good';
+      }
+
+      var tooltip = '[' + catTitle + ' · ' + typeName + '형]\n총 ' + total + '문항 중 ' + done + '문항 풀이 (정답 ' + right + ', 오답 ' + wrong + (rate !== null ? ', 정답률 ' + rate + '%' : '') + ')\n클릭하여 이 유형 집중 공략 🎯';
+
+      return '<td>'
+        + '<div class="matrix-cell ' + cls + '" data-m-drill="cell|' + esc(catTitle) + '|' + catId + '|' + typeName + '" title="' + esc(tooltip) + '">'
+        +   '<span class="matrix-cell-rate">' + rateStr + '</span>'
+        +   '<span class="matrix-cell-sub">' + (done ? (right + '/' + done) : ('0/' + total)) + '</span>'
+        + '</div>'
+        + '</td>';
+    }
+
+    function renderRowTotalCell(catTitle, catId, rowObj){
+      if(!rowObj.total){
+        return '<td><div class="matrix-cell cell-empty" style="cursor:default;opacity:.4"><span class="matrix-cell-rate">-</span></div></td>';
+      }
+      var total = rowObj.total;
+      var done = rowObj.done;
+      var right = rowObj.right;
+      var wrong = rowObj.wrong;
+      var rate = done ? Math.round(right / done * 100) : null;
+
+      var cls = 'cell-empty';
+      var rateStr = '-';
+      if(done > 0){
+        rateStr = rate + '%';
+        if(rate < 60) cls = 'cell-weak';
+        else if(rate < 80) cls = 'cell-medium';
+        else cls = 'cell-good';
+      }
+
+      var tooltip = '[' + catTitle + ' 전체]\n총 ' + total + '문항 중 ' + done + '문항 풀이 (정답 ' + right + ', 오답 ' + wrong + (rate !== null ? ', 정답률 ' + rate + '%' : '') + ')\n클릭하여 이 단원 전체 집중 공략 🎯';
+
+      return '<td>'
+        + '<div class="matrix-cell ' + cls + '" data-m-drill="cat|' + esc(catTitle) + '|' + catId + '" title="' + esc(tooltip) + '" style="font-weight:800">'
+        +   '<span class="matrix-cell-rate">' + rateStr + '</span>'
+        +   '<span class="matrix-cell-sub">' + (done ? (right + '/' + done) : ('0/' + total)) + ' (' + total + ')</span>'
+        + '</div>'
+        + '</td>';
+    }
+
+    var tableRowsHtml = allRows.map(function(r){
+      return '<tr>'
+        + '<td class="matrix-cat-title" title="' + esc(r.title) + '">'
+        +   '<b>' + esc(r.title) + '</b>'
+        + '</td>'
+        + renderCell(r.title, r.id, '조문', r.types['조문'])
+        + renderCell(r.title, r.id, '판례', r.types['판례'])
+        + renderCell(r.title, r.id, '사례', r.types['사례'])
+        + renderRowTotalCell(r.title, r.id, r)
+        + '</tr>';
+    }).join('');
+
+    // Grand Total Row
+    var grandTotalHtml = '<tr class="matrix-total-row">'
+      + '<td class="matrix-cat-title" style="font-weight:900;color:var(--accent)">전체 합계</td>'
+      + renderCell('전체', 'all', '조문', grandTypes['조문'])
+      + renderCell('전체', 'all', '판례', grandTypes['판례'])
+      + renderCell('전체', 'all', '사례', grandTypes['사례'])
+      + renderRowTotalCell('전체', 'all', { total: grandTotal, done: grandDone, right: grandRight, wrong: grandWrong, allQids: grandAllQids })
+      + '</tr>';
+
+    var html = '<div class="matrix-wrap">'
+      + '<div class="matrix-head-card">'
+      +   '<div class="matrix-head-title">'
+      +     '<span class="pill q" style="font-size:11.5px;padding:3px 9px;width:fit-content">2차원 취약점 입체 진단</span>'
+      +     '<h2>' + esc(law) + ' 단원 × 지식유형 약점 진단 매트릭스</h2>'
+      +     '<p>어느 단원의 판례가 약한지, 어디서 조문 암기가 덜 되었는지 한눈에 파악하고 셀을 클릭해 즉시 집중 공략하세요.</p>'
+      +   '</div>'
+      +   lawBtns
+      + '</div>'
+
+      + '<div class="matrix-kpis">'
+      +   kpi1
+      +   kpi2
+      +   kpi3
+      + '</div>'
+
+      + '<div class="matrix-table-card">'
+      +   '<div class="matrix-table-meta">'
+      +     '<span>📊 <b>' + esc(law) + '</b> 2차원 약점 히트맵 (총 <b>' + grandTotal + '</b>문항)</span>'
+      +     '<span style="color:var(--accent)">💡 원하는 셀을 클릭하면 해당 문제만 모아서 즉시 집중 풀기(Drill-down)가 시작됩니다.</span>'
+      +   '</div>'
+      +   '<div style="overflow-x:auto">'
+      +     '<table class="matrix-table">'
+      +       '<thead>'
+      +         '<tr>'
+      +           '<th style="text-align:left;padding-left:14px;min-width:180px">단원 분류</th>'
+      +           '<th style="min-width:90px">📜 조문형</th>'
+      +           '<th style="min-width:90px">⚖️ 판례형</th>'
+      +           '<th style="min-width:90px">💡 사례형</th>'
+      +           '<th style="min-width:105px">📊 단원 합계</th>'
+      +         '</tr>'
+      +       '</thead>'
+      +       '<tbody>'
+      +         tableRowsHtml
+      +       '</tbody>'
+      +       '<tfoot>'
+      +         grandTotalHtml
+      +       '</tfoot>'
+      +     '</table>'
+      +   '</div>'
+      +   '<div class="matrix-legend">'
+      +     '<span style="font-weight:800;color:#334155">정답률 기준:</span>'
+      +     '<div class="matrix-legend-item"><div class="matrix-legend-dot good"></div> 🟢 강점 (80% 이상)</div>'
+      +     '<div class="matrix-legend-item"><div class="matrix-legend-dot medium"></div> 🟡 보통 (60%~79%)</div>'
+      +     '<div class="matrix-legend-item"><div class="matrix-legend-dot weak"></div> 🔴 취약 (60% 미만)</div>'
+      +     '<div class="matrix-legend-item"><div class="matrix-legend-dot empty"></div> ⚪ 미풀이 (0문항 풀림)</div>'
+      +   '</div>'
+      + '</div>'
+      + '</div>';
+
+    area.innerHTML = html;
+
+    if(matrixBound) return;
+    matrixBound = true;
+
+    area.addEventListener('click', function(e){
+      if(mode !== 'matrix') return;
+
+      var lBtn = e.target.closest('[data-m-law]');
+      if(lBtn){
+        matrixState.law = lBtn.getAttribute('data-m-law');
+        saveJson(MATRIX_KEY, matrixState);
+        render();
+        return;
+      }
+
+      var drillEl = e.target.closest('[data-m-drill]');
+      if(drillEl){
+        var drillInfo = drillEl.getAttribute('data-m-drill').split('|');
+        var dKind = drillInfo[0]; // 'cell' or 'cat'
+        var dTitle = drillInfo[1];
+        var dCatId = drillInfo[2];
+        var dTypeName = drillInfo[3]; // '조문', '판례', '사례'
+
+        // Compute matching qids
+        var curLaw = matrixState.law || '특허법';
+        var curTax = TAXONOMY[curLaw] || [];
+        var curMap = buildArticleToCatMap(curTax);
+        var curByRound = (OXDB[curLaw] && OXDB[curLaw].byRound) || {};
+        var curAll = [];
+        for(var r in curByRound){
+          curAll.push.apply(curAll, curByRound[r]);
+        }
+
+        var targetQids = [];
+        curAll.forEach(function(q){
+          var qType = classifyKnowledgeType(q);
+          var qClean = cleanArticleNum(q.c);
+          var qCatIdx = (qClean && curMap[qClean] !== undefined) ? curMap[qClean] : 'other';
+
+          // Category match
+          var catMatch = false;
+          if(dCatId === 'all') catMatch = true;
+          else if(dCatId === 'other') catMatch = (qCatIdx === 'other');
+          else catMatch = (String(qCatIdx) === String(dCatId));
+
+          // Type match
+          var typeMatch = false;
+          if(!dTypeName || dKind === 'cat') typeMatch = true;
+          else typeMatch = (qType === dTypeName);
+
+          if(catMatch && typeMatch){
+            targetQids.push(q.i);
+          }
+        });
+
+        var drillLabel = dKind === 'cat' ? '단원 전체' : (dTypeName + '형');
+        startMatrixDrill(curLaw, dTitle, drillLabel, targetQids);
+        return;
+      }
+    });
+  }
+
   document.getElementById('mode-exam').addEventListener('click',function(){mode='exam';render();});
   document.getElementById('mode-quiz').addEventListener('click',function(){mode='quiz';render();});
   document.getElementById('mode-browse').addEventListener('click',function(){mode='browse';render();});
   document.getElementById('mode-cases').addEventListener('click',function(){mode='cases';render();});
+  document.getElementById('mode-matrix').addEventListener('click',function(){mode='matrix';render();});
 
   render();
 })();

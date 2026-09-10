@@ -230,7 +230,22 @@ body.dark .ox-scenario-title{color:#A5B4FC}
 .oxres{margin-top:9px;font-size:12.5px;font-weight:800;border-radius:7px;padding:8px 10px}
 .oxres.ok{background:#E8F6EE;color:#168A4A}
 .oxres.no{background:#FDF0F0;color:#CF2F2F}
-.oxagain{margin-left:8px;border:1px solid currentColor;background:transparent;border-radius:999px;padding:2px 9px;font-size:11px;font-weight:800;color:inherit;cursor:pointer}
+.oxagain{margin-left:8px;border:1px solid currentColor;background:rgba(255,255,255,0.6);border-radius:999px;padding:3px 10px;font-size:11.5px;font-weight:800;color:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all .15s}
+.oxagain:hover{background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.08)}
+.oxretry-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;padding:6px 10px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:6px;font-size:12px}
+.oxretry-badge{color:#334155;font-weight:800;display:flex;align-items:center;gap:4px}
+.oxcancel{background:transparent;border:1px solid #CBD5E1;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;color:#64748B;cursor:pointer;transition:all .15s}
+.oxcancel:hover{background:#E2E8F0;color:#0F172A}
+.retry-toggle-btn{background:#EFF6FF;color:#2563EB;border:1px solid #BFDBFE;border-radius:999px;padding:4px 10px;font-size:11.5px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all .15s}
+.retry-toggle-btn:hover{background:#DBEAFE}
+body.dark .oxagain{background:rgba(0,0,0,0.3)}
+body.dark .oxagain:hover{background:rgba(255,255,255,0.1)}
+body.dark .oxretry-bar{background:#1E293B;border-color:#334155}
+body.dark .oxretry-badge{color:#94A3B8}
+body.dark .oxcancel{border-color:#475569;color:#94A3B8}
+body.dark .oxcancel:hover{background:#334155;color:#F8FAFC}
+body.dark .retry-toggle-btn{background:rgba(37,99,235,0.15);color:#93C5FD;border-color:#3B82F6}
+body.dark .retry-toggle-btn:hover{background:rgba(37,99,235,0.25)}
 .oxstem{margin-top:7px;font-size:11.5px;color:#8A93A6;line-height:1.7}
 .oxexpl{margin-top:8px;background:#F4F6FB;border:1px solid #E2E6EF;border-radius:8px;padding:10px 12px;font-size:13px;color:#2D3748;line-height:1.75;word-break:keep-all}
 .oxexpl strong,.oxexpl b,.expl strong,.expl b{font-weight:800;color:#1E40AF}
@@ -2620,9 +2635,13 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
     }
     return html+'</div>';
   }
+  // 기출 다시 풀기(재도전) 인메모리 상태 관리 { [qid]: true }
+  var examRetrying = {};
   // 선지 카드 하나. 조문 화면과 회차 화면이 함께 쓴다.
   function oxItemHtml(q, isActive){
     var rec=oxLog[q.i];
+    var isRetrying=!!examRetrying[q.i];
+    var showSolveBtns=(!rec || isRetrying);
     var hasCustom=Object.prototype.hasOwnProperty.call(customLinks, q.i);
     var curArt=hasCustom ? customLinks[q.i] : (q.c || '');
     var artDisplay='';
@@ -2663,14 +2682,20 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
     var bmBtn='<button type="button" class="ox-star-btn '+(isBm?'active':'')+'" data-bm="'+esc(q.i)+'" title="'+(isBm?'즐겨찾기 해제':'즐겨찾기 추가')+'" aria-label="즐겨찾기">'+(isBm?'★':'☆')+'</button>';
     var noteBtn='<button type="button" class="ox-note-btn '+(isNote?'active':'')+'" data-toggle-note="'+esc(q.i)+'" title="'+(isNote?'나만의 메모 보기/수정':'나만의 메모 작성')+'">✏️ '+(isNote?'메모':'메모작성')+'</button>';
     var body = qBody + '<div class="oxtags"><div class="oxtags-left">' + tags + '</div><div style="display:flex;gap:5px;align-items:center">' + noteBtn + bmBtn + '</div></div>';
-    if(!rec){
+    if(showSolveBtns){
       body+='<div class="oxbtns"><button type="button" class="oxbtn" data-ox="'+esc(q.i)+'" data-pick="O">O</button>'
         +'<button type="button" class="oxbtn" data-ox="'+esc(q.i)+'" data-pick="X">X</button></div>';
+      if(isRetrying){
+        body+='<div class="oxretry-bar">'
+          +'<span class="oxretry-badge">🔄 다시 푸는 중</span>'
+          +'<button type="button" class="oxcancel" data-cancel-retry="'+esc(q.i)+'" title="다시 풀기를 취소하고 이전 채점 결과와 해설을 봅니다">이전 해설 보기 →</button>'
+          +'</div>';
+      }
     }else{
       var right=rec.pick===q.a;
       body+='<div class="oxres '+(right?'ok':'no')+'">'
         +(right?'맞혔습니다':'틀렸습니다')+' · 이 서술은 '+(q.a==='O'?'맞음':'틀림')
-        +' <button type="button" class="oxagain" data-again="'+esc(q.i)+'">다시</button></div>'
+        +' <button type="button" class="oxagain" data-again="'+esc(q.i)+'" title="이 문제를 다시 풀어봅니다">🔄 다시 풀기</button></div>'
         +(q.e?'<div class="oxexpl">'+renderExplain(q.e)+'</div>':'')
         +'<div class="oxstem">출처 — '+esc(q.s)+'</div>';
     }
@@ -2938,11 +2963,27 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
       if(bmb){toggleBookmark(bmb.getAttribute('data-bm'));paintDetail();return;}
       if(handleNoteClick(e,paintDetail))return;
       var oxb=e.target.closest('[data-ox]');
-      if(oxb){gradeOx(oxb.getAttribute('data-ox'),oxb.getAttribute('data-pick'));return;}
+      if(oxb){
+        var qid=oxb.getAttribute('data-ox');
+        delete examRetrying[qid];
+        gradeOx(qid,oxb.getAttribute('data-pick'));
+        return;
+      }
       var more=e.target.closest('[data-more]');
       if(more){var k=more.getAttribute('data-more');oxShown[k]=(oxShown[k]||5)+10;paintDetail();return;}
       var again=e.target.closest('[data-again]');
-      if(again){delete oxLog[again.getAttribute('data-again')];saveJson(OX_KEY,oxLog);syncSchedulePush();paintDetail();return;}
+      if(again){
+        var qid=again.getAttribute('data-again');
+        examRetrying[qid]=true;
+        paintDetail();
+        return;
+      }
+      var cr=e.target.closest('[data-cancel-retry]');
+      if(cr){
+        delete examRetrying[cr.getAttribute('data-cancel-retry')];
+        paintDetail();
+        return;
+      }
       var mv=e.target.closest('[data-move]');
       if(mv&&!mv.disabled&&mv.getAttribute('data-move')){openArticle(mv.getAttribute('data-move'));return;}
       var le=e.target.closest('[data-link-edit]');
@@ -3372,6 +3413,15 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
       splitContainerHtml = '<div class="empty">'+emptyMsg + (exam.case ? ' <button type="button" class="exam-case-banner-clear" id="clear-case-filter" style="margin-left:6px">전체 문제 보기</button>' : '') + (exam.matrixDrill ? ' <button type="button" class="exam-case-banner-clear" id="clear-matrix-drill" style="margin-left:6px">공략 해제</button>' : '') + '</div>';
     }
 
+    var hasSolvedInList = visibleList.some(function(q){ return !!oxLog[q.i]; });
+    var allRetryingInList = hasSolvedInList && visibleList.filter(function(q){ return !!oxLog[q.i]; }).every(function(q){ return !!examRetrying[q.i]; });
+    var retryAllBtnHtml = '';
+    if(hasSolvedInList){
+      retryAllBtnHtml = '<button type="button" class="retry-toggle-btn" id="toggle-retry-all" title="'+(allRetryingInList?'전체 해설을 펼쳐 봅니다':'전체 문항을 다시 풀기 상태로 전환합니다')+'">'
+        + (allRetryingInList ? '📖 전 문항 해설보기' : '🔄 전 문항 다시 풀기')
+        + '</button>';
+    }
+
     html+='<div class="card">'
       + caseBanner
       + matrixBanner
@@ -3382,6 +3432,7 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
       + (done.length?'<span class="pill '+(right===done.length?'ok':'wh')+'">'+right+'/'+done.length+' 정답</span>':'')
       + '</div>'
       + '<div style="display:flex;align-items:center;gap:6px">'
+      + retryAllBtnHtml
       + '<button type="button" class="trilink-toggle-btn '+(trilinkState.enabled?'active':'')+'" id="toggle-trilink-panel" title="2단 연계 패널 접기/펼치기">'
       + '🔗 2단 연계 패널 ' + (trilinkState.enabled ? 'ON' : 'OFF')
       + '</button>'
@@ -3526,9 +3577,29 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
         return;
       }
       if(e.target.closest('[data-emore]')){exam.shown=(exam.shown||20)+20;saveJson(EXAM_KEY,exam);render();return;}
+      if(e.target.closest('#toggle-retry-all')){
+        var itemEls = area.querySelectorAll('.oxitem[data-qid]');
+        var curQids = [];
+        for(var ii=0; ii<itemEls.length; ii++){
+          var qi = itemEls[ii].getAttribute('data-qid');
+          if(qi) curQids.push(qi);
+        }
+        var hasSolved = curQids.some(function(id){ return !!oxLog[id]; });
+        var allRetrying = hasSolved && curQids.filter(function(id){ return !!oxLog[id]; }).every(function(id){ return !!examRetrying[id]; });
+        if(allRetrying){
+          curQids.forEach(function(id){ delete examRetrying[id]; });
+        } else {
+          curQids.forEach(function(id){
+            if(oxLog[id]) examRetrying[id] = true;
+          });
+        }
+        renderExam();
+        return;
+      }
       var ob=e.target.closest('[data-ox]');
       if(ob){
         var qid=ob.getAttribute('data-ox');
+        delete examRetrying[qid];
         oxLog[qid]={pick:ob.getAttribute('data-pick'),t:Date.now()};
         saveJson(OX_KEY,oxLog);
         syncSchedulePush();
@@ -3539,9 +3610,15 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
       var ag=e.target.closest('[data-again]');
       if(ag){
         var qid=ag.getAttribute('data-again');
-        delete oxLog[qid];
-        saveJson(OX_KEY,oxLog);
-        syncSchedulePush();
+        examRetrying[qid]=true;
+        trilinkState.activeId=qid;
+        renderExam();
+        return;
+      }
+      var cr=e.target.closest('[data-cancel-retry]');
+      if(cr){
+        var qid=cr.getAttribute('data-cancel-retry');
+        delete examRetrying[qid];
         trilinkState.activeId=qid;
         renderExam();
         return;
@@ -3902,6 +3979,9 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
       alert('선택하신 조건에 해당하는 문항이 없습니다.');
       return;
     }
+    (qids || []).forEach(function(id){
+      examRetrying[id] = true;
+    });
     mode = 'exam';
     exam.law = law;
     exam.matrixDrill = {
@@ -4678,6 +4758,13 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
             exam.round = 'wrong';
             exam.filter = 'all';
             exam.shown = 20;
+            var wldb = OXDB[targetLaw] || {};
+            for(var wrk in (wldb.byRound || {})){
+              (wldb.byRound[wrk] || []).forEach(function(q){
+                var rec = oxLog[q.i];
+                if(rec && rec.pick !== q.a) examRetrying[q.i] = true;
+              });
+            }
             saveJson(EXAM_KEY, exam);
             render();
             window.scrollTo(0,0);
@@ -4717,6 +4804,13 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
           exam.round = 'wrong';
           exam.filter = 'all';
           exam.shown = 20;
+          var wldb2 = OXDB[targetLaw2] || {};
+          for(var wrk2 in (wldb2.byRound || {})){
+            (wldb2.byRound[wrk2] || []).forEach(function(q){
+              var rec = oxLog[q.i];
+              if(rec && rec.pick !== q.a) examRetrying[q.i] = true;
+            });
+          }
           saveJson(EXAM_KEY, exam);
           render();
           window.scrollTo(0,0);

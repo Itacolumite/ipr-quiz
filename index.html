@@ -199,6 +199,72 @@ body.dark .exam-case-banner{background:#2E1065;border-color:#6B21A8}
 body.dark .exam-case-banner-info{color:#E9D5FF}
 body.dark .exam-case-banner-clear{background:#1A1E27;color:#D8B4FE;border-color:#7E22CE}
 body.dark .exam-case-banner-clear:hover{background:#9333EA;color:#fff}
+/* ── Tri-Link 3각 연계 분할 뷰 (Split View & Bottom Sheet) ── */
+.exam-split-container{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(360px,450px);gap:16px;align-items:start;margin-top:10px}
+.exam-split-container.collapsed{grid-template-columns:1fr}
+.exam-split-container.collapsed .exam-split-right{display:none !important}
+.exam-split-left{min-width:0;display:flex;flex-direction:column;gap:10px}
+.exam-split-right{position:sticky;top:68px;max-height:calc(100vh - 86px);overflow-y:auto;background:#FFFFFF;border:1.5px solid #E2E8F0;border-radius:12px;box-shadow:0 4px 20px rgba(15,23,42,0.08);display:flex;flex-direction:column;z-index:20}
+body.dark .exam-split-right{background:#1E293B;border-color:#334155;box-shadow:0 4px 20px rgba(0,0,0,0.35)}
+.oxitem.trilink-active{border:2px solid #3157C9;box-shadow:0 0 0 3px rgba(49,87,201,0.14);background:#F8FAFF}
+body.dark .oxitem.trilink-active{border-color:#60A5FA;box-shadow:0 0 0 3px rgba(96,165,250,0.18);background:#172554}
+.ox-trilink-badge{background:rgba(49,87,201,0.08);color:#3157C9;border:1px solid rgba(49,87,201,0.25);border-radius:999px;font-size:11px;font-weight:800;padding:2px 8px;cursor:pointer;line-height:1.3;vertical-align:middle;transition:all .15s}
+.ox-trilink-badge:hover,.ox-trilink-badge.active{background:#3157C9;color:#fff;border-color:#3157C9}
+body.dark .ox-trilink-badge{background:rgba(96,165,250,0.12);color:#93C5FD;border-color:rgba(96,165,250,0.3)}
+body.dark .ox-trilink-badge:hover,body.dark .ox-trilink-badge.active{background:#2563EB;color:#fff;border-color:#2563EB}
+.trilink-panel-header{padding:12px 14px 10px 14px;border-bottom:1px solid #E2E8F0;background:#F8FAFC;border-top-left-radius:12px;border-top-right-radius:12px;display:flex;flex-direction:column;gap:8px;position:sticky;top:0;z-index:5}
+body.dark .trilink-panel-header{background:#0F172A;border-bottom-color:#334155}
+.trilink-header-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.trilink-header-title{font-size:13px;font-weight:800;color:#1E293B;display:flex;align-items:center;gap:6px}
+body.dark .trilink-header-title{color:#F1F5F9}
+.trilink-q-badge{font-size:11px;font-weight:800;background:#E0E7FF;color:#4338CA;border-radius:6px;padding:2px 7px}
+body.dark .trilink-q-badge{background:#312E81;color:#C7D2FE}
+.trilink-tabs{display:flex;gap:4px;background:#EDF2F7;padding:3px;border-radius:8px}
+body.dark .trilink-tabs{background:#1E293B;border:1px solid #334155}
+.trilink-tab{flex:1;text-align:center;border:none;background:transparent;padding:6px 3px;font-size:11.5px;font-weight:700;color:#64748B;border-radius:6px;cursor:pointer;transition:all .15s}
+.trilink-tab:hover{color:#1E293B}
+.trilink-tab.active{background:#FFFFFF;color:#1E40AF;font-weight:800;box-shadow:0 1px 3px rgba(0,0,0,0.1)}
+body.dark .trilink-tab{color:#94A3B8}
+body.dark .trilink-tab:hover{color:#F1F5F9}
+body.dark .trilink-tab.active{background:#334155;color:#60A5FA;box-shadow:0 1px 3px rgba(0,0,0,0.4)}
+.trilink-body{padding:14px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
+.trilink-art-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:6px}
+.trilink-art-title{font-size:14px;font-weight:800;color:#1E293B;display:flex;align-items:center;gap:6px}
+body.dark .trilink-art-title{color:#F8FAFC}
+.trilink-jump-btn{font-size:11.5px;font-weight:700;color:#2563EB;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:6px;padding:3px 8px;cursor:pointer;transition:all .15s}
+.trilink-jump-btn:hover{background:#DBEAFE;color:#1D4ED8}
+body.dark .trilink-jump-btn{background:#1E3A8A;color:#93C5FD;border-color:#3B82F6}
+.trilink-art-text{font-size:13.5px;line-height:1.8;color:#2D3748;word-break:keep-all;background:#FAFBFD;border:1px solid #EAEFF6;border-radius:8px;padding:12px 14px;max-height:520px;overflow-y:auto}
+body.dark .trilink-art-text{background:#0F172A;border-color:#334155;color:#CBD5E1}
+.trilink-case-card{background:#FAF5FF;border:1px solid #E9D5FF;border-radius:9px;padding:12px;display:flex;flex-direction:column;gap:8px}
+body.dark .trilink-case-card{background:#2E1065;border-color:#6B21A8}
+.trilink-case-head{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.trilink-case-title{font-size:13px;font-weight:800;color:#581C87;line-height:1.5}
+body.dark .trilink-case-title{color:#E9D5FF}
+.trilink-case-item{background:#FFFFFF;border:1px solid #F3E8FF;border-radius:6px;padding:8px 10px;font-size:12px;line-height:1.65;color:#374151}
+body.dark .trilink-case-item{background:#1E1B4B;border-color:#4C1D95;color:#DDD6FE}
+.trilink-case-item-title{font-weight:800;color:#6B21A8;margin-bottom:4px;font-size:11.5px}
+body.dark .trilink-case-item-title{color:#C084FC}
+.trilink-empty{text-align:center;padding:24px 16px;color:#64748B;font-size:13px;line-height:1.6}
+body.dark .trilink-empty{color:#94A3B8}
+.trilink-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(2px);z-index:9998;display:none}
+.trilink-backdrop.open{display:block}
+.trilink-sheet{position:fixed;left:0;right:0;bottom:0;max-height:84vh;background:#FFFFFF;border-radius:18px 18px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,0.25);z-index:9999;display:flex;flex-direction:column;transform:translateY(105%);transition:transform .25s cubic-bezier(0.2,0.9,0.3,1);overflow:hidden}
+body.dark .trilink-sheet{background:#1E293B;box-shadow:0 -8px 30px rgba(0,0,0,0.5)}
+.trilink-sheet.open{transform:translateY(0)}
+.trilink-sheet-handle-bar{width:40px;height:4px;background:#CBD5E1;border-radius:2px;margin:10px auto 4px auto;flex-shrink:0}
+body.dark .trilink-sheet-handle-bar{background:#475569}
+.trilink-sheet-content{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+.trilink-toggle-btn{background:#F1F5F9;border:1px solid #CBD5E1;border-radius:6px;padding:4px 10px;font-size:11.5px;font-weight:700;color:#334155;cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:all .15s}
+.trilink-toggle-btn:hover{background:#E2E8F0;color:#0F172A}
+.trilink-toggle-btn.active{background:#EFF6FF;border-color:#93C5FD;color:#1D4ED8;font-weight:800}
+body.dark .trilink-toggle-btn{background:#334155;border-color:#475569;color:#E2E8F0}
+body.dark .trilink-toggle-btn:hover{background:#475569;color:#F8FAFC}
+body.dark .trilink-toggle-btn.active{background:#1E3A8A;border-color:#3B82F6;color:#93C5FD}
+@media (max-width: 959px){
+  .exam-split-container{display:block !important}
+  .exam-split-right{display:none !important}
+}
 .oxmore{width:100%;margin-top:9px;border:1px solid #D9DEEA;background:#fff;border-radius:8px;padding:10px;font-size:12.5px;font-weight:800;color:#596273;cursor:pointer}
 .stars{color:#E8A400;font-size:11px;flex:none;letter-spacing:-1px}
 .crumb{font-size:12px;font-weight:800;color:var(--accent);margin-bottom:7px}
@@ -2390,7 +2456,7 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
     return html+'</div>';
   }
   // 선지 카드 하나. 조문 화면과 회차 화면이 함께 쓴다.
-  function oxItemHtml(q){
+  function oxItemHtml(q, isActive){
     var rec=oxLog[q.i];
     var hasCustom=Object.prototype.hasOwnProperty.call(customLinks, q.i);
     var curArt=hasCustom ? customLinks[q.i] : (q.c || '');
@@ -2405,11 +2471,13 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
     var casesBtns = (q.cs || []).map(function(cNum){
       return '<button type="button" class="oxcase-btn" data-case-jump="'+esc(cNum)+'" title="판례 383선에서 확인">판례 '+esc(cNum)+'</button>';
     }).join('');
+    var trilinkBtn = '<button type="button" class="ox-trilink-badge '+(isActive?'active':'')+'" data-trilink-target="'+esc(q.i)+'" title="근거 조문·판례·메모 연계 보기">🔗 연계</button>';
     var tags='<span class="chip">'+q.r+'회 '+q.q+'번</span>'
       +(q.p ? '<span class="pill">'+esc(q.p)+'</span>' : '')
       +(q.k ? '<span class="pill">'+esc(q.k)+'</span>' : '')
       +linkBtn
-      +casesBtns;
+      +casesBtns
+      +trilinkBtn;
     var qBody = '';
     var rawText = (q.t || '').trim();
     var dnl = String.fromCharCode(10) + String.fromCharCode(10);
@@ -2460,7 +2528,7 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
       + '<button type="button" class="oxnote-cancel" data-cancel-note="'+esc(q.i)+'">취소</button>'
       + '</div></div>';
     body += noteHtml;
-    return '<div class="oxitem">'+body+'</div>';
+    return '<div class="oxitem '+(isActive?'trilink-active':'')+'" data-qid="'+esc(q.i)+'" id="oxitem-'+esc(q.i)+'">'+body+'</div>';
   }
 
   function handleNoteClick(e, reRenderFn){
@@ -2728,6 +2796,256 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
     });
   }
 
+  // ── 판례 383선 ──
+  var CASES_383 = (function(){
+    var el = document.getElementById('cases-383-data');
+    if(!el) return [];
+    try { return JSON.parse(el.textContent) || []; } catch(e){ return []; }
+  })();
+
+  var CASE_TO_OX = (function(){
+    var idx = {};
+    for (var l in OXDB) {
+      var byR = (OXDB[l] && OXDB[l].byRound) || {};
+      for (var r in byR) {
+        byR[r].forEach(function(q){
+          (q.cs || []).forEach(function(cNum){
+            var raw = (cNum || '').trim();
+            var norm = raw.replace(/s+/g, '');
+            if(!raw) return;
+            (idx[raw] = idx[raw] || []).push({ law: l, round: q.r, q: q.q, o: q.o, id: q.i });
+            if(norm !== raw){
+              (idx[norm] = idx[norm] || []).push({ law: l, round: q.r, q: q.q, o: q.o, id: q.i });
+            }
+          });
+        });
+      }
+    }
+    return idx;
+  })();
+
+  // ── Tri-Link 3각 연계 헬퍼 및 상태 ──
+  var trilinkState = loadJson('ipquiz.trilink.v1', {
+    enabled: true,
+    tab: 'art',
+    activeId: null
+  });
+
+  function findArticleRow(law, artNum){
+    if(!artNum) return null;
+    var clean = String(artNum).replace(/^(특허법|상표법|디자인보호법)[ 	]*/,'').replace(/^제[ 	]*/,'').replace(/[ 	]*조$/,'').trim();
+    clean = clean.replace(/조의/g, '의');
+    var idx = artIndexOf(law, clean);
+    if(idx >= 0) return artRows(law)[idx];
+    var cleanNoJo = clean.replace(/조$/, '');
+    idx = artIndexOf(law, cleanNoJo);
+    if(idx >= 0) return artRows(law)[idx];
+    return null;
+  }
+
+  function findCaseByNum(caseNum){
+    if(!caseNum) return null;
+    var norm = String(caseNum).replace(/s+/g, '').replace(/^(대법원|특허법원)/, '');
+    for(var i = 0; i < CASES_383.length; i++){
+      var c = CASES_383[i];
+      var cNumNorm = (c.num || '').replace(/s+/g, '').replace(/^(대법원|특허법원)/, '');
+      if(cNumNorm === norm || cNumNorm.indexOf(norm) >= 0 || norm.indexOf(cNumNorm) >= 0){
+        return c;
+      }
+    }
+    return null;
+  }
+
+  function renderTriLinkContentHtml(q, activeTab, isSheet){
+    if(!q){
+      return '<div class="trilink-empty">'
+        + '<div style="font-size:28px;margin-bottom:8px">🔗</div>'
+        + '<div style="font-weight:700">문항을 선택하면 연계 정보가 표시됩니다.</div>'
+        + '<div style="font-size:12px;margin-top:4px;opacity:.75">좌측 문항 카드나 [🔗 연계] 버튼을 클릭해보세요.</div>'
+        + '</div>';
+    }
+    var tab = activeTab || 'art';
+    var qInfo = q.r + '회 ' + q.q + '번 (' + q.o + '번 지문) · ' + (q.a === 'O' ? '정답 O' : '정답 X');
+    var hasCustom = Object.prototype.hasOwnProperty.call(customLinks, q.i);
+    var curArt = hasCustom ? customLinks[q.i] : (q.c || '');
+    var artRow = findArticleRow(exam.law, curArt);
+    var cases = q.cs || [];
+    var nObj = getNote(q.i);
+    var noteText = nObj ? nObj.text : '';
+
+    var tabArtTitle = '📜 근거 조문' + (artRow ? ' (' + artRow[0] + '조)' : '');
+    var tabCaseTitle = '⚖️ 판례 요지' + (cases.length ? ' (' + cases.length + ')' : '');
+    var tabNoteTitle = '📝 메모' + (noteText ? ' (1)' : '');
+
+    var header = '<div class="trilink-panel-header">'
+      + '<div class="trilink-header-top">'
+      + '<div class="trilink-header-title">'
+      + '<span>🔗 3각 연계 패널</span>'
+      + '<span class="trilink-q-badge">' + esc(qInfo) + '</span>'
+      + '</div>'
+      + (isSheet ? '<button type="button" class="trilink-toggle-btn" id="close-trilink-sheet" style="padding:2px 8px">✕ 닫기</button>' : '')
+      + '</div>'
+      + '<div class="trilink-tabs">'
+      + '<button type="button" class="trilink-tab '+(tab==='art'?'active':'')+'" data-trilink-tab="art">'+esc(tabArtTitle)+'</button>'
+      + '<button type="button" class="trilink-tab '+(tab==='case'?'active':'')+'" data-trilink-tab="case">'+esc(tabCaseTitle)+'</button>'
+      + '<button type="button" class="trilink-tab '+(tab==='note'?'active':'')+'" data-trilink-tab="note">'+esc(tabNoteTitle)+'</button>'
+      + '</div></div>';
+
+    var body = '';
+    if(tab === 'art'){
+      if(artRow){
+        body = '<div class="trilink-art-top">'
+          + '<div class="trilink-art-title">'
+          + '<span class="pill q">'+esc(exam.law)+'</span>'
+          + '<strong>제'+esc(artRow[0])+'조 '+esc(artRow[1]||'')+'</strong>'
+          + '</div>'
+          + '<button type="button" class="trilink-jump-btn" data-trilink-jump-art="'+esc(artRow[0])+'" title="조문 학습에서 상세 보기">조문 학습으로 열기 ↗</button>'
+          + '</div>'
+          + '<div class="trilink-art-text atext">'
+          + articleTextHtml(artRow[2], exam.law, artRow[0], 'text')
+          + '</div>';
+      } else {
+        body = '<div class="trilink-empty">'
+          + '<div style="font-size:26px;margin-bottom:6px">📜</div>'
+          + '<div style="font-weight:700">연계된 근거 조문이 없습니다.</div>'
+          + '<div style="font-size:12px;opacity:.8;margin:6px 0 10px 0">이 문항의 근거 조문을 직접 지정할 수 있습니다.</div>'
+          + '<button type="button" class="oxlink-btn" data-link-edit="'+esc(q.i)+'">+ 근거 조문 지정하기</button>'
+          + '</div>';
+      }
+    } else if(tab === 'case'){
+      if(cases.length > 0){
+        body = '<div style="display:flex;flex-direction:column;gap:10px">'
+          + cases.map(function(cNum){
+              var c = findCaseByNum(cNum);
+              if(c){
+                var itemsHtml = (c.items || []).map(function(it, idx){
+                  return '<div class="trilink-case-item">'
+                    + (it.title ? '<div class="trilink-case-item-title">【판결요지 '+(idx+1)+'】 '+esc(it.title)+'</div>' : '')
+                    + '<div style="white-space:pre-wrap">'+esc(it.body || '')+'</div>'
+                    + '</div>';
+                }).join('');
+                return '<div class="trilink-case-card">'
+                  + '<div class="trilink-case-head">'
+                  + '<span class="chip">'+esc(c.court||'대법원')+(c.date?' '+esc(c.date.slice(0,10)):'')+'</span>'
+                  + '<span class="cno" style="font-weight:800;color:#6B21A8">'+esc(c.num)+'</span>'
+                  + (c.star ? '<span class="pill q" style="background:#FEF3C7;color:#D97706;border:1px solid #FCD34D">★중요</span>' : '')
+                  + (c.nick ? '<span class="pill" style="background:#EDE9FE;color:#6D28D9">'+esc(c.nick)+'</span>' : '')
+                  + '</div>'
+                  + '<div class="trilink-case-title">'+esc(c.title||'')+'</div>'
+                  + (itemsHtml ? '<div style="display:flex;flex-direction:column;gap:6px">'+itemsHtml+'</div>' : '')
+                  + '<div style="margin-top:6px;text-align:right">'
+                  + '<button type="button" class="trilink-jump-btn" data-case-jump="'+esc(c.num)+'" data-case-full="1">판례 383선에서 전체 보기 ↗</button>'
+                  + '</div></div>';
+              } else {
+                return '<div class="trilink-case-card">'
+                  + '<div class="trilink-case-head">'
+                  + '<span class="cno" style="font-weight:800;color:#6B21A8">판례 '+esc(cNum)+'</span>'
+                  + '</div>'
+                  + '<div class="trilink-case-title">기출 인용 판례 (383선 외 판례)</div>'
+                  + '<div style="margin-top:6px;text-align:right">'
+                  + '<button type="button" class="trilink-jump-btn" data-case-jump="'+esc(cNum)+'" data-case-full="1">판례 검색에서 찾기 ↗</button>'
+                  + '</div></div>';
+              }
+            }).join('')
+          + '</div>';
+      } else {
+        body = '<div class="trilink-empty">'
+          + '<div style="font-size:26px;margin-bottom:6px">⚖️</div>'
+          + '<div style="font-weight:700">연계된 판례가 없습니다.</div>'
+          + '<div style="font-size:12px;opacity:.8;margin-top:4px">(순수 조문형 문항이거나 미지정 판례)</div>'
+          + '</div>';
+      }
+    } else if(tab === 'note'){
+      body = '<div style="display:flex;flex-direction:column;gap:10px">'
+        + (noteText ? (
+          '<div class="oxnote-box" id="trilink-note-view">'
+          + '<div class="oxnote-head"><span>📝 나만의 단권화 메모</span>'
+          + '<div class="oxnote-actions">'
+          + '<button type="button" class="oxnote-btn" id="trilink-btn-edit-note">수정</button>'
+          + '<button type="button" class="oxnote-btn del" data-del-note="'+esc(q.i)+'">삭제</button>'
+          + '</div></div>'
+          + '<div class="oxnote-body">' + renderExplain(noteText) + '</div>'
+          + '</div>'
+        ) : '')
+        + '<div class="oxnote-editor" id="trilink-note-editor" style="'+(noteText?'display:none':'display:flex')+'">'
+        + '<textarea class="oxnote-input" id="trilink-note-input" placeholder="이 지문의 함정 포인트나 나만의 암기 팁을 적어보세요... (**볼드**, __밑줄__, ==형광펜== 지원)">'+esc(noteText)+'</textarea>'
+        + '<div class="oxnote-edit-btns">'
+        + '<button type="button" class="oxnote-save" id="trilink-btn-save-note" data-qid="'+esc(q.i)+'">저장 (Ctrl+Enter)</button>'
+        + (noteText ? '<button type="button" class="oxnote-cancel" id="trilink-btn-cancel-note">취소</button>' : '')
+        + '</div></div></div>';
+    }
+
+    return header + '<div class="trilink-body">' + body + '</div>';
+  }
+
+  function setActiveTriLink(qid, forceTab){
+    if(!qid) return;
+    trilinkState.activeId = qid;
+    if(forceTab) trilinkState.tab = forceTab;
+    saveJson('ipquiz.trilink.v1', trilinkState);
+
+    var cards = document.querySelectorAll('.oxitem[data-qid]');
+    for(var i=0; i<cards.length; i++){
+      var isAct = (cards[i].getAttribute('data-qid') === qid);
+      cards[i].classList.toggle('trilink-active', isAct);
+      var b = cards[i].querySelector('.ox-trilink-badge');
+      if(b) b.classList.toggle('active', isAct);
+    }
+
+    var qObj = null;
+    var db = OXDB[exam.law] || {};
+    for(var rk in (db.byRound || {})){
+      var arr = db.byRound[rk] || [];
+      for(var j=0; j<arr.length; j++){
+        if(arr[j].i === qid){ qObj = arr[j]; break; }
+      }
+      if(qObj) break;
+    }
+
+    var rightPanel = document.getElementById('trilink-panel');
+    if(rightPanel){
+      rightPanel.innerHTML = renderTriLinkContentHtml(qObj, trilinkState.tab, false);
+      bindTrilinkNoteKeys();
+    }
+    var sheetContent = document.getElementById('trilink-sheet-content');
+    if(sheetContent){
+      sheetContent.innerHTML = renderTriLinkContentHtml(qObj, trilinkState.tab, true);
+      bindTrilinkNoteKeys();
+    }
+  }
+
+  function bindTrilinkNoteKeys(){
+    var inp = document.getElementById('trilink-note-input');
+    if(inp && !inp._boundCtrlEnter){
+      inp._boundCtrlEnter = true;
+      inp.addEventListener('keydown', function(ev){
+        if(ev.ctrlKey && ev.key === 'Enter'){
+          ev.preventDefault();
+          var btn = document.getElementById('trilink-btn-save-note');
+          if(btn){
+            var qid = btn.getAttribute('data-qid') || trilinkState.activeId;
+            saveNote(qid, inp.value);
+            renderExam();
+          }
+        }
+      });
+    }
+  }
+
+  function openTriLinkSheet(){
+    var sheet = document.getElementById('trilink-sheet');
+    var backdrop = document.getElementById('trilink-backdrop');
+    if(sheet) sheet.classList.add('open');
+    if(backdrop) backdrop.classList.add('open');
+  }
+
+  function closeTriLinkSheet(){
+    var sheet = document.getElementById('trilink-sheet');
+    var backdrop = document.getElementById('trilink-backdrop');
+    if(sheet) sheet.classList.remove('open');
+    if(backdrop) backdrop.classList.remove('open');
+  }
+
   // 회차별 기출 정오문제 화면. 조문에 연결되지 않은 문항까지 전부 여기서 풀 수 있다.
   function renderExam(){
     var db=OXDB[exam.law]||{},rounds=Object.keys(db.byRound||{}).map(Number).sort(function(a,b){return b-a;});
@@ -2759,10 +3077,10 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
     var favCount=all.filter(function(q){return bookmarks[q.i];}).length;
     var noteCount=all.filter(function(q){return hasNote(q.i);}).length;
     // 필터: 전체 / 아직 안 푼 것 / 틀린 것 / 즐겨찾기 / 메모
-    var normCase = exam.case ? exam.case.replace(/\s+/g, '') : null;
+    var normCase = exam.case ? exam.case.replace(/s+/g, '') : null;
     var list=all.filter(function(q){
       if(normCase){
-        var matched = (q.cs || []).some(function(c){ return c.replace(/\s+/g, '') === normCase; });
+        var matched = (q.cs || []).some(function(c){ return c.replace(/s+/g, '') === normCase; });
         if(!matched) return false;
       }
       var rec=oxLog[q.i];
@@ -2777,6 +3095,14 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
       return true;
     });
     var shown=exam.shown||20;
+    var visibleList = list.slice(0, shown);
+
+    // Active Q for Tri-Link
+    if(!trilinkState.activeId || !visibleList.some(function(q){ return q.i === trilinkState.activeId; })){
+      trilinkState.activeId = visibleList.length ? visibleList[0].i : null;
+    }
+    var activeQ = visibleList.find(function(q){ return q.i === trilinkState.activeId; }) || null;
+
     var html='<div class="lawseg">'+LAWS.map(function(l){
         var n=((OXDB[l]||{}).total)||0;
         return '<button type="button" data-elaw="'+esc(l)+'" class="'+(l===exam.law?'active':'')+'">'
@@ -2802,7 +3128,7 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
       +filterOptions.map(function(o){
           return '<button type="button" data-efilter="'+o[0]+'" class="'+(exam.filter===o[0]?'active':'')+'">'+esc(o[1])+'</button>';
         }).join('')+'</div>';
-    // 극성·유형 필터. 값은 데이터에 이미 들어 있다.
+    // 극성·유형 필터
     function seg(field,label,vals){
       return '<div class="starseg" style="flex-wrap:wrap"><span>'+label+'</span>'
         +[['','전체']].concat(vals.map(function(v){return [v,v];})).map(function(o){
@@ -2824,17 +3150,50 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
     ) : '';
     var headTitle=(exam.round==='fav')?('⭐ '+esc(exam.law)+' 전체 즐겨찾기 모아보기 '):((exam.round==='note')?('📝 '+esc(exam.law)+' 전체 메모 모아보기 '):('제'+exam.round+'회 정오문제 '));
     var emptyMsg=(exam.filter==='fav'||exam.round==='fav')?'⭐ 즐겨찾기한 문항이 없습니다. 문제 카드의 별(☆) 아이콘을 눌러 추가해보세요!':((exam.filter==='note'||exam.round==='note')?'📝 작성된 나만의 메모가 없습니다. 문제 카드의 [✏️ 메모작성] 버튼을 눌러 나만의 요약 노트를 남겨보세요!':'해당하는 문항이 없습니다.');
+
+    var splitContainerHtml = '';
+    if(list.length){
+      splitContainerHtml = '<div class="exam-split-container '+(trilinkState.enabled?'':'collapsed')+'" id="exam-split-container">'
+        + '<div class="exam-split-left">'
+        + '<div class="oxlist">'
+        + visibleList.map(function(q){ return oxItemHtml(q, q.i===trilinkState.activeId); }).join('')
+        + '</div>'
+        + (shown<list.length?'<button type="button" class="oxmore" data-emore="1">더 보기 ('+(list.length-shown)+'건 남음)</button>':'')
+        + '</div>'
+        + '<aside class="exam-split-right" id="trilink-panel">'
+        + renderTriLinkContentHtml(activeQ, trilinkState.tab, false)
+        + '</aside>'
+        + '</div>';
+    } else {
+      splitContainerHtml = '<div class="empty">'+emptyMsg + (exam.case ? ' <button type="button" class="exam-case-banner-clear" id="clear-case-filter" style="margin-left:6px">전체 문제 보기</button>' : '') + '</div>';
+    }
+
     html+='<div class="card">'
       + caseBanner
-      + '<div class="exhead">'+headTitle
-      +'<span class="pill q">'+list.length+'건</span>'
-      +(done.length?'<span class="pill '+(right===done.length?'ok':'wh')+'">'+right+'/'+done.length+' 정답</span>':'')
-      +'</div>'
-      +(list.length?'':'<div class="empty">'+emptyMsg + (exam.case ? ' <button type="button" class="exam-case-banner-clear" id="clear-case-filter" style="margin-left:6px">전체 문제 보기</button>' : '') + '</div>')
-      +'<div class="oxlist">'+list.slice(0,shown).map(oxItemHtml).join('')+'</div>'
-      +(shown<list.length?'<button type="button" class="oxmore" data-emore="1">더 보기 ('+(list.length-shown)+'건 남음)</button>':'')
-      +'</div>';
+      + '<div class="exhead" style="justify-content:space-between;align-items:center;flex-wrap:wrap">'
+      + '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">'
+      + headTitle
+      + '<span class="pill q">'+list.length+'건</span>'
+      + (done.length?'<span class="pill '+(right===done.length?'ok':'wh')+'">'+right+'/'+done.length+' 정답</span>':'')
+      + '</div>'
+      + '<div style="display:flex;align-items:center;gap:6px">'
+      + '<button type="button" class="trilink-toggle-btn '+(trilinkState.enabled?'active':'')+'" id="toggle-trilink-panel" title="2단 연계 패널 접기/펼치기">'
+      + '🔗 2단 연계 패널 ' + (trilinkState.enabled ? 'ON' : 'OFF')
+      + '</button>'
+      + '</div>'
+      + '</div>'
+      + splitContainerHtml
+      + '</div>'
+      + '<div class="trilink-backdrop" id="trilink-backdrop"></div>'
+      + '<div class="trilink-sheet" id="trilink-sheet">'
+      + '<div class="trilink-sheet-handle-bar"></div>'
+      + '<div class="trilink-sheet-content" id="trilink-sheet-content">'
+      + renderTriLinkContentHtml(activeQ, trilinkState.tab, true)
+      + '</div></div>';
+
     area.innerHTML=html;
+    bindTrilinkNoteKeys();
+
     // 처리기는 한 번만 단다. 다시 그릴 때마다 달면 클릭이 여러 번 처리된다.
     if(examBound)return;
     examBound=true;
@@ -2844,6 +3203,80 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
         delete exam.case;
         saveJson(EXAM_KEY, exam);
         renderExam();
+        return;
+      }
+      if(e.target.closest('#toggle-trilink-panel')){
+        if(window.innerWidth < 960){
+          openTriLinkSheet();
+          return;
+        }
+        trilinkState.enabled = !trilinkState.enabled;
+        saveJson('ipquiz.trilink.v1', trilinkState);
+        var container = document.getElementById('exam-split-container');
+        var btn = document.getElementById('toggle-trilink-panel');
+        if(container){
+          container.classList.toggle('collapsed', !trilinkState.enabled);
+        }
+        if(btn){
+          btn.classList.toggle('active', trilinkState.enabled);
+          btn.innerHTML = '🔗 2단 연계 패널 ' + (trilinkState.enabled ? 'ON' : 'OFF');
+        }
+        return;
+      }
+      if(e.target.closest('#trilink-backdrop') || e.target.closest('#close-trilink-sheet')){
+        closeTriLinkSheet();
+        return;
+      }
+      var tTab = e.target.closest('[data-trilink-tab]');
+      if(tTab){
+        var tabName = tTab.getAttribute('data-trilink-tab');
+        setActiveTriLink(trilinkState.activeId, tabName);
+        return;
+      }
+      var tJump = e.target.closest('[data-trilink-jump-art]');
+      if(tJump){
+        var artNum = tJump.getAttribute('data-trilink-jump-art');
+        mode = 'browse';
+        browse.law = exam.law;
+        browse.art = artNum;
+        saveBrowse();
+        render();
+        window.scrollTo({top:0, behavior:'smooth'});
+        return;
+      }
+      var tTarget = e.target.closest('[data-trilink-target]');
+      if(tTarget){
+        var qid = tTarget.getAttribute('data-trilink-target');
+        setActiveTriLink(qid);
+        if(window.innerWidth < 960){
+          openTriLinkSheet();
+        }
+        return;
+      }
+      if(e.target.closest('#trilink-btn-edit-note')){
+        var ed = document.getElementById('trilink-note-editor');
+        var vw = document.getElementById('trilink-note-view');
+        if(ed) ed.style.display = 'flex';
+        if(vw) vw.style.display = 'none';
+        var inp = document.getElementById('trilink-note-input');
+        if(inp) inp.focus();
+        return;
+      }
+      if(e.target.closest('#trilink-btn-cancel-note')){
+        var ed = document.getElementById('trilink-note-editor');
+        var vw = document.getElementById('trilink-note-view');
+        if(ed) ed.style.display = 'none';
+        if(vw) vw.style.display = 'block';
+        return;
+      }
+      if(e.target.closest('#trilink-btn-save-note')){
+        var inp = document.getElementById('trilink-note-input');
+        var btn = document.getElementById('trilink-btn-save-note');
+        var qid = (btn && btn.getAttribute('data-qid')) || trilinkState.activeId;
+        if(inp && qid){
+          saveNote(qid, inp.value);
+          renderExam();
+        }
         return;
       }
       var lb=e.target.closest('[data-elaw]');
@@ -2869,14 +3302,47 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
       }
       if(e.target.closest('[data-emore]')){exam.shown=(exam.shown||20)+20;saveJson(EXAM_KEY,exam);render();return;}
       var ob=e.target.closest('[data-ox]');
-      if(ob){oxLog[ob.getAttribute('data-ox')]={pick:ob.getAttribute('data-pick'),t:Date.now()};saveJson(OX_KEY,oxLog);syncSchedulePush();renderExam();return;}
+      if(ob){
+        var qid=ob.getAttribute('data-ox');
+        oxLog[qid]={pick:ob.getAttribute('data-pick'),t:Date.now()};
+        saveJson(OX_KEY,oxLog);
+        syncSchedulePush();
+        trilinkState.activeId=qid;
+        renderExam();
+        return;
+      }
       var ag=e.target.closest('[data-again]');
-      if(ag){delete oxLog[ag.getAttribute('data-again')];saveJson(OX_KEY,oxLog);syncSchedulePush();renderExam();return;}
+      if(ag){
+        var qid=ag.getAttribute('data-again');
+        delete oxLog[qid];
+        saveJson(OX_KEY,oxLog);
+        syncSchedulePush();
+        trilinkState.activeId=qid;
+        renderExam();
+        return;
+      }
       var le=e.target.closest('[data-link-edit]');
       if(le){handleLinkEdit(le.getAttribute('data-link-edit'));return;}
       var cj=e.target.closest('[data-case-jump]');
       if(cj){
         var caseNum=cj.getAttribute('data-case-jump');
+        if(cj.getAttribute('data-case-full') === '1'){
+          mode='cases';
+          casesFilter.search=caseNum;
+          saveJson('ipquiz.casesfilter.v1',casesFilter);
+          render();
+          window.scrollTo({top:0,behavior:'smooth'});
+          return;
+        }
+        var parentOx = cj.closest('.oxitem[data-qid]');
+        if(parentOx){
+          var qid = parentOx.getAttribute('data-qid');
+          setActiveTriLink(qid, 'case');
+          if(window.innerWidth < 960){
+            openTriLinkSheet();
+          }
+          return;
+        }
         mode='cases';
         casesFilter.search=caseNum;
         saveJson('ipquiz.casesfilter.v1',casesFilter);
@@ -2884,36 +3350,16 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
         window.scrollTo({top:0,behavior:'smooth'});
         return;
       }
+
+      var oxCard = e.target.closest('.oxitem[data-qid]');
+      if(oxCard){
+        var qid = oxCard.getAttribute('data-qid');
+        if(qid && qid !== trilinkState.activeId){
+          setActiveTriLink(qid);
+        }
+      }
     });
   }
-
-  // ── 판례 383선 ──
-  var CASES_383 = (function(){
-    var el = document.getElementById('cases-383-data');
-    if(!el) return [];
-    try { return JSON.parse(el.textContent) || []; } catch(e){ return []; }
-  })();
-
-  var CASE_TO_OX = (function(){
-    var idx = {};
-    for (var l in OXDB) {
-      var byR = (OXDB[l] && OXDB[l].byRound) || {};
-      for (var r in byR) {
-        byR[r].forEach(function(q){
-          (q.cs || []).forEach(function(cNum){
-            var raw = (cNum || '').trim();
-            var norm = raw.replace(/\s+/g, '');
-            if(!raw) return;
-            (idx[raw] = idx[raw] || []).push({ law: l, round: q.r, q: q.q, o: q.o, id: q.i });
-            if(norm !== raw){
-              (idx[norm] = idx[norm] || []).push({ law: l, round: q.r, q: q.q, o: q.o, id: q.i });
-            }
-          });
-        });
-      }
-    }
-    return idx;
-  })();
 
   var casesFilter = loadJson('ipquiz.casesfilter.v1', {
     search: '',

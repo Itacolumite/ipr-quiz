@@ -3,7 +3,7 @@
 <head>
 <meta name="robots" content="noindex,nofollow">
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,interactive-widget=resizes-content">
 <title>산업재산권법 퀴즈</title>
 <meta name="theme-color" content="#3157C9">
 <meta name="mobile-web-app-capable" content="yes">
@@ -375,8 +375,18 @@ body.browse{display:block;grid-template-columns:none}
 .input{width:100%;margin-top:16px;border:2px solid #D9DEEA;border-radius:8px;padding:12px 13px;outline:none}
 .input:focus{border-color:var(--accent)}
 .opts{display:grid;gap:8px;margin-top:16px}
-.picks{display:grid;gap:6px;margin-top:10px}
-.pick b{flex:0 0 auto;font-weight:800;color:#596273;margin-right:4px}
+.picks{display:grid;gap:6px;margin:12px 0;background:#F8FAFC;border:1.5px solid #CBD5E1;border-radius:10px;padding:10px 12px}
+.picks-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.picks-title{font-size:12px;font-weight:800;color:#334155}
+.picks-sub{font-size:11px;color:#64748B}
+.picks-grid{display:grid;gap:6px}
+.pick{background:#fff;border:1.5px solid #E2E8F0;border-radius:8px;padding:8px 10px;font-size:13.5px}
+.pick b{flex:0 0 auto;font-weight:800;color:#475569;margin-right:6px}
+.due-done-milestone{animation:fadeIn .25s ease}
+body.dark .picks{background:#1E293B;border-color:#334155}
+body.dark .picks-title{color:#E2E8F0}
+body.dark .picks-sub{color:#94A3B8}
+body.dark .pick{background:#0F172A;border-color:#334155;color:#E2E8F0}
 .opt{display:flex;gap:10px;align-items:flex-start;text-align:left;border:2px solid #E2E6EF;background:#fff;border-radius:8px;padding:10px 12px;cursor:pointer;font-size:14px;line-height:1.5;word-break:keep-all}
 .opt .no{flex:0 0 auto;font-weight:800;color:#596273}
 .opt.sel{border-color:var(--accent);background:#F4F7FF}
@@ -1190,7 +1200,7 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
     }
   }
 
-  function resetTab(t){state[t]={queue:null,idx:0,answered:false,hinted:false,hintStage:0,mcSel:-1,needConf:false};scores[t]={correct:0,total:0,wrong:[]};}
+  function resetTab(t){state[t]={queue:null,idx:0,answered:false,hinted:false,hintStage:0,mcSel:-1,needConf:false,freshUnlocked:false};scores[t]={correct:0,total:0,wrong:[]};}
   function st(){return state[TABS[tabIdx]];}
   function currentScore(){return scores[TABS[tabIdx]];}
 
@@ -1473,6 +1483,15 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
     paint();
     var items=list();
     var s=st();
+    var curLaw=TABS[tabIdx];
+    if(tabIdx<REVIEW){
+      var bBuckets=lawBuckets(curLaw);
+      var dueCount=bBuckets.due.length;
+      if(dueCount>0 && !s.freshUnlocked && s.idx>=dueCount){
+        renderDueDone(curLaw, dueCount);
+        return;
+      }
+    }
     if(!items.length||s.idx>=items.length){renderDone();return;}
     var q=items[s.idx];
     var r=rec(q.id);
@@ -1529,8 +1548,13 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
         return '<button type="button" class="opt" data-i="'+i+'"><span class="no">'+(i+1)+'</span><span>'+esc(o)+'</span></button>';
       }).join('')+'</div>';
     }else if(q.type==='blank'||q.type==='recall'){
+      if(q.choices&&q.choices.length){
+        body+='<div id="picks" class="picks" hidden>'
+          +'<div class="picks-head"><span class="picks-title">💡 선택지</span><span class="picks-sub">터치 시 정답란에 자동 입력됩니다</span></div>'
+          +'<div class="picks-grid">'+q.choices.map(function(c,i){return '<button type="button" class="opt pick" data-c="'+esc(c)+'"><b>'+(i+1)+'</b> <span>'+esc(c)+'</span></button>';}).join('')+'</div>'
+          +'</div>';
+      }
       body+='<input id="answer" class="input" autocomplete="off" placeholder="정답을 입력하세요">';
-      if(q.choices&&q.choices.length)body+='<div id="picks" class="picks" hidden>'+q.choices.map(function(c,i){return '<button class="opt pick" data-c="'+esc(c)+'"><b>'+(i+1)+'</b> '+esc(c)+'</button>';}).join('')+'</div>';
     }
     body+='<div id="result" class="result"></div>'
       +'<div class="expl" id="expl"></div>';
@@ -1650,6 +1674,7 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
         records={};saveRecords();localStorage.removeItem(NEWDAY_KEY);invalidateQueues();render();
       });
     }
+    var isTouchMobile = ('ontouchstart' in window) || (window.innerWidth < 768);
     if(q.type==='mc'||q.type==='compare'||q.type==='ox'){
       Array.prototype.forEach.call(document.querySelectorAll('.opt'),function(btn){
         btn.addEventListener('click',function(){selectOption(Number(btn.getAttribute('data-i')));});
@@ -1662,11 +1687,15 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
           if(e.key==='Enter'){e.preventDefault();if(st().answered){next();return;}var nx=nextEmptyToken();if(nx&&inp.value)nx.focus();else check();}
         });
       });
-      setTimeout(function(){var f=toks[0];if(f)f.focus();},40);
+      if(!isTouchMobile){
+        setTimeout(function(){var f=toks[0];if(f)f.focus();},40);
+      }
     }else{
       var input=document.getElementById('answer');
       input.addEventListener('keydown',function(e){if(e.key==='Enter'){if(st().answered)next();else check();}});
-      setTimeout(function(){input.focus();},40);
+      if(!isTouchMobile){
+        setTimeout(function(){input.focus();},40);
+      }
     }
     if(s.answered){ // 탭을 갔다 온 경우: 답변 완료 상태 복원
       Array.prototype.forEach.call(document.querySelectorAll('.tok,.opt,#answer'),function(el){el.disabled=true;});
@@ -1706,12 +1735,23 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
     s.hinted=true;
     box.hidden=false;
     var input=document.getElementById('answer');
+    var isTouchMobile = ('ontouchstart' in window) || (window.innerWidth < 768);
+    if(input && isTouchMobile){
+      input.blur(); // 모바일 가상 키보드가 선지를 가리지 않도록 내림
+    }
+    box.scrollIntoView({behavior:'smooth', block:'nearest'});
     Array.prototype.forEach.call(box.querySelectorAll('.pick'),function(btn){
       btn.addEventListener('click',function(){
         Array.prototype.forEach.call(box.querySelectorAll('.pick'),function(b){b.classList.remove('sel');});
         btn.classList.add('sel');
         input.value=btn.getAttribute('data-c');
-        input.focus();
+        if(!isTouchMobile){
+          input.focus();
+        }
+        var act=document.querySelector('.actions');
+        if(act && isTouchMobile){
+          act.scrollIntoView({behavior:'smooth', block:'nearest'});
+        }
       });
     });
     setResult('warn','선지를 펼쳤습니다 — 고른 뒤 확인을 누르세요. 재인은 인출보다 약해 틀림으로 기록됩니다.');
@@ -1851,15 +1891,75 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
     render();
   }
 
+  function renderDueDone(law, dueCount){
+    paint();
+    var sc=currentScore();
+    var pct=sc.total?Math.round(sc.correct/sc.total*100):0;
+    var b=lawBuckets(law);
+    var html='<section class="done due-done-milestone">'
+      +'<div style="font-size:42px;margin-bottom:8px">🎉</div>'
+      +'<h1>오늘의 복습 완료!</h1>'
+      +'<p style="font-size:15px;color:#334155;margin-bottom:14px">오늘 복습 주기가 도래했던 <b>'+esc(law)+'</b> '+dueCount+'문항을 모두 마쳤습니다.</p>';
+    if(sc.total){
+      html+='<div class="big">'+sc.correct+' / '+sc.total+'</div>'
+        +'<p style="font-weight:700;color:var(--accent);margin-bottom:18px">복습 정답률 '+pct+'%</p>';
+    }
+    if(sc.wrong.length){
+      var wrong=sc.wrong.slice(0,5).map(function(q){
+        return '<div class="wrong-item"><strong>'+esc(q.label||('제'+(q.num||q.article)+'조'))+' '+esc(q.title)+'</strong><br>정답: '+esc(q.answer)+'</div>';
+      }).join('');
+      html+='<div class="wrong"><strong>이번 복습에서 틀린 문제 '+sc.wrong.length+'개</strong>'+wrong+'</div>';
+    }
+    html+='<div class="actions" style="flex-direction:column;gap:8px;max-width:360px;margin:20px auto 0 auto">'
+      + (b.fresh.length ? '<button class="btn primary" id="btn-continue-fresh" style="width:100%;padding:12px;font-size:14px;font-weight:800">🌱 신규 문항 학습 시작 ('+(settings.newPerDay>=99999?'신규 전부':'신규 '+settings.newPerDay+'개')+')</button>' : '')
+      + (sc.wrong.length ? '<button class="btn amber" id="btn-retry-due-wrong" style="width:100%;padding:12px;font-size:14px;font-weight:800">⚡ 틀린 '+sc.wrong.length+'문항만 다시 풀기</button>' : '')
+      + '<button class="btn secondary" id="btn-retry-due-all" style="width:100%;padding:11px;font-size:13px">🔄 복습 전체 다시 풀기</button>'
+      + '<button class="btn secondary" id="btn-go-today" style="width:100%;padding:11px;font-size:13px">🎯 오늘 할 일로 이동</button>'
+      +'</div>'
+      +'</section>';
+    area.innerHTML=html;
+
+    var btnFresh=document.getElementById('btn-continue-fresh');
+    if(btnFresh) btnFresh.addEventListener('click',function(){
+      var s=st();
+      s.freshUnlocked=true;
+      render();
+    });
+    var btnWrongOnly=document.getElementById('btn-retry-due-wrong');
+    if(btnWrongOnly) btnWrongOnly.addEventListener('click',function(){
+      var s=st();
+      s.queue=sc.wrong.slice();
+      s.idx=0; s.answered=false; s.freshUnlocked=false;
+      scores[law]={correct:0, total:0, wrong:[]};
+      render();
+    });
+    var btnRetryAll=document.getElementById('btn-retry-due-all');
+    if(btnRetryAll) btnRetryAll.addEventListener('click',function(){
+      resetTab(law);
+      render();
+    });
+    var btnGoToday=document.getElementById('btn-go-today');
+    if(btnGoToday) btnGoToday.addEventListener('click',function(){
+      mode='today';
+      render();
+    });
+  }
+
   function renderDone(){
     paint();
     var sc=currentScore();
     var pct=sc.total?Math.round(sc.correct/sc.total*100):0;
     var html='<section class="done">';
     if(tabIdx===REVIEW){
-      html+=(list().length?'<h1>복습 완료</h1>':'<h1>복습</h1><p>틀림으로 기록된 문항이 없습니다. 학습을 진행하면 여기에 쌓입니다.</p>');
-      if(sc.total)html+='<div class="big">'+sc.correct+' / '+sc.total+'</div><p>정답률 '+pct+'%</p>';
-      html+='<div class="actions"><button class="btn secondary" id="retry">다시 풀기</button></div>';
+      var revCount=list().length;
+      html+='<div style="font-size:38px;margin-bottom:6px">🎉</div>';
+      html+=(revCount?'<h1>복습 완료!</h1>':'<h1>복습</h1><p>틀림으로 기록된 문항이 없습니다. 학습을 진행하면 여기에 쌓입니다.</p>');
+      if(sc.total)html+='<div class="big">'+sc.correct+' / '+sc.total+'</div><p style="font-weight:700;color:var(--accent);margin-bottom:14px">정답률 '+pct+'%</p>';
+      html+='<div class="actions" style="flex-direction:column;gap:8px;max-width:340px;margin:18px auto 0 auto">'
+        + (sc.wrong.length ? '<button class="btn amber" id="retry-wrong-only" style="width:100%;padding:11px;font-size:14px;font-weight:800">⚡ 이번에 틀린 '+sc.wrong.length+'문항만 다시 풀기</button>' : '')
+        + '<button class="btn secondary" id="retry" style="width:100%;padding:11px;font-size:13px">🔄 전체 다시 풀기</button>'
+        + '<button class="btn primary" id="rev-go-today" style="width:100%;padding:11px;font-size:13px">🎯 오늘 할 일로 이동</button>'
+        + '</div>';
     }else{
       var law=TABS[tabIdx];
       var b=lawBuckets(law);
@@ -1870,9 +1970,11 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
       if(cf)html+='<p style="font-size:13px;color:#596273">지금 <b>'+esc(cf)+'</b>만 보고 있습니다. 다른 장을 풀려면 상단 장 필터를 «전체 장»으로 바꾸세요.</p>';
       if(sc.total)html+='<div class="big">'+sc.correct+' / '+sc.total+'</div><p>정답률 '+pct+'%</p>';
       html+='<p>내일 복습 예정 '+dueTomorrow+'문항 · 신규 대기 '+b.fresh.length+'문항</p>';
-      html+='<div class="actions">';
-      if(b.fresh.length)html+='<button class="btn primary" id="more-new">신규 10문항 더 풀기</button>';
-      if(b.later.length)html+='<button class="btn secondary" id="pull-ahead">예정 복습 미리 풀기 (가까운 순 10)</button>';
+      html+='<div class="actions" style="flex-direction:column;gap:8px;max-width:360px;margin:18px auto 0 auto">';
+      if(b.fresh.length)html+='<button class="btn primary" id="more-new" style="width:100%;padding:11px;font-size:13px">신규 10문항 더 풀기</button>';
+      if(b.later.length)html+='<button class="btn secondary" id="pull-ahead" style="width:100%;padding:11px;font-size:13px">예정 복습 미리 풀기 (가까운 순 10)</button>';
+      html+='<button class="btn secondary" id="retry" style="width:100%;padding:11px;font-size:13px">🔄 오늘 세션 다시 풀기</button>';
+      html+='<button class="btn secondary" id="done-go-today" style="width:100%;padding:11px;font-size:13px">🎯 오늘 할 일로 이동</button>';
       if(!b.fresh.length&&!b.later.length&&!b.due.length)html+='<p>이 법령의 모든 문항을 소화했습니다. 내일 다시 확인하세요.</p>';
       html+='</div>';
     }
@@ -1885,6 +1987,25 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
 
     var retry=document.getElementById('retry');
     if(retry)retry.addEventListener('click',function(){resetTab(TABS[tabIdx]);render();});
+    var retryWrongOnly=document.getElementById('retry-wrong-only');
+    if(retryWrongOnly)retryWrongOnly.addEventListener('click',function(){
+      var s=st();
+      s.queue=sc.wrong.slice();
+      s.idx=0;
+      s.answered=false;
+      scores[TABS[tabIdx]]={correct:0,total:0,wrong:[]};
+      render();
+    });
+    var revGoToday=document.getElementById('rev-go-today');
+    if(revGoToday)revGoToday.addEventListener('click',function(){
+      mode='today';
+      render();
+    });
+    var doneGoToday=document.getElementById('done-go-today');
+    if(doneGoToday)doneGoToday.addEventListener('click',function(){
+      mode='today';
+      render();
+    });
     var moreNew=document.getElementById('more-new');
     if(moreNew)moreNew.addEventListener('click',function(){
       var b=lawBuckets(TABS[tabIdx]);
@@ -2148,7 +2269,24 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
         syncBusy=false;
         setSyncState('마지막 동기화 '+new Date().toLocaleTimeString('ko-KR')
           +' · 내려받아 합친 기록 '+r.got+'개'+(r.gotOx?' (정오 '+r.gotOx+'개)':''));
-        if(r.got||r.gotOx){invalidateQueues();updateDataSummary();render();paint();}
+        if(r.got||r.gotOx){
+          updateDataSummary();
+          paintTabCounts();
+          var activeEl = document.activeElement;
+          var isTyping = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA');
+          var ansInp = document.getElementById('answer');
+          var hasValue = (ansInp && ansInp.value && ansInp.value.trim().length > 0);
+          var tokInps = document.querySelectorAll('.tok');
+          for(var ti=0; ti<tokInps.length; ti++){
+            if(tokInps[ti].value && tokInps[ti].value.trim().length > 0) hasValue = true;
+          }
+          if(quiet && (isTyping || hasValue || (mode === 'quiz' && st() && st().idx > 0))){
+            return;
+          }
+          invalidateQueues();
+          render();
+          paint();
+        }
         if(!quiet)showDataMsg('ok','동기화했습니다. 내려받아 합친 기록 '+r.got+'개입니다.');
       })
       .catch(function(err){

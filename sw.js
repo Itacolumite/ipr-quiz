@@ -1,5 +1,5 @@
-// 산업재산권법 퀴즈 Service Worker (오프라인 지원)
-const CACHE_NAME = 'ipr-quiz-pwa-v51';
+// 산업재산권법 & 자연과학 퀴즈 Service Worker (오프라인 지원)
+const CACHE_NAME = 'ipr-quiz-pwa-v52';
 const PRECACHE_ASSETS = [
   './',
   './index.html',
@@ -48,18 +48,20 @@ self.addEventListener('fetch', (e) => {
     return;
   }
 
-  // 정적 에셋(아이콘 등)은 Cache-First
+  // 정적 에셋 및 외부 CDN(KaTeX, 문제 그림 등) Cache-First / 런타임 캐싱
   e.respondWith(
     caches.match(e.request).then((cached) => {
       if (cached) return cached;
       return fetch(e.request).then((response) => {
-        if (!response || response.status !== 200 || response.type !== 'basic') {
+        if (!response || response.status !== 200) {
           return response;
         }
-        const responseToCache = response.clone();
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(e.request, responseToCache);
-        });
+        if (response.type === 'basic' || response.type === 'cors') {
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(e.request, responseToCache);
+          });
+        }
         return response;
       });
     })

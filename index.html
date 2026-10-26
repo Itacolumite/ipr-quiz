@@ -2630,6 +2630,807 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
     }
   }
 
+  /* ==============================================================
+     WIDE SCREEN LAYOUT & OMR ANSWER SHEET SYSTEM (v54)
+     ============================================================== */
+  :root {
+    --omr-paper: #f5f6f9;
+    --omr-sheet: #ffffff;
+    --omr-ink: #161a23;
+    --omr-muted: #5b6273;
+    --omr-rule: #e8cdd3;
+    --omr-line: #dce0e9;
+    --omr-red: #c8304d;
+    --omr-red-soft: #fbe6ea;
+    --omr-mark: #ffe58a;
+    --omr-ok: #1d7f47;
+    --omr-ok-soft: #e1f3e8;
+    --omr-bad: #c2352f;
+    --omr-bad-soft: #fbe4e2;
+    --omr-chip: #eceff5;
+  }
+
+  body.dark {
+    --omr-paper: #111318;
+    --omr-sheet: #191c24;
+    --omr-ink: #e9ebf1;
+    --omr-muted: #9aa1b3;
+    --omr-rule: #47282f;
+    --omr-line: #2b303c;
+    --omr-red: #ff6f88;
+    --omr-red-soft: #3a1d25;
+    --omr-mark: #5e4f10;
+    --omr-ok: #57cf8a;
+    --omr-ok-soft: #16301f;
+    --omr-bad: #ff7c73;
+    --omr-bad-soft: #3a1c1b;
+    --omr-chip: #232733;
+  }
+
+  /* Fix empty side margins on PC/Wide screens */
+  body.domain-science .main,
+  body.domain-science #main {
+    max-width: 1440px !important;
+    width: 100%;
+    padding: 18px 28px 60px;
+  }
+  body.domain-law.browse .main,
+  body.domain-law.mode-exam .main {
+    max-width: 1440px !important;
+    width: 100%;
+  }
+  body.domain-law:not(.browse) .main {
+    max-width: 980px !important;
+    width: 100%;
+  }
+
+  @media (max-width: 768px) {
+    body.domain-science .main,
+    body.domain-law.browse .main,
+    body.domain-law:not(.browse) .main {
+      padding: 12px 12px 48px;
+    }
+  }
+
+  /* 2-Column Wide Split Grid for Science Stage on Desktop */
+  .sci-stage-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 370px;
+    gap: 20px;
+    align-items: start;
+  }
+  @media (max-width: 1024px) {
+    .sci-stage-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .sci-stage-main {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+  }
+
+  .sci-stage-side {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    position: sticky;
+    top: 16px;
+    min-width: 0;
+  }
+  @media (max-width: 1024px) {
+    .sci-stage-side {
+      position: static;
+    }
+  }
+
+  /* OMR Option Toggles & Keyboard Hint Row */
+  .omr-top-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 16px;
+    background: var(--omr-sheet);
+    border: 1px solid var(--omr-line);
+    border-radius: 10px;
+    padding: 10px 14px;
+  }
+  .omr-toggles {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 16px;
+  }
+  .omr-toggle-lbl {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--omr-muted);
+    cursor: pointer;
+    user-select: none;
+  }
+  .omr-toggle-lbl input[type="checkbox"] {
+    accent-color: var(--omr-red);
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+  }
+  .omr-keyhint {
+    font-size: 12.5px;
+    color: var(--omr-muted);
+  }
+  @media (hover: none) {
+    .omr-keyhint, .omr-btn kbd {
+      display: none !important;
+    }
+  }
+
+  /* View Mode Pill Switch (Single OMR vs List) */
+  .omr-view-switch {
+    display: inline-flex;
+    background: var(--omr-chip);
+    padding: 3px;
+    border-radius: 999px;
+    gap: 2px;
+  }
+  .omr-view-btn {
+    border: none;
+    background: transparent;
+    color: var(--omr-muted);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .omr-view-btn.active {
+    background: var(--omr-ink);
+    color: var(--omr-sheet);
+  }
+
+  /* Red-Ruled OMR Answer Sheet (.omr-sheet) */
+  .omr-sheet {
+    background-color: var(--omr-sheet);
+    border: 1px solid var(--omr-line);
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0 31px,
+      var(--omr-rule) 31px 32px
+    );
+    background-position: 0 70px;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+  }
+  .omr-sheet::before {
+    content: "";
+    position: absolute;
+    left: 48px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--omr-red);
+    opacity: 0.38;
+    pointer-events: none;
+  }
+  .omr-qnum {
+    position: absolute;
+    left: 4px;
+    top: 20px;
+    width: 40px;
+    text-align: center;
+    font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+    font-size: 11.5px;
+    color: var(--omr-red);
+    font-weight: 800;
+    line-height: 1.35;
+    user-select: none;
+  }
+  .omr-sheet-in {
+    position: relative;
+    padding: 20px 24px 24px 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+  }
+  @media (max-width: 540px) {
+    .omr-sheet::before {
+      left: 36px;
+    }
+    .omr-qnum {
+      left: 1px;
+      width: 34px;
+      font-size: 10.5px;
+    }
+    .omr-sheet-in {
+      padding: 16px 14px 18px 46px;
+      gap: 13px;
+    }
+  }
+
+  /* Meta Bar inside OMR Sheet */
+  .omr-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 8px;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12.5px;
+    color: var(--omr-muted);
+  }
+  .omr-meta-left {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 8px;
+    align-items: center;
+  }
+  .omr-meta-right {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+  }
+  .omr-tag {
+    background: var(--omr-chip);
+    padding: 3px 9px;
+    border-radius: 5px;
+    color: var(--omr-ink);
+    font-weight: 700;
+    font-size: 12px;
+  }
+  .omr-chl {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 700;
+    color: var(--omr-ink);
+  }
+  .omr-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    background: var(--accent, #2563eb);
+  }
+  .omr-mst {
+    padding: 2px 8px;
+    border-radius: 5px;
+    font-size: 11.5px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .omr-mst.m-new {
+    background: var(--omr-chip);
+    color: var(--omr-muted);
+  }
+  .omr-mst.m-again {
+    background: var(--omr-bad-soft);
+    color: var(--omr-bad);
+  }
+  .omr-mst.m-easy {
+    background: var(--omr-ok-soft);
+    color: var(--omr-ok);
+  }
+
+  /* Statement / Stem Typography inside OMR Sheet */
+  .omr-ox-q {
+    font-weight: 800;
+    font-size: 1.24rem;
+    line-height: 1.62;
+    color: var(--omr-ink);
+    min-height: 2.8em;
+    display: flex;
+    align-items: center;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+  .omr-qtext {
+    font-weight: 600;
+    font-size: 1.06rem;
+    line-height: 1.75;
+    color: var(--omr-ink);
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+  @media (max-width: 540px) {
+    .omr-ox-q {
+      font-size: 1.12rem;
+    }
+    .omr-qtext {
+      font-size: 0.98rem;
+    }
+  }
+
+  /* Draining Timer Bar */
+  .omr-tbar {
+    height: 6px;
+    background: var(--omr-chip);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .omr-tbar i {
+    display: block;
+    height: 100%;
+    width: 100%;
+    background: var(--omr-red);
+    transform-origin: left center;
+    animation-name: omrDrain;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+  }
+  @keyframes omrDrain {
+    from { transform: scaleX(1); }
+    to { transform: scaleX(0); }
+  }
+
+  /* Big O / X Buttons (.omr-ox-btns) */
+  .omr-ox-btns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .omr-oxb {
+    font: inherit;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 16px 12px;
+    border-radius: 10px;
+    border: 2px solid var(--omr-line);
+    background: var(--omr-sheet);
+    color: var(--omr-ink);
+    cursor: pointer;
+    transition: all 0.14s ease;
+  }
+  .omr-oxb b {
+    font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+    font-size: 2.15rem;
+    line-height: 1;
+    font-weight: 800;
+  }
+  .omr-oxb small {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--omr-muted);
+  }
+  .omr-oxb[data-pick="O"] b,
+  .omr-oxb[data-v="1"] b {
+    color: var(--omr-ok);
+  }
+  .omr-oxb[data-pick="X"] b,
+  .omr-oxb[data-v="0"] b {
+    color: var(--omr-bad);
+  }
+  .omr-oxb:hover:not([disabled]) {
+    border-color: var(--omr-red);
+    transform: translateY(-1px);
+  }
+  .omr-oxb.right {
+    background: var(--omr-ok-soft) !important;
+    border-color: var(--omr-ok) !important;
+  }
+  .omr-oxb.wrong {
+    background: var(--omr-bad-soft) !important;
+    border-color: var(--omr-bad) !important;
+  }
+  .omr-oxb[disabled] {
+    cursor: default;
+  }
+
+  /* OMR 5-Choice Bubble Options (.omr-opts / .omr-opt) */
+  .omr-opts {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .omr-opt {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    text-align: left;
+    font: inherit;
+    font-size: 0.98rem;
+    line-height: 1.55;
+    width: 100%;
+    background: var(--omr-sheet);
+    border: 1.5px solid var(--omr-line);
+    border-radius: 8px;
+    padding: 11px 14px;
+    color: var(--omr-ink);
+    cursor: pointer;
+    transition: all 0.14s ease;
+  }
+  .omr-opt:hover:not([disabled]):not(.disabled) {
+    border-color: var(--omr-red);
+    background: var(--omr-paper);
+  }
+  .omr-bubble {
+    flex: 0 0 auto;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 1.8px solid var(--omr-red);
+    color: var(--omr-red);
+    font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+    font-size: 0.82rem;
+    font-weight: 700;
+    display: grid;
+    place-items: center;
+  }
+  .omr-opt.right,
+  .omr-opt.correct-choice {
+    background: var(--omr-ok-soft) !important;
+    border-color: var(--omr-ok) !important;
+    font-weight: 700;
+  }
+  .omr-opt.right .omr-bubble,
+  .omr-opt.correct-choice .omr-bubble {
+    background: var(--omr-ok) !important;
+    border-color: var(--omr-ok) !important;
+    color: #fff !important;
+  }
+  .omr-opt.wrong,
+  .omr-opt.wrong-choice {
+    background: var(--omr-bad-soft) !important;
+    border-color: var(--omr-bad) !important;
+  }
+  .omr-opt.wrong .omr-bubble,
+  .omr-opt.wrong-choice .omr-bubble {
+    background: var(--omr-bad) !important;
+    border-color: var(--omr-bad) !important;
+    color: #fff !important;
+  }
+
+  /* Verdict, Explanation Box & Action Buttons */
+  .omr-res-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    animation: omrRise 0.18s ease-out;
+  }
+  @keyframes omrRise {
+    from { transform: translateY(4px); opacity: 0.4; }
+    to { transform: none; opacity: 1; }
+  }
+  .omr-verdict {
+    font-weight: 800;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .omr-verdict.ok {
+    color: var(--omr-ok);
+  }
+  .omr-verdict.bad {
+    color: var(--omr-bad);
+  }
+  .omr-ex {
+    font-size: 0.95rem;
+    line-height: 1.75;
+    background: var(--omr-chip);
+    border-radius: 8px;
+    padding: 13px 15px;
+    color: var(--omr-ink);
+    overflow-wrap: break-word;
+  }
+  .omr-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .omr-btn {
+    font: inherit;
+    font-size: 0.92rem;
+    font-weight: 700;
+    padding: 9px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--omr-line);
+    background: var(--omr-sheet);
+    color: var(--omr-ink);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.14s;
+  }
+  .omr-btn:hover:not([disabled]) {
+    border-color: var(--omr-ink);
+  }
+  .omr-btn.primary {
+    background: var(--omr-ink);
+    color: var(--omr-sheet);
+    border-color: var(--omr-ink);
+  }
+  .omr-btn kbd {
+    font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+    font-size: 0.72rem;
+    opacity: 0.65;
+    margin-left: 4px;
+  }
+  .omr-btn[disabled] {
+    opacity: 0.4;
+    cursor: default;
+  }
+
+  /* OMR Question Number Navigator Grid (.omr-nav-panel / .omr-exnavs) */
+  .omr-side-card {
+    background: var(--omr-sheet);
+    border: 1px solid var(--omr-line);
+    border-radius: 10px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .omr-side-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 13.5px;
+    font-weight: 800;
+    color: var(--omr-ink);
+  }
+  .omr-exnavs {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(34px, 1fr));
+    gap: 5px;
+    max-height: 220px;
+    overflow-y: auto;
+    padding: 2px;
+  }
+  .omr-exnav {
+    font: inherit;
+    font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 0;
+    border-radius: 5px;
+    border: 1px solid var(--omr-line);
+    background: var(--omr-sheet);
+    color: var(--omr-muted);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.12s;
+  }
+  .omr-exnav:hover {
+    border-color: var(--omr-red);
+    color: var(--omr-ink);
+  }
+  .omr-exnav.ok {
+    background: var(--omr-ok-soft);
+    color: var(--omr-ok);
+    border-color: var(--omr-ok);
+    font-weight: 700;
+  }
+  .omr-exnav.bad {
+    background: var(--omr-bad-soft);
+    color: var(--omr-bad);
+    border-color: var(--omr-bad);
+    font-weight: 700;
+  }
+  .omr-exnav.now {
+    outline: 2px solid var(--omr-ink);
+    outline-offset: 1px;
+    color: var(--omr-ink);
+    font-weight: 800;
+  }
+
+  /* 4-Color Mastery Bar (.omr-mastery) */
+  .omr-mastery {
+    background: var(--omr-sheet);
+    border: 1px solid var(--omr-line);
+    border-radius: 10px;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .omr-mbar {
+    display: flex;
+    height: 9px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: var(--omr-chip);
+  }
+  .omr-mbar i {
+    display: block;
+    height: 100%;
+    transition: width 0.25s ease;
+  }
+  .omr-mbar .m-easy { background: var(--omr-ok); }
+  .omr-mbar .m-again { background: var(--omr-bad); }
+  .omr-mbar .m-new { background: var(--omr-chip); }
+  .omr-mleg {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    font-size: 12.5px;
+    color: var(--omr-muted);
+    align-items: center;
+  }
+  .omr-mleg .sw {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 2px;
+    margin-right: 5px;
+  }
+  .omr-mleg .sw.m-easy { background: var(--omr-ok); }
+  .omr-mleg .sw.m-again { background: var(--omr-bad); }
+  .omr-mleg .sw.m-new { background: var(--omr-line); }
+  .omr-mleg b {
+    color: var(--omr-ink);
+    font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  }
+
+  /* Law Mode OMR Sheet & Shared Utility Classes */
+  .omr-sheet.oxitem,
+  .omr-sheet.card {
+    padding: 20px 24px 24px 64px !important;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    border-radius: 10px !important;
+  }
+  @media (max-width: 540px) {
+    .omr-sheet.oxitem,
+    .omr-sheet.card {
+      padding: 16px 14px 18px 46px !important;
+      gap: 12px;
+    }
+  }
+  .omr-qnum-sub {
+    display: block;
+    font-size: 9.5px;
+    opacity: 0.78;
+    margin-top: 2px;
+    font-weight: 700;
+    color: var(--omr-muted);
+  }
+  .omr-tag.c { background: var(--omr-red-soft); color: var(--omr-red); }
+  .omr-tag.p { background: var(--omr-ok-soft); color: var(--omr-ok); }
+  .omr-tag.r { background: var(--omr-bad-soft); color: var(--omr-bad); }
+  .omr-chk {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--omr-muted);
+    cursor: pointer;
+    user-select: none;
+  }
+  .omr-chk input[type="checkbox"] {
+    accent-color: var(--omr-red);
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+  }
+  .omr-kbd-hint {
+    font-size: 12.5px;
+    color: var(--omr-muted);
+  }
+  @media (hover: none) {
+    .omr-kbd-hint { display: none !important; }
+  }
+  .sci-view-switch {
+    display: inline-flex;
+    background: var(--omr-chip);
+    padding: 3px;
+    border-radius: 999px;
+    gap: 2px;
+  }
+  .sci-view-btn {
+    border: none;
+    background: transparent;
+    color: var(--omr-muted);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .sci-view-btn.active {
+    background: var(--omr-ink);
+    color: var(--omr-sheet);
+  }
+  .omr-side-card h3 {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13.5px;
+    font-weight: 800;
+    color: var(--omr-ink);
+  }
+  .omr-exnav.cur {
+    outline: 2px solid var(--omr-ink);
+    outline-offset: 1px;
+    color: var(--omr-ink);
+    font-weight: 800;
+  }
+  .omr-mlabel {
+    font-size: 12.5px;
+    font-weight: 800;
+    color: var(--omr-ink);
+  }
+  .omr-mbar span {
+    display: block;
+    height: 100%;
+    transition: width 0.25s ease;
+  }
+  .omr-mbar span.m0 { background: var(--omr-chip); }
+  .omr-mbar span.m1 { background: var(--omr-bad); }
+  .omr-mbar span.m2 { background: #f59e0b; }
+  .omr-mbar span.m3 { background: var(--omr-ok); }
+  .omr-mlegend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    font-size: 12.5px;
+    color: var(--omr-muted);
+    align-items: center;
+  }
+  .omr-mlegend i {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 2px;
+    margin-right: 5px;
+  }
+  .omr-mlegend i.d0 { background: var(--omr-line); }
+  .omr-mlegend i.d1 { background: var(--omr-bad); }
+  .omr-mlegend i.d3 { background: var(--omr-ok); }
+  .omr-tbar > div {
+    height: 100%;
+    background: var(--omr-red);
+    transition: width 0.05s linear;
+  }
+  html, body {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+  .exam-split-container,
+  .exam-split-left,
+  .exam-split-right,
+  .sci-stage-grid,
+  .sci-stage-main,
+  .sci-stage-side,
+  .omr-sheet {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  @media (max-width: 640px) {
+    .omr-kbd-hint,
+    .omr-keyhint {
+      display: none !important;
+    }
+    .omr-oxb {
+      padding: 13px 8px;
+    }
+    .omr-oxb b {
+      font-size: 1.75rem;
+    }
+  }
+
 </style>
 
 </head>
@@ -3871,8 +4672,8 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
 
 
 
-  // ==========================================
-// NATURAL SCIENCE CLIENT MODULE
+// ==========================================
+// NATURAL SCIENCE CLIENT MODULE (OMR Single-Question & Wide Split View)
 // ==========================================
 
 var SCIENCE = (function(){
@@ -3902,12 +4703,27 @@ var sciState = loadJson(SCI_STATE_KEY, {
   chFilter: 'all',
   conceptIdFilter: '',
   shown: 20,
+  qIdx: 0,
+  wrongIdx: 0,
+  viewMode: 'single', // 'single' (OMR 각 문제별) | 'list' (목록형)
+  timer: false,
+  autoNext: false,
   conceptSearch: '',
   conceptChFilter: 'all'
 });
 if (!sciState.shown || sciState.shown < 20) sciState.shown = 20;
+if (!sciState.viewMode) sciState.viewMode = 'single';
+if (typeof sciState.qIdx !== 'number' || sciState.qIdx < 0) sciState.qIdx = 0;
+if (typeof sciState.wrongIdx !== 'number' || sciState.wrongIdx < 0) sciState.wrongIdx = 0;
 
 var sciRetrying = {}; // in-memory retry tracking { [qid]: true }
+var sciTimerHandle = null;
+var sciAutoNextHandle = null;
+
+function clearSciTimers(){
+  if(sciTimerHandle){ clearTimeout(sciTimerHandle); sciTimerHandle = null; }
+  if(sciAutoNextHandle){ clearTimeout(sciAutoNextHandle); sciAutoNextHandle = null; }
+}
 
 function renderMath(container){
   if(typeof renderMathInElement === 'function' && container){
@@ -3985,10 +4801,21 @@ function getConceptTitle(subj, cid){
   return cid;
 }
 
+function getConceptById(subj, cid){
+  var sData = SCIENCE[subj];
+  if(sData && sData.concepts){
+    for(var i=0; i<sData.concepts.length; i++){
+      if(sData.concepts[i].id === cid) return sData.concepts[i];
+    }
+  }
+  return null;
+}
+
 // ── DOMAIN SWITCHER SETUP ──
 var domainBtn = document.getElementById('domain-btn');
 if(domainBtn){
   domainBtn.addEventListener('click', function(){
+    clearSciTimers();
     domainMode = (domainMode === 'law') ? 'science' : 'law';
     saveJson(DOMAIN_KEY, domainMode);
     render();
@@ -4001,6 +4828,7 @@ if(domainBtn){
   var btn = document.getElementById('sci-mode-' + t);
   if(btn){
     btn.addEventListener('click', function(){
+      clearSciTimers();
       sciState.tab = t;
       saveJson(SCI_STATE_KEY, sciState);
       render();
@@ -4027,10 +4855,13 @@ function renderScienceTabs(){
   sciTabsEl.innerHTML = html;
   sciTabsEl.querySelectorAll('.tab').forEach(function(btn){
     btn.addEventListener('click', function(){
+      clearSciTimers();
       sciState.subj = this.getAttribute('data-sci-subj');
       sciState.chFilter = 'all';
       sciState.conceptIdFilter = '';
       sciState.shown = 20;
+      sciState.qIdx = 0;
+      sciState.wrongIdx = 0;
       sciState.conceptChFilter = 'all';
       saveJson(SCI_STATE_KEY, sciState);
       render();
@@ -4040,6 +4871,7 @@ function renderScienceTabs(){
 
 // ── SCIENCE MAIN RENDER DISPATCHER ──
 function renderScienceMode(){
+  clearSciTimers();
   var domainBtn = document.getElementById('domain-btn');
   if(domainBtn){
     domainBtn.textContent = '🏛️ 법령 모드';
@@ -4101,11 +4933,105 @@ function updateSciBarStatus(subj){
     '<span>정답 <b style="color:#059669">' + correctCount + '</b>개</span>';
 }
 
+function renderSciMasteryHtml(qs){
+  var cnt = { new: 0, again: 0, easy: 0 };
+  qs.forEach(function(q){
+    var rec = sciLog[q.id];
+    if(!rec) cnt.new++;
+    else if(rec.correct) cnt.easy++;
+    else cnt.again++;
+  });
+  var tot = qs.length || 1;
+  var pEasy = (cnt.easy / tot * 100).toFixed(1);
+  var pAgain = (cnt.again / tot * 100).toFixed(1);
+  var pNew = (cnt.new / tot * 100).toFixed(1);
+
+  return '<div class="omr-mastery">' +
+    '<div class="omr-mbar">' +
+      '<i class="m-easy" style="width:' + pEasy + '%"></i>' +
+      '<i class="m-again" style="width:' + pAgain + '%"></i>' +
+      '<i class="m-new" style="width:' + pNew + '%"></i>' +
+    '</div>' +
+    '<div class="omr-mleg">' +
+      '<span><i class="sw m-new"></i>미학습 <b>' + cnt.new + '</b></span>' +
+      '<span><i class="sw m-again"></i>Again · 오답 <b>' + cnt.again + '</b></span>' +
+      '<span><i class="sw m-easy"></i>Easy · 정답 <b>' + cnt.easy + '</b></span>' +
+    '</div>' +
+  '</div>';
+}
+
+function renderSciSidePanelHtml(subj, qs, curIdx, q, isWrongTab){
+  var navBtns = qs.map(function(item, idx){
+    var rec = sciLog[item.id];
+    var cls = 'omr-exnav';
+    if(idx === curIdx) cls += ' now';
+    if(rec && !sciRetrying[item.id]){
+      cls += rec.correct ? ' ok' : ' bad';
+    }
+    return '<button type="button" class="' + cls + '" data-sci-jump="' + idx + '" title="' + item.yr + '년 ' + item.r + '회 ' + item.q + '번 (' + esc(item.c) + ')">' + (idx + 1) + '</button>';
+  }).join('');
+
+  var html = '<aside class="sci-stage-side">';
+  // 1. OMR Navigator Card
+  html += '<div class="omr-side-card">';
+  html += '  <div class="omr-side-head">';
+  html += '    <span>🧭 OMR 문항 번호판 (' + (curIdx + 1) + ' / ' + qs.length + ')</span>';
+  if(!isWrongTab){
+    html += '    <button type="button" class="sci-btn-outline" id="sci-pick-unsolved-btn" style="padding:3px 9px;font-size:11.5px">⚡ 미풀이/오답 추천</button>';
+  }
+  html += '  </div>';
+  html += '  <div class="omr-exnavs">' + navBtns + '</div>';
+  html += '  <div style="display:flex;gap:6px">';
+  html += '    <button type="button" class="omr-btn" style="flex:1;justify-content:center;padding:7px 10px;font-size:12.5px" id="sci-side-prev"' + (curIdx <= 0 ? ' disabled' : '') + '>← 이전</button>';
+  html += '    <button type="button" class="omr-btn primary" style="flex:1;justify-content:center;padding:7px 10px;font-size:12.5px" id="sci-side-next"' + (curIdx >= qs.length - 1 ? ' disabled' : '') + '>다음 →</button>';
+  html += '  </div>';
+  html += '</div>';
+
+  // 2. Linked Core Concepts Card
+  var linkedConcepts = [];
+  if(q && q.c_ids && q.c_ids.length){
+    q.c_ids.forEach(function(cid){
+      var cObj = getConceptById(subj, cid);
+      if(cObj) linkedConcepts.push(cObj);
+    });
+  }
+  if(linkedConcepts.length === 0 && q && q.c){
+    var sData = SCIENCE[subj] || {};
+    linkedConcepts = (sData.concepts || []).filter(function(c){ return c.ch === q.c; }).slice(0, 2);
+  }
+
+  html += '<div class="omr-side-card">';
+  html += '  <div class="omr-side-head">';
+  html += '    <span>📖 연계 핵심 개념 & 공식</span>';
+  html += '    <span class="sci-tag chapter">' + esc(q ? q.c : subj) + '</span>';
+  html += '  </div>';
+  if(linkedConcepts.length === 0){
+    html += '  <div style="font-size:12.5px;color:var(--omr-muted)">이 문항에 직접 연결된 요약 공식 카드가 없습니다.</div>';
+  } else {
+    linkedConcepts.forEach(function(c){
+      html += '  <div style="border-top:1px dashed var(--omr-line);padding-top:10px;display:flex;flex-direction:column;gap:6px">';
+      html += '    <div style="font-weight:800;font-size:13.5px;color:var(--accent)">' + esc(c.title) + '</div>';
+      html += '    <div class="concept-body" style="padding:10px 12px;font-size:12.5px">';
+      (c.body || []).slice(0, 4).forEach(function(bLine){
+        html += formatConceptLine(bLine);
+      });
+      html += '    </div>';
+      html += '  </div>';
+    });
+  }
+  html += '</div>';
+  html += '</aside>';
+  return html;
+}
+
 // ── 1. 5지선다 기출 풀이 (MCQ) ──
 function renderSciMcq(){
   var subj = sciState.subj;
   var sData = SCIENCE[subj] || { questions: [], chapters: [], rounds: [] };
   var qs = getFilteredSciQuestions(subj);
+
+  if(sciState.qIdx >= qs.length) sciState.qIdx = Math.max(0, qs.length - 1);
+  if(sciState.qIdx < 0) sciState.qIdx = 0;
 
   var solvedCount = 0;
   var correctCount = 0;
@@ -4144,6 +5070,10 @@ function renderSciMcq(){
   html += '    </select>';
 
   html += '    <button type="button" id="sci-retry-round-btn" class="sci-btn-outline" title="현재 필터된 문항 다시 풀기">🔄 현재 목록 다시 풀기</button>';
+  html += '    <div class="omr-view-switch">';
+  html += '      <button type="button" class="omr-view-btn' + (sciState.viewMode === 'single' ? ' active' : '') + '" data-sci-view="single">🎯 각 문제별 (OMR)</button>';
+  html += '      <button type="button" class="omr-view-btn' + (sciState.viewMode === 'list' ? ' active' : '') + '" data-sci-view="list">📋 전체 목록</button>';
+  html += '    </div>';
   html += '  </div>';
 
   html += '  <div class="sci-bar-status" id="sci-mcq-status">';
@@ -4153,22 +5083,36 @@ function renderSciMcq(){
   html += '  </div>';
   html += '</div>';
 
-  var limit = sciState.shown || 20;
-  var shownQs = qs.slice(0, limit);
-
-  // Questions container
-  html += '<div class="sci-qs-list">';
   if(qs.length === 0){
     html += '<div class="sci-empty">해당 조건에 일치하는 기출문제가 없습니다.</div>';
+  } else if(sciState.viewMode === 'single'){
+    var curQ = qs[sciState.qIdx];
+    html += '<div class="sci-stage-grid">';
+    html += '  <div class="sci-stage-main">';
+    html += '    <div class="omr-top-controls">';
+    html += '      <div class="omr-toggles">';
+    html += '        <label class="omr-toggle-lbl"><input type="checkbox" id="sci-opt-timer"' + (sciState.timer ? ' checked' : '') + '> 90초 타이머</label>';
+    html += '        <label class="omr-toggle-lbl"><input type="checkbox" id="sci-opt-auto"' + (sciState.autoNext ? ' checked' : '') + '> 맞히면 자동으로 다음</label>';
+    html += '      </div>';
+    html += '      <div class="omr-keyhint">키보드: 1~5 선택 · Enter/Space 다음 · ←/→ 이전/다음</div>';
+    html += '    </div>';
+    html += renderSciQuestionCard(subj, curQ, sciState.qIdx, qs.length);
+    html += renderSciMasteryHtml(qs);
+    html += '  </div>';
+    html += renderSciSidePanelHtml(subj, qs, sciState.qIdx, curQ, false);
+    html += '</div>';
   } else {
-    shownQs.forEach(function(q){
-      html += renderSciQuestionCard(subj, q);
+    var limit = sciState.shown || 20;
+    var shownQs = qs.slice(0, limit);
+    html += '<div class="sci-qs-list">';
+    shownQs.forEach(function(q, idx){
+      html += renderSciQuestionCard(subj, q, idx, qs.length);
     });
     if(qs.length > shownQs.length){
       html += '<button type="button" id="sci-more-btn" class="sci-more-btn">더 보기 (' + shownQs.length + ' / ' + qs.length + '문항 표시 중 · +20문항)</button>';
     }
+    html += '</div>';
   }
-  html += '</div>';
 
   area.innerHTML = html;
 
@@ -4178,6 +5122,7 @@ function renderSciMcq(){
     clearCidBtn.addEventListener('click', function(){
       sciState.conceptIdFilter = '';
       sciState.shown = 20;
+      sciState.qIdx = 0;
       saveJson(SCI_STATE_KEY, sciState);
       render();
     });
@@ -4187,6 +5132,7 @@ function renderSciMcq(){
     rSel.addEventListener('change', function(){
       sciState.roundFilter = this.value;
       sciState.shown = 20;
+      sciState.qIdx = 0;
       saveJson(SCI_STATE_KEY, sciState);
       render();
     });
@@ -4196,6 +5142,7 @@ function renderSciMcq(){
     cSel.addEventListener('change', function(){
       sciState.chFilter = this.value;
       sciState.shown = 20;
+      sciState.qIdx = 0;
       saveJson(SCI_STATE_KEY, sciState);
       render();
     });
@@ -4203,10 +5150,10 @@ function renderSciMcq(){
   var retryBtn = document.getElementById('sci-retry-round-btn');
   if(retryBtn){
     retryBtn.addEventListener('click', function(){
-      if(confirm('현재 표시된 ' + qs.length + '문항을 모두 다시 푸시겠습니까?')){
-        qs.forEach(function(q){ sciRetrying[q.id] = true; });
-        render();
-      }
+      qs.forEach(function(q){ sciRetrying[q.id] = true; });
+      sciState.qIdx = 0;
+      saveJson(SCI_STATE_KEY, sciState);
+      render();
     });
   }
   var moreBtn = document.getElementById('sci-more-btn');
@@ -4218,106 +5165,238 @@ function renderSciMcq(){
     });
   }
 
-  bindSciCardEvents(area, subj);
+  bindSciStageEvents(area, subj, qs, false);
+  bindSciCardEvents(area, subj, qs, false);
+  startSciQuestionTimerIfNeeded(subj, qs, false);
 }
 
-function renderSciQuestionCard(subj, q){
+function renderSciQuestionCard(subj, q, idx, totalLen){
   var rec = sciLog[q.id];
   var isRetrying = !!sciRetrying[q.id];
   var isAnswered = (rec && !isRetrying);
+  var qNumStr = (typeof idx === 'number') ? String(idx + 1).padStart(3, '0') : String(q.q).padStart(2, '0');
+  var subNumStr = (typeof idx === 'number' && totalLen) ? ((idx + 1) + '/' + totalLen) : '';
+
+  var mstClass = !rec ? 'm-new' : (rec.correct ? 'm-easy' : 'm-again');
+  var mstLabel = !rec ? '미학습' : (rec.correct ? 'Easy · 정답' : 'Again · 오답');
 
   var cardHtml = '';
-  cardHtml += '<div class="sci-card" id="card-' + q.id + '">';
-  
-  // Tags
-  cardHtml += '  <div class="sci-q-head">';
-  cardHtml += '    <div class="sci-q-tags">';
-  cardHtml += '      <span class="sci-tag round">' + q.yr + '년 제' + q.r + '회 ' + subj + ' ' + q.q + '번</span>';
-  cardHtml += '      <span class="sci-tag chapter">' + esc(q.c) + '</span>';
-  if(q.t) cardHtml += '      <span class="sci-tag type">' + esc(q.t) + '</span>';
+  cardHtml += '<section class="omr-sheet sci-card" id="card-' + q.id + '" data-qid="' + q.id + '">';
+  cardHtml += '  <div class="omr-qnum">' + qNumStr + (subNumStr ? '<div style="font-size:9.5px;opacity:.75;margin-top:2px">' + subNumStr + '</div>' : '') + '</div>';
+  cardHtml += '  <div class="omr-sheet-in">';
+
+  // Meta bar
+  cardHtml += '    <div class="omr-meta sci-q-head" style="border-bottom:0;padding-bottom:0">';
+  cardHtml += '      <div class="omr-meta-left sci-q-tags">';
+  cardHtml += '        <span class="omr-tag">5지선다</span>';
+  cardHtml += '        <span class="omr-chl"><i class="omr-dot"></i>' + esc(subj) + ' · ' + esc(q.c) + '</span>';
+  cardHtml += '        <span class="sci-tag round">' + q.yr + '년 제' + q.r + '회 ' + subj + ' ' + q.q + '번</span>';
+  if(q.t) cardHtml += '        <span class="sci-tag type">' + esc(q.t) + '</span>';
+  cardHtml += '        <span class="omr-mst ' + mstClass + '">' + mstLabel + '</span>';
   if(isAnswered){
-    cardHtml += '      <span class="sci-tag ' + (rec.correct ? 'correct' : 'wrong') + '">' +
+    cardHtml += '        <span class="sci-tag ' + (rec.correct ? 'correct' : 'wrong') + '">' +
                 (rec.correct ? '✅ 맞힘' : '❌ 틀림 (내 선택: ' + ['①','②','③','④','⑤'][rec.pick - 1] + ')') + '</span>';
   } else if(isRetrying){
-    cardHtml += '      <span class="sci-tag retrying">🔄 다시 푸는 중</span>';
+    cardHtml += '        <span class="sci-tag retrying">🔄 다시 푸는 중</span>';
   }
+  cardHtml += '      </div>';
   cardHtml += '    </div>';
-  cardHtml += '  </div>';
+
+  // Timer bar (when timer enabled and unanswered)
+  if(sciState.viewMode === 'single' && sciState.timer && !isAnswered){
+    cardHtml += '    <div class="omr-tbar" aria-hidden="true"><i id="sci-tbar-fill" style="animation-duration:90s"></i></div>';
+  }
 
   // Stem
-  cardHtml += '  <div class="sci-q-stem">' + formatMathText(q.s) + '</div>';
+  cardHtml += '    <div class="sci-q-stem omr-qtext">' + formatMathText(q.s) + '</div>';
 
   // Figure
   if(q.fig){
-    cardHtml += '  <div class="sci-q-fig">';
-    cardHtml += '    <img src="https://quiz-sapiens.pages.dev/figures/' + encodeURIComponent(q.fig) + '" alt="문제 그림" loading="lazy">';
-    cardHtml += '  </div>';
+    cardHtml += '    <div class="sci-q-fig">';
+    cardHtml += '      <img src="https://quiz-sapiens.pages.dev/figures/' + encodeURIComponent(q.fig) + '" alt="문제 그림" loading="lazy">';
+    cardHtml += '    </div>';
   }
 
   // Box
   if(q.b && q.b.length > 0){
-    cardHtml += '  <div class="sci-q-box">';
-    cardHtml += '    <div class="sci-box-title">&lt;보 기&gt;</div>';
+    cardHtml += '    <div class="sci-q-box">';
+    cardHtml += '      <div class="sci-box-title">&lt;보 기&gt;</div>';
     q.b.forEach(function(bItem){
-      cardHtml += '    <div class="sci-box-item">' + formatMathText(bItem) + '</div>';
+      cardHtml += '      <div class="sci-box-item">' + formatMathText(bItem) + '</div>';
     });
-    cardHtml += '  </div>';
+    cardHtml += '    </div>';
   }
 
-  // 5 Choices
-  var numIcons = ['①','②','③','④','⑤'];
-  cardHtml += '  <div class="sci-choices" data-qid="' + q.id + '">';
-  (q.ch || []).forEach(function(cText, idx){
-    var cNum = idx + 1;
+  // 5 Choices (OMR Bubble Options)
+  cardHtml += '    <div class="sci-choices omr-opts" data-qid="' + q.id + '">';
+  (q.ch || []).forEach(function(cText, cIdx){
+    var cNum = cIdx + 1;
     var stateClass = '';
     if(isAnswered){
-      if(cNum === q.a) stateClass = ' choice-answer';
-      else if(rec && rec.pick === cNum && !rec.correct) stateClass = ' choice-wrong-pick';
+      if(cNum === q.a) stateClass = ' choice-answer right';
+      else if(rec && rec.pick === cNum && !rec.correct) stateClass = ' choice-wrong-pick wrong';
     }
-    cardHtml += '    <button type="button" class="sci-choice-btn' + stateClass + '" data-qid="' + q.id + '" data-choice="' + cNum + '"' + (isAnswered ? ' disabled' : '') + '>';
-    cardHtml += '      <span class="choice-num">' + numIcons[idx] + '</span>';
-    cardHtml += '      <span class="choice-content">';
+    cardHtml += '      <button type="button" class="sci-choice-btn omr-opt' + stateClass + '" data-qid="' + q.id + '" data-choice="' + cNum + '"' + (isAnswered ? ' disabled' : '') + '>';
+    cardHtml += '        <span class="omr-bubble choice-num">' + cNum + '</span>';
+    cardHtml += '        <span class="choice-content">';
     if(cText) cardHtml += formatMathText(cText);
-    if(q.ci && q.ci[idx]){
-      cardHtml += '      <img src="https://quiz-sapiens.pages.dev/figures/' + encodeURIComponent(q.ci[idx]) + '" class="choice-img" alt="선지 그림" loading="lazy">';
+    if(q.ci && q.ci[cIdx]){
+      cardHtml += '        <img src="https://quiz-sapiens.pages.dev/figures/' + encodeURIComponent(q.ci[cIdx]) + '" class="choice-img" alt="선지 그림" loading="lazy">';
     }
-    cardHtml += '      </span>';
-    cardHtml += '    </button>';
+    cardHtml += '        </span>';
+    cardHtml += '      </button>';
   });
-  cardHtml += '  </div>';
+  cardHtml += '    </div>';
 
-  // Explanation
+  // Verdict & Explanation
+  var numIcons = ['①','②','③','④','⑤'];
   if(isAnswered){
-    cardHtml += '  <div class="sci-explanation ' + (rec.correct ? 'expl-correct' : 'expl-wrong') + '">';
-    cardHtml += '    <div class="expl-header">';
-    cardHtml += '      <span class="expl-badge">정답: ' + numIcons[q.a - 1] + '</span>';
-    cardHtml += '      <button type="button" class="btn-retry-q" data-qid="' + q.id + '">🔄 다시 풀기</button>';
-    cardHtml += '    </div>';
-    cardHtml += '    <div class="expl-body">' + formatExplanationText(q.e) + '</div>';
+    cardHtml += '    <div class="sci-explanation omr-res-wrap ' + (rec.correct ? 'expl-correct' : 'expl-wrong') + '">';
+    cardHtml += '      <div class="omr-verdict ' + (rec.correct ? 'ok' : 'bad') + '">';
+    cardHtml += '        <span>' + (rec.correct ? '정답입니다! (' + numIcons[q.a - 1] + ')' : '오답 · 정답은 ' + numIcons[q.a - 1] + '번입니다') + '</span>';
+    cardHtml += '        <span class="expl-badge">정답: ' + numIcons[q.a - 1] + '</span>';
+    cardHtml += '      </div>';
+    cardHtml += '      <div class="omr-ex expl-body">' + formatExplanationText(q.e) + '</div>';
     if(q.ef){
-      cardHtml += '    <div class="expl-fig">';
-      cardHtml += '      <img src="https://quiz-sapiens.pages.dev/figures/' + encodeURIComponent(q.ef) + '" alt="해설 그림" loading="lazy">';
-      cardHtml += '    </div>';
+      cardHtml += '      <div class="expl-fig">';
+      cardHtml += '        <img src="https://quiz-sapiens.pages.dev/figures/' + encodeURIComponent(q.ef) + '" alt="해설 그림" loading="lazy">';
+      cardHtml += '      </div>';
     }
     if(q.c_ids && q.c_ids.length > 0){
-      cardHtml += '    <div class="expl-concepts">';
-      cardHtml += '      <span class="expl-concepts-label">💡 핵심 개념:</span>';
+      cardHtml += '      <div class="expl-concepts">';
+      cardHtml += '        <span class="expl-concepts-label">💡 핵심 개념:</span>';
       q.c_ids.forEach(function(cid){
-        cardHtml += '      <button type="button" class="btn-concept-link" data-cid="' + cid + '" data-subj="' + subj + '">' + esc(getConceptTitle(subj, cid)) + '</button>';
+        cardHtml += '        <button type="button" class="btn-concept-link" data-cid="' + cid + '" data-subj="' + subj + '">' + esc(getConceptTitle(subj, cid)) + '</button>';
       });
-      cardHtml += '    </div>';
+      cardHtml += '      </div>';
     }
-    cardHtml += '  </div>';
+    cardHtml += '    </div>';
   }
 
-  cardHtml += '</div>';
+  // OMR Action Bar (Prev / Next / Retry)
+  if(sciState.viewMode === 'single'){
+    cardHtml += '    <div class="omr-actions">';
+    cardHtml += '      <button type="button" class="omr-btn" data-sci-nav="prev"' + (idx <= 0 ? ' disabled' : '') + '>← 이전 문제</button>';
+    cardHtml += '      <button type="button" class="omr-btn primary" data-sci-nav="next"' + (totalLen && idx >= totalLen - 1 ? ' disabled' : '') + '>다음 문제 <kbd>Enter</kbd></button>';
+    if(isAnswered){
+      cardHtml += '      <button type="button" class="omr-btn btn-retry-q" data-qid="' + q.id + '">🔄 다시 풀기</button>';
+    }
+    cardHtml += '    </div>';
+  } else if(isAnswered){
+    cardHtml += '    <div class="omr-actions">';
+    cardHtml += '      <button type="button" class="omr-btn btn-retry-q" data-qid="' + q.id + '">🔄 다시 풀기</button>';
+    cardHtml += '    </div>';
+  }
+
+  cardHtml += '  </div>';
+  cardHtml += '</section>';
   return cardHtml;
 }
 
-function bindSciCardEvents(container, subj){
+function startSciQuestionTimerIfNeeded(subj, qs, isWrongTab){
+  clearSciTimers();
+  if(sciState.viewMode !== 'single' || !sciState.timer || !qs || !qs.length) return;
+  var curIdx = isWrongTab ? sciState.wrongIdx : sciState.qIdx;
+  var q = qs[curIdx];
+  if(!q) return;
+  var rec = sciLog[q.id];
+  var isAnswered = (rec && !sciRetrying[q.id]);
+  if(isAnswered) return;
+
+  sciTimerHandle = setTimeout(function(){
+    sciLog[q.id] = { pick: 0, correct: false, ts: Date.now() };
+    delete sciRetrying[q.id];
+    saveJson(SCI_LOG_KEY, sciLog);
+    render();
+  }, 90000);
+}
+
+function bindSciStageEvents(container, subj, qs, isWrongTab){
+  // View switch (single vs list)
+  container.querySelectorAll('[data-sci-view]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      sciState.viewMode = this.getAttribute('data-sci-view');
+      saveJson(SCI_STATE_KEY, sciState);
+      render();
+    });
+  });
+
+  // Timer & AutoNext toggles
+  var timerChk = document.getElementById('sci-opt-timer');
+  if(timerChk){
+    timerChk.addEventListener('change', function(){
+      sciState.timer = this.checked;
+      saveJson(SCI_STATE_KEY, sciState);
+      render();
+    });
+  }
+  var autoChk = document.getElementById('sci-opt-auto');
+  if(autoChk){
+    autoChk.addEventListener('change', function(){
+      sciState.autoNext = this.checked;
+      saveJson(SCI_STATE_KEY, sciState);
+    });
+  }
+
+  // Prev / Next navigation
+  function goIdx(newIdx){
+    if(!qs || !qs.length) return;
+    clearSciTimers();
+    var clamped = Math.max(0, Math.min(qs.length - 1, newIdx));
+    if(isWrongTab) sciState.wrongIdx = clamped;
+    else sciState.qIdx = clamped;
+    saveJson(SCI_STATE_KEY, sciState);
+    render();
+  }
+
+  container.querySelectorAll('[data-sci-nav]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var dir = this.getAttribute('data-sci-nav');
+      var curIdx = isWrongTab ? sciState.wrongIdx : sciState.qIdx;
+      goIdx(dir === 'prev' ? curIdx - 1 : curIdx + 1);
+    });
+  });
+
+  var sidePrev = document.getElementById('sci-side-prev');
+  if(sidePrev) sidePrev.addEventListener('click', function(){
+    var curIdx = isWrongTab ? sciState.wrongIdx : sciState.qIdx;
+    goIdx(curIdx - 1);
+  });
+  var sideNext = document.getElementById('sci-side-next');
+  if(sideNext) sideNext.addEventListener('click', function(){
+    var curIdx = isWrongTab ? sciState.wrongIdx : sciState.qIdx;
+    goIdx(curIdx + 1);
+  });
+
+  container.querySelectorAll('[data-sci-jump]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      goIdx(parseInt(this.getAttribute('data-sci-jump'), 10));
+    });
+  });
+
+  var pickUnsolvedBtn = document.getElementById('sci-pick-unsolved-btn');
+  if(pickUnsolvedBtn){
+    pickUnsolvedBtn.addEventListener('click', function(){
+      var curIdx = isWrongTab ? sciState.wrongIdx : sciState.qIdx;
+      var candidates = [];
+      qs.forEach(function(item, i){
+        if(i !== curIdx && (!sciLog[item.id] || !sciLog[item.id].correct)) candidates.push(i);
+      });
+      if(candidates.length > 0){
+        var pick = candidates[Math.floor(Math.random() * candidates.length)];
+        goIdx(pick);
+      } else if(curIdx + 1 < qs.length){
+        goIdx(curIdx + 1);
+      }
+    });
+  }
+}
+
+function bindSciCardEvents(container, subj, qs, isWrongTab){
   // Choice click
   container.querySelectorAll('.sci-choice-btn').forEach(function(btn){
     btn.addEventListener('click', function(){
+      clearSciTimers();
       var qid = this.getAttribute('data-qid');
       var choiceNum = parseInt(this.getAttribute('data-choice'), 10);
       var sData = SCIENCE[subj] || {};
@@ -4334,14 +5413,30 @@ function bindSciCardEvents(container, subj){
       saveJson(SCI_LOG_KEY, sciLog);
       updateSciBarStatus(subj);
 
-      // Replace card DOM
+      if(sciState.viewMode === 'single'){
+        render();
+        if(isCorrect && sciState.autoNext && qs && qs.length){
+          var curIdx = isWrongTab ? sciState.wrongIdx : sciState.qIdx;
+          if(curIdx + 1 < qs.length){
+            sciAutoNextHandle = setTimeout(function(){
+              if(isWrongTab) sciState.wrongIdx = curIdx + 1;
+              else sciState.qIdx = curIdx + 1;
+              saveJson(SCI_STATE_KEY, sciState);
+              render();
+            }, 1200);
+          }
+        }
+        return;
+      }
+
+      // List mode: replace card DOM in place
       var oldCard = document.getElementById('card-' + qid);
       if(oldCard){
         var tmp = document.createElement('div');
         tmp.innerHTML = renderSciQuestionCard(subj, q);
         var newCard = tmp.firstElementChild;
         oldCard.parentNode.replaceChild(newCard, oldCard);
-        bindSciCardEvents(newCard, subj);
+        bindSciCardEvents(newCard, subj, qs, isWrongTab);
         renderMath(newCard);
       }
     });
@@ -4351,8 +5446,13 @@ function bindSciCardEvents(container, subj){
   container.querySelectorAll('.btn-retry-q').forEach(function(btn){
     btn.addEventListener('click', function(e){
       e.stopPropagation();
+      clearSciTimers();
       var qid = this.getAttribute('data-qid');
       sciRetrying[qid] = true;
+      if(sciState.viewMode === 'single'){
+        render();
+        return;
+      }
       var sData = SCIENCE[subj] || {};
       var q = (sData.questions || []).find(function(it){ return it.id === qid; });
       if(!q) return;
@@ -4363,7 +5463,7 @@ function bindSciCardEvents(container, subj){
         tmp.innerHTML = renderSciQuestionCard(subj, q);
         var newCard = tmp.firstElementChild;
         oldCard.parentNode.replaceChild(newCard, oldCard);
-        bindSciCardEvents(newCard, subj);
+        bindSciCardEvents(newCard, subj, qs, isWrongTab);
         renderMath(newCard);
       }
     });
@@ -4373,6 +5473,7 @@ function bindSciCardEvents(container, subj){
   container.querySelectorAll('.btn-concept-link').forEach(function(btn){
     btn.addEventListener('click', function(e){
       e.stopPropagation();
+      clearSciTimers();
       var cid = this.getAttribute('data-cid');
       var s = this.getAttribute('data-subj') || subj;
       sciState.subj = s;
@@ -4385,6 +5486,67 @@ function bindSciCardEvents(container, subj){
     });
   });
 }
+
+// Keyboard Shortcuts for Science Single-Question Mode
+document.addEventListener('keydown', function(e){
+  if(domainMode !== 'science') return;
+  if(sciState.tab !== 'mcq' && sciState.tab !== 'wrong') return;
+  if(sciState.viewMode !== 'single') return;
+  if(e.metaKey || e.ctrlKey || e.altKey) return;
+  var tag = e.target && e.target.tagName ? e.target.tagName.toUpperCase() : '';
+  if(tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
+  var subj = sciState.subj;
+  var isWrongTab = (sciState.tab === 'wrong');
+  var qs = isWrongTab
+    ? ((SCIENCE[subj] && SCIENCE[subj].questions) || []).filter(function(q){ var r = sciLog[q.id]; return r && !r.correct; })
+    : getFilteredSciQuestions(subj);
+  if(!qs.length) return;
+
+  var curIdx = isWrongTab ? sciState.wrongIdx : sciState.qIdx;
+  var curQ = qs[curIdx];
+  if(!curQ) return;
+  var rec = sciLog[curQ.id];
+  var isAnswered = (rec && !sciRetrying[curQ.id]);
+
+  if(!isAnswered && /^[1-5]$/.test(e.key)){
+    var btn = area.querySelector('.sci-choice-btn[data-choice="' + e.key + '"]');
+    if(btn){
+      e.preventDefault();
+      btn.click();
+    }
+    return;
+  }
+  if(e.key === 'Enter' || e.key === ' '){
+    if(isAnswered && curIdx + 1 < qs.length){
+      e.preventDefault();
+      clearSciTimers();
+      if(isWrongTab) sciState.wrongIdx = curIdx + 1;
+      else sciState.qIdx = curIdx + 1;
+      saveJson(SCI_STATE_KEY, sciState);
+      render();
+    }
+    return;
+  }
+  if(e.key === 'ArrowRight' && curIdx + 1 < qs.length){
+    e.preventDefault();
+    clearSciTimers();
+    if(isWrongTab) sciState.wrongIdx = curIdx + 1;
+    else sciState.qIdx = curIdx + 1;
+    saveJson(SCI_STATE_KEY, sciState);
+    render();
+    return;
+  }
+  if(e.key === 'ArrowLeft' && curIdx > 0){
+    e.preventDefault();
+    clearSciTimers();
+    if(isWrongTab) sciState.wrongIdx = curIdx - 1;
+    else sciState.qIdx = curIdx - 1;
+    saveJson(SCI_STATE_KEY, sciState);
+    render();
+    return;
+  }
+});
 
 // ── 2. 핵심 개념 & 공식 사전 (CONCEPTS) ──
 function renderSciConcepts(){
@@ -4494,6 +5656,7 @@ function renderSciConcepts(){
       sciState.chFilter = 'all';
       sciState.conceptIdFilter = cid;
       sciState.shown = 20;
+      sciState.qIdx = 0;
       saveJson(SCI_STATE_KEY, sciState);
       render();
       window.scrollTo(0, 0);
@@ -4509,20 +5672,28 @@ function renderSciWrong(){
 
   var wrongQs = allQs.filter(function(q){
     var rec = sciLog[q.id];
-    return (rec && !rec.correct);
+    return (rec && !rec.correct) || sciRetrying[q.id];
   });
+
+  if(sciState.wrongIdx >= wrongQs.length) sciState.wrongIdx = Math.max(0, wrongQs.length - 1);
+  if(sciState.wrongIdx < 0) sciState.wrongIdx = 0;
 
   var html = '';
   html += '<div class="sci-bar">';
   html += '  <div class="sci-bar-status" style="border-top:0;padding-top:0">';
   html += '    <span style="font-size:14.5px;font-weight:800">❌ ' + subj + ' 오답 노트: 총 <b>' + wrongQs.length + '</b>문항</span>';
   html += '  </div>';
+  html += '  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">';
   if(wrongQs.length > 0){
-    html += '  <button type="button" id="sci-retry-all-wrong-btn" class="sci-btn-outline sci-btn-danger">⚡ 오답 전 문항 다시 풀기</button>';
+    html += '    <button type="button" id="sci-retry-all-wrong-btn" class="sci-btn-outline sci-btn-danger">⚡ 오답 전 문항 다시 풀기</button>';
   }
+  html += '    <div class="omr-view-switch">';
+  html += '      <button type="button" class="omr-view-btn' + (sciState.viewMode === 'single' ? ' active' : '') + '" data-sci-view="single">🎯 각 문제별 (OMR)</button>';
+  html += '      <button type="button" class="omr-view-btn' + (sciState.viewMode === 'list' ? ' active' : '') + '" data-sci-view="list">📋 전체 목록</button>';
+  html += '    </div>';
+  html += '  </div>';
   html += '</div>';
 
-  html += '<div class="sci-qs-list">';
   if(wrongQs.length === 0){
     html += '<div class="sci-empty">';
     html += '  <div style="font-size:36px;margin-bottom:10px">🎉</div>';
@@ -4530,12 +5701,21 @@ function renderSciWrong(){
     html += '  <div style="font-size:13px;margin-bottom:16px">실전 기출문제를 풀면서 틀린 문항이 이곳에 자동으로 기록됩니다.</div>';
     html += '  <button type="button" id="btn-go-latest-sci" class="btn-filter-concept-qs">📝 ' + subj + ' 최신 63회 기출 풀러 가기 →</button>';
     html += '</div>';
+  } else if(sciState.viewMode === 'single'){
+    var curQ = wrongQs[sciState.wrongIdx];
+    html += '<div class="sci-stage-grid">';
+    html += '  <div class="sci-stage-main">';
+    html += renderSciQuestionCard(subj, curQ, sciState.wrongIdx, wrongQs.length);
+    html += '  </div>';
+    html += renderSciSidePanelHtml(subj, wrongQs, sciState.wrongIdx, curQ, true);
+    html += '</div>';
   } else {
-    wrongQs.forEach(function(q){
-      html += renderSciQuestionCard(subj, q);
+    html += '<div class="sci-qs-list">';
+    wrongQs.forEach(function(q, idx){
+      html += renderSciQuestionCard(subj, q, idx, wrongQs.length);
     });
+    html += '</div>';
   }
-  html += '</div>';
 
   area.innerHTML = html;
 
@@ -4543,6 +5723,7 @@ function renderSciWrong(){
   if(retryAllBtn){
     retryAllBtn.addEventListener('click', function(){
       wrongQs.forEach(function(q){ sciRetrying[q.id] = true; });
+      sciState.wrongIdx = 0;
       render();
     });
   }
@@ -4555,12 +5736,14 @@ function renderSciWrong(){
       sciState.chFilter = 'all';
       sciState.conceptIdFilter = '';
       sciState.shown = 20;
+      sciState.qIdx = 0;
       saveJson(SCI_STATE_KEY, sciState);
       render();
     });
   }
 
-  bindSciCardEvents(area, subj);
+  bindSciStageEvents(area, subj, wrongQs, true);
+  bindSciCardEvents(area, subj, wrongQs, true);
 }
 
 // ── 4. 성적 & 취약 단원 (STATS) ──
@@ -4686,6 +5869,7 @@ function renderSciStats(){
       sciState.roundFilter = 'all';
       sciState.conceptIdFilter = '';
       sciState.shown = 20;
+      sciState.qIdx = 0;
       saveJson(SCI_STATE_KEY, sciState);
       render();
       window.scrollTo(0, 0);
@@ -4903,21 +6087,33 @@ function render(){
 
       +'✏️ '+(hasQNote?'메모':'메모작성')+'</button>';
 
-    var body='<section class="card">'+revbar
+    var body='<section class="card omr-sheet">'+revbar
+
+      +'<div class="omr-qnum">'+String(s.idx+1).padStart(3,'0')+'<span class="omr-qnum-sub">'+(s.idx+1)+' / '+items.length+'</span></div>'
 
       +'<div class="meta"><div class="meta-left">'+meta+'</div><div style="display:flex;gap:5px;align-items:center">'+quizNoteBtn+quizBmBtn+'</div></div>'
 
-      +'<div class="question" id="qtext">'+questionHtml(q)+'</div>'
+      +'<div class="question omr-ox-q" id="qtext">'+questionHtml(q)+'</div>'
 
       +examNoteHtml;
 
 
 
-    if(q.type==='mc'||q.type==='compare'||q.type==='ox'){
+    if(q.type==='ox'){
 
-      body+='<div class="opts" id="opts">'+q.options.map(function(o,i){
+      body+='<div class="opts omr-ox-btns" id="opts">'+q.options.map(function(o,i){
 
-        return '<button type="button" class="opt" data-i="'+i+'"><span class="no">'+(i+1)+'</span><span>'+esc(o)+'</span></button>';
+        var isO = (String(o).indexOf('O')>=0 || String(o).indexOf('맞')>=0 || i===0);
+
+        return '<button type="button" class="opt omr-oxb" data-i="'+i+'"><b>'+(isO?'O':'X')+'</b><small>'+esc(o)+' ('+(i+1)+')</small></button>';
+
+      }).join('')+'</div>';
+
+    }else if(q.type==='mc'||q.type==='compare'){
+
+      body+='<div class="opts omr-opts" id="opts">'+q.options.map(function(o,i){
+
+        return '<button type="button" class="opt omr-opt" data-i="'+i+'"><span class="no omr-bubble">'+(i+1)+'</span><span class="omr-opt-txt">'+esc(o)+'</span></button>';
 
       }).join('')+'</div>';
 
@@ -5903,9 +7099,105 @@ function render(){
 
   document.addEventListener('keydown',function(e){
 
-    if(mode==='browse'){
+    if(document.body.classList.contains('domain-science'))return;
 
-      var tag=(e.target&&e.target.tagName)||'';
+    var tag=(e.target&&e.target.tagName)||'';
+
+    if(mode==='exam'){
+
+      if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT')return;
+
+      if(e.ctrlKey||e.altKey||e.metaKey)return;
+
+      if(exam.viewMode!=='list'&&currentExamList.length){
+
+        var eq=currentExamList[exam.idx];
+
+        if(!eq)return;
+
+        var canSolve=(!oxLog[eq.i]||!!examRetrying[eq.i]);
+
+        if((e.key==='o'||e.key==='O'||e.key==='1')&&canSolve){
+
+          e.preventDefault();
+
+          var obtnO=area.querySelector('[data-ox="'+eq.i+'"][data-pick="O"]');
+
+          if(obtnO)obtnO.click();
+
+          return;
+
+        }
+
+        if((e.key==='x'||e.key==='X'||e.key==='2')&&canSolve){
+
+          e.preventDefault();
+
+          var obtnX=area.querySelector('[data-ox="'+eq.i+'"][data-pick="X"]');
+
+          if(obtnX)obtnX.click();
+
+          return;
+
+        }
+
+        if(e.key==='ArrowLeft'){
+
+          e.preventDefault();
+
+          if(canSolve){
+
+            var obtnL=area.querySelector('[data-ox="'+eq.i+'"][data-pick="O"]');
+
+            if(obtnL)obtnL.click();
+
+          }else if(exam.idx>0){
+
+            exam.idx--;saveJson(EXAM_KEY,exam);renderExam();
+
+          }
+
+          return;
+
+        }
+
+        if(e.key==='ArrowRight'){
+
+          e.preventDefault();
+
+          if(canSolve){
+
+            var obtnR=area.querySelector('[data-ox="'+eq.i+'"][data-pick="X"]');
+
+            if(obtnR)obtnR.click();
+
+          }else if(exam.idx<currentExamList.length-1){
+
+            exam.idx++;saveJson(EXAM_KEY,exam);renderExam();
+
+          }
+
+          return;
+
+        }
+
+        if((e.key==='Enter'||e.key===' ')&&exam.idx<currentExamList.length-1){
+
+          e.preventDefault();
+
+          exam.idx++;saveJson(EXAM_KEY,exam);renderExam();
+
+          return;
+
+        }
+
+      }
+
+      return;
+
+    }
+
+    if(mode==='browse'){
 
       if(tag==='INPUT'||tag==='TEXTAREA')return;
 
@@ -7649,9 +8941,19 @@ function render(){
 
   var examRetrying = {};
 
-  // 선지 카드 하나. 조문 화면과 회차 화면이 함께 쓴다.
+  var examTimerInt = null, examAutoNextTo = null;
 
-  function oxItemHtml(q, isActive){
+  function clearExamTimers(){
+
+    if(examTimerInt){ clearInterval(examTimerInt); examTimerInt = null; }
+
+    if(examAutoNextTo){ clearTimeout(examAutoNextTo); examAutoNextTo = null; }
+
+  }
+
+  // 선지 카드 하나. 조문 화면과 회차 화면이 함께 쓴다 (OMR 답안지 스타일).
+
+  function oxItemHtml(q, isActive, idx, totalLen, isSingle){
 
     var rec=oxLog[q.i];
 
@@ -7687,7 +8989,15 @@ function render(){
 
     var trilinkBtn = '<button type="button" class="ox-trilink-badge '+(isActive?'active':'')+'" data-trilink-target="'+esc(q.i)+'" title="근거 조문·판례·메모 연계 보기">🔗 연계</button>';
 
-    var tags='<span class="chip">'+q.r+'회 '+q.q+'번</span>'
+    var masteryPill = !rec
+
+      ? '<span class="omr-tag">미학습</span>'
+
+      : (rec.pick === q.a ? '<span class="omr-tag p">Easy · 정답</span>' : '<span class="omr-tag r">Again · 오답</span>');
+
+    var tags='<span class="omr-tag c">OX</span>'
+
+      +'<span class="chip">'+q.r+'회 '+q.q+'번'+(q.o?'-'+q.o:'')+'</span>'
 
       +(q.p ? '<span class="pill">'+esc(q.p)+'</span>' : '')
 
@@ -7697,7 +9007,9 @@ function render(){
 
       +casesBtns
 
-      +trilinkBtn;
+      +trilinkBtn
+
+      +masteryPill;
 
     var qBody = '';
 
@@ -7715,11 +9027,11 @@ function render(){
 
       qBody = '<div class="ox-scenario"><div class="ox-scenario-title">📋 [사례 사실관계]</div>' + esc(scenarioText) + '</div>'
 
-            + '<div class="oxq"><b>' + esc(questionText) + '</b></div>';
+            + '<div class="omr-ox-q oxq"><b>' + esc(questionText) + '</b></div>';
 
     } else {
 
-      qBody = '<div class="oxq">' + esc(rawText) + '</div>';
+      qBody = '<div class="omr-ox-q oxq">' + esc(rawText) + '</div>';
 
     }
 
@@ -7737,13 +9049,47 @@ function render(){
 
     var noteBtn='<button type="button" class="ox-note-btn '+(isNote?'active':'')+'" data-toggle-note="'+esc(q.i)+'" title="'+(isNote?'나만의 메모 보기/수정':'나만의 메모 작성')+'">✏️ '+(isNote?'메모':'메모작성')+'</button>';
 
-    var body = qBody + '<div class="oxtags"><div class="oxtags-left">' + tags + '</div><div style="display:flex;gap:5px;align-items:center">' + noteBtn + bmBtn + '</div></div>';
+    var numLabel = (typeof idx === 'number' && totalLen)
+
+      ? (String(idx + 1).padStart(3, '0') + '<span class="omr-qnum-sub">' + (idx + 1) + ' / ' + totalLen + '</span>')
+
+      : (String(q.q || 1).padStart(2, '0') + '<span class="omr-qnum-sub">선지 ' + (q.o || 1) + '</span>');
+
+    var body = '<div class="omr-qnum">' + numLabel + '</div>'
+
+      + '<div class="omr-meta oxtags"><div class="oxtags-left">' + tags + '</div><div style="display:flex;gap:5px;align-items:center">' + noteBtn + bmBtn + '</div></div>'
+
+      + qBody;
+
+    if(isSingle && exam.timer && showSolveBtns){
+
+      body += '<div class="omr-tbar"><div id="exam-omr-tfill" style="width:100%"></div></div>';
+
+    }
+
+    var oCls = 'omr-oxb oxbtn', xCls = 'omr-oxb oxbtn';
+
+    if(!showSolveBtns && rec){
+
+      if(q.a === 'O') oCls += ' right';
+
+      else if(rec.pick === 'O') oCls += ' wrong';
+
+      if(q.a === 'X') xCls += ' right';
+
+      else if(rec.pick === 'X') xCls += ' wrong';
+
+    }
+
+    body += '<div class="omr-ox-btns oxbtns">'
+
+      + '<button type="button" class="'+oCls+'" data-ox="'+esc(q.i)+'" data-pick="O"'+(showSolveBtns?'':' disabled')+'><b>O</b><small>맞다 (O / ←)</small></button>'
+
+      + '<button type="button" class="'+xCls+'" data-ox="'+esc(q.i)+'" data-pick="X"'+(showSolveBtns?'':' disabled')+'><b>X</b><small>틀리다 (X / →)</small></button>'
+
+      + '</div>';
 
     if(showSolveBtns){
-
-      body+='<div class="oxbtns"><button type="button" class="oxbtn" data-ox="'+esc(q.i)+'" data-pick="O">O</button>'
-
-        +'<button type="button" class="oxbtn" data-ox="'+esc(q.i)+'" data-pick="X">X</button></div>';
 
       if(isRetrying){
 
@@ -7761,15 +9107,25 @@ function render(){
 
       var right=rec.pick===q.a;
 
-      body+='<div class="oxres '+(right?'ok':'no')+'">'
+      var vMsg = rec.pick === 'TIMEOUT'
 
-        +(right?'맞혔습니다':'틀렸습니다')+' · 이 서술은 '+(q.a==='O'?'맞음':'틀림')
+        ? ('시간 초과 · 정답은 ' + q.a + ' (' + (q.a==='O'?'맞음':'틀림') + ')')
+
+        : ((right?'맞혔습니다':'틀렸습니다')+' · 이 서술은 '+(q.a==='O'?'맞음 (O)':'틀림 (X)'));
+
+      body+='<div class="omr-res-wrap">'
+
+        +'<div class="omr-verdict oxres '+(right?'ok':'bad no')+'">'
+
+        +'<span>'+vMsg+'</span>'
 
         +' <button type="button" class="oxagain" data-again="'+esc(q.i)+'" title="이 문제를 다시 풀어봅니다">🔄 다시 풀기</button></div>'
 
-        +(q.e?'<div class="oxexpl">'+renderExplain(q.e)+'</div>':'')
+        +(q.e?'<div class="omr-ex oxexpl">'+renderExplain(q.e)+'</div>':'')
 
-        +'<div class="oxstem">출처 — '+esc(q.s)+'</div>';
+        +'<div class="oxstem">출처 — '+esc(q.s)+'</div>'
+
+        +'</div>';
 
     }
 
@@ -7811,7 +9167,21 @@ function render(){
 
     body += noteHtml;
 
-    return '<div class="oxitem '+(isActive?'trilink-active':'')+'" data-qid="'+esc(q.i)+'" id="oxitem-'+esc(q.i)+'">'+body+'</div>';
+    if(isSingle){
+
+      body += '<div class="omr-actions">'
+
+        + '<button type="button" class="omr-btn" data-exam-nav="prev"' + (idx <= 0 ? ' disabled' : '') + '>← 이전</button>'
+
+        + '<button type="button" class="omr-btn ' + (!showSolveBtns ? 'primary' : '') + '" data-exam-nav="next"' + (idx >= totalLen - 1 ? ' disabled' : '') + '>다음 <small>Enter</small></button>'
+
+        + '<button type="button" class="omr-btn ghost" id="exam-pick-unsolved" style="margin-left:auto">⚡ 다음 미풀이로</button>'
+
+        + '</div>';
+
+    }
+
+    return '<section class="omr-sheet oxitem '+(isActive?'trilink-active':'')+'" data-qid="'+esc(q.i)+'" id="oxitem-'+esc(q.i)+'">'+body+'</section>';
 
   }
 
@@ -8049,7 +9419,7 @@ function render(){
 
       +(done?'<span class="pill ok">'+done+'개 풀었음</span>':'')+'</div>'
 
-      +'<div class="oxlist">'+page.map(oxItemHtml).join('')+'</div>'
+      +'<div class="oxlist">'+page.map(function(q,idx){return oxItemHtml(q,false,idx,page.length,false);}).join('')+'</div>'
 
       +(shown<list.length
 
@@ -8067,7 +9437,13 @@ function render(){
 
   var examBound=false;
 
-  var exam=loadJson(EXAM_KEY,{law:'특허법',round:null,shown:20,filter:'all',pol:'',kind:''});
+  var currentExamList=[];
+
+  var exam=loadJson(EXAM_KEY,{law:'특허법',round:null,shown:20,filter:'all',pol:'',kind:'',viewMode:'single',idx:0,timer:false,autoNext:false});
+
+  if(!exam.viewMode)exam.viewMode='single';
+
+  if(typeof exam.idx!=='number')exam.idx=0;
 
   function gradeOx(id,pick){
 
@@ -9327,21 +10703,43 @@ function render(){
 
     });
 
+    clearExamTimers();
+
+    currentExamList = list;
+
     var shown=exam.shown||20;
 
     var visibleList = list.slice(0, shown);
+
+    var isSingle = (exam.viewMode !== 'list');
+
+    if(typeof exam.idx !== 'number' || exam.idx < 0) exam.idx = 0;
+
+    if(exam.idx >= list.length) exam.idx = Math.max(0, list.length - 1);
 
 
 
     // Active Q for Tri-Link
 
-    if(!trilinkState.activeId || !visibleList.some(function(q){ return q.i === trilinkState.activeId; })){
+    var activeQ = null;
 
-      trilinkState.activeId = visibleList.length ? visibleList[0].i : null;
+    if(isSingle && list.length){
+
+      activeQ = list[exam.idx];
+
+      trilinkState.activeId = activeQ.i;
+
+    } else {
+
+      if(!trilinkState.activeId || !visibleList.some(function(q){ return q.i === trilinkState.activeId; })){
+
+        trilinkState.activeId = visibleList.length ? visibleList[0].i : null;
+
+      }
+
+      activeQ = visibleList.find(function(q){ return q.i === trilinkState.activeId; }) || null;
 
     }
-
-    var activeQ = visibleList.find(function(q){ return q.i === trilinkState.activeId; }) || null;
 
 
 
@@ -9481,31 +10879,153 @@ function render(){
 
 
 
+    var topControlsHtml = '<div class="omr-top-controls" style="margin-bottom:14px">'
+
+      + '<label class="omr-chk"><input type="checkbox" id="exam-opt-timer" '+(exam.timer?'checked':'')+'> 10초 타이머</label>'
+
+      + '<label class="omr-chk"><input type="checkbox" id="exam-opt-auto" '+(exam.autoNext?'checked':'')+'> 맞히면 자동으로 다음</label>'
+
+      + '<span class="omr-kbd-hint">키보드: <b>O/←</b> 맞다 · <b>X/→</b> 틀리다 · <b>Enter/Space</b> 다음</span>'
+
+      + '<div class="sci-view-switch" style="margin-left:auto">'
+
+      +   '<button type="button" class="sci-view-btn '+(isSingle?'active':'')+'" data-exam-view="single">🎯 각 문제별 (OMR)</button>'
+
+      +   '<button type="button" class="sci-view-btn '+(!isSingle?'active':'')+'" data-exam-view="list">📋 전체 목록 ('+list.length+')</button>'
+
+      + '</div>'
+
+      + '</div>';
+
+
+
     var splitContainerHtml = '';
 
     if(list.length){
 
-      splitContainerHtml = '<div class="exam-split-container '+(trilinkState.enabled?'':'collapsed')+'" id="exam-split-container">'
+      if(isSingle){
 
-        + '<div class="exam-split-left">'
+        var mUnseen = 0, mWrong = 0, mEasy = 0;
 
-        + '<div class="oxlist">'
+        list.forEach(function(item){
 
-        + visibleList.map(function(q){ return oxItemHtml(q, q.i===trilinkState.activeId); }).join('')
+          var r = oxLog[item.i];
 
-        + '</div>'
+          if(!r) mUnseen++;
 
-        + (shown<list.length?'<button type="button" class="oxmore" data-emore="1">더 보기 ('+(list.length-shown)+'건 남음)</button>':'')
+          else if(r.pick === item.a) mEasy++;
 
-        + '</div>'
+          else mWrong++;
 
-        + '<aside class="exam-split-right" id="trilink-panel">'
+        });
 
-        + renderTriLinkContentHtml(activeQ, trilinkState.tab, false)
+        var mTot = list.length || 1;
 
-        + '</aside>'
+        var masteryBarHtml = '<div class="omr-mastery">'
 
-        + '</div>';
+          + '<span class="omr-mlabel">숙련도 · 총 ' + list.length + '지문</span>'
+
+          + '<div class="omr-mbar">'
+
+          +   '<span class="m0" style="width:' + (mUnseen/mTot*100) + '%"></span>'
+
+          +   '<span class="m1" style="width:' + (mWrong/mTot*100) + '%"></span>'
+
+          +   '<span class="m2" style="width:0%"></span>'
+
+          +   '<span class="m3" style="width:' + (mEasy/mTot*100) + '%"></span>'
+
+          + '</div>'
+
+          + '<div class="omr-mlegend">'
+
+          +   '<span><i class="d0"></i>미학습 ' + mUnseen + '</span>'
+
+          +   '<span><i class="d1"></i>오답 ' + mWrong + '</span>'
+
+          +   '<span><i class="d3"></i>정답 ' + mEasy + '</span>'
+
+          + '</div>'
+
+          + '</div>';
+
+        var navGridHtml = '<div class="omr-side-card" style="margin-top:12px">'
+
+          + '<h3><span>🎯 지문 번호 이동 (1 ~ ' + list.length + ')</span><span>' + (exam.idx + 1) + ' / ' + list.length + '</span></h3>'
+
+          + '<div class="omr-exnavs">'
+
+          + list.map(function(item, idx){
+
+              var r = oxLog[item.i];
+
+              var cls = 'omr-exnav';
+
+              if(idx === exam.idx) cls += ' cur';
+
+              if(r) cls += (r.pick === item.a ? ' ok' : ' bad');
+
+              return '<button type="button" class="' + cls + '" data-exam-jump="' + idx + '" title="' + item.r + '회 ' + item.q + '번-' + (item.o||1) + '">' + (idx + 1) + '</button>';
+
+            }).join('')
+
+          + '</div>'
+
+          + '</div>';
+
+        splitContainerHtml = topControlsHtml
+
+          + '<div class="exam-split-container '+(trilinkState.enabled?'':'collapsed')+'" id="exam-split-container">'
+
+          + '<div class="exam-split-left">'
+
+          +   '<div class="oxlist">'
+
+          +     oxItemHtml(activeQ, true, exam.idx, list.length, true)
+
+          +   '</div>'
+
+          +   masteryBarHtml
+
+          +   navGridHtml
+
+          + '</div>'
+
+          + '<aside class="exam-split-right" id="trilink-panel">'
+
+          + renderTriLinkContentHtml(activeQ, trilinkState.tab, false)
+
+          + '</aside>'
+
+          + '</div>';
+
+      } else {
+
+        splitContainerHtml = topControlsHtml
+
+          + '<div class="exam-split-container '+(trilinkState.enabled?'':'collapsed')+'" id="exam-split-container">'
+
+          + '<div class="exam-split-left">'
+
+          + '<div class="oxlist">'
+
+          + visibleList.map(function(q, idx){ return oxItemHtml(q, q.i===trilinkState.activeId, idx, list.length, false); }).join('')
+
+          + '</div>'
+
+          + (shown<list.length?'<button type="button" class="oxmore" data-emore="1">더 보기 ('+(list.length-shown)+'건 남음)</button>':'')
+
+          + '</div>'
+
+          + '<aside class="exam-split-right" id="trilink-panel">'
+
+          + renderTriLinkContentHtml(activeQ, trilinkState.tab, false)
+
+          + '</aside>'
+
+          + '</div>';
+
+      }
 
     } else {
 
@@ -9515,9 +11035,11 @@ function render(){
 
 
 
-    var hasSolvedInList = visibleList.some(function(q){ return !!oxLog[q.i]; });
+    var targetCheckList = isSingle ? list : visibleList;
 
-    var allRetryingInList = hasSolvedInList && visibleList.filter(function(q){ return !!oxLog[q.i]; }).every(function(q){ return !!examRetrying[q.i]; });
+    var hasSolvedInList = targetCheckList.some(function(q){ return !!oxLog[q.i]; });
+
+    var allRetryingInList = hasSolvedInList && targetCheckList.filter(function(q){ return !!oxLog[q.i]; }).every(function(q){ return !!examRetrying[q.i]; });
 
     var retryAllBtnHtml = '';
 
@@ -9589,6 +11111,76 @@ function render(){
 
 
 
+    // Start 10s timer if single mode + timer enabled + unanswered
+
+    if(isSingle && exam.timer && activeQ && (!oxLog[activeQ.i] || examRetrying[activeQ.i])){
+
+      var tStart = Date.now(), tLimit = 10000;
+
+      examTimerInt = setInterval(function(){
+
+        var el = Date.now() - tStart;
+
+        var rem = Math.max(0, 1 - el / tLimit);
+
+        var bar = document.getElementById('exam-omr-tfill');
+
+        if(bar) bar.style.width = (rem * 100) + '%';
+
+        if(rem <= 0){
+
+          clearExamTimers();
+
+          delete examRetrying[activeQ.i];
+
+          oxLog[activeQ.i] = { pick: 'TIMEOUT', t: Date.now() };
+
+          saveJson(OX_KEY, oxLog);
+
+          syncSchedulePush();
+
+          renderExam();
+
+        }
+
+      }, 50);
+
+    }
+
+
+
+    var timerChk = document.getElementById('exam-opt-timer');
+
+    if(timerChk){
+
+      timerChk.addEventListener('change', function(ev){
+
+        exam.timer = !!ev.target.checked;
+
+        saveJson(EXAM_KEY, exam);
+
+        renderExam();
+
+      });
+
+    }
+
+    var autoChk = document.getElementById('exam-opt-auto');
+
+    if(autoChk){
+
+      autoChk.addEventListener('change', function(ev){
+
+        exam.autoNext = !!ev.target.checked;
+
+        saveJson(EXAM_KEY, exam);
+
+      });
+
+    }
+
+
+
     // 처리기는 한 번만 단다. 다시 그릴 때마다 달면 클릭이 여러 번 처리된다.
 
     if(examBound)return;
@@ -9599,9 +11191,75 @@ function render(){
 
       if(mode!=='exam')return;
 
+      var viewBtn = e.target.closest('[data-exam-view]');
+
+      if(viewBtn){
+
+        exam.viewMode = viewBtn.getAttribute('data-exam-view') || 'single';
+
+        saveJson(EXAM_KEY, exam);
+
+        renderExam();
+
+        return;
+
+      }
+
+      var navBtn = e.target.closest('[data-exam-nav]');
+
+      if(navBtn){
+
+        var dir = navBtn.getAttribute('data-exam-nav');
+
+        if(dir === 'prev' && exam.idx > 0){ exam.idx--; saveJson(EXAM_KEY, exam); renderExam(); }
+
+        else if(dir === 'next' && exam.idx < currentExamList.length - 1){ exam.idx++; saveJson(EXAM_KEY, exam); renderExam(); }
+
+        return;
+
+      }
+
+      var jumpBtn = e.target.closest('[data-exam-jump]');
+
+      if(jumpBtn){
+
+        var jIdx = parseInt(jumpBtn.getAttribute('data-exam-jump'), 10);
+
+        if(!isNaN(jIdx)){ exam.idx = jIdx; saveJson(EXAM_KEY, exam); renderExam(); }
+
+        return;
+
+      }
+
+      if(e.target.closest('#exam-pick-unsolved')){
+
+        for(var ui = 1; ui <= currentExamList.length; ui++){
+
+          var candIdx = (exam.idx + ui) % currentExamList.length;
+
+          if(!oxLog[currentExamList[candIdx].i]){
+
+            exam.idx = candIdx;
+
+            saveJson(EXAM_KEY, exam);
+
+            renderExam();
+
+            return;
+
+          }
+
+        }
+
+        return;
+
+      }
+
       if(e.target.closest('#clear-matrix-drill')){
 
         delete exam.matrixDrill;
+
+        exam.idx = 0;
 
         saveJson(EXAM_KEY, exam);
 
@@ -9616,6 +11274,8 @@ function render(){
         delete exam.case;
 
         delete exam.matrixDrill;
+
+        exam.idx = 0;
 
         saveJson(EXAM_KEY, exam);
 
@@ -9787,6 +11447,8 @@ function render(){
 
         exam.shown = 20;
 
+        exam.idx = 0;
+
         saveJson(EXAM_KEY, exam);
 
         render();
@@ -9799,15 +11461,15 @@ function render(){
 
       var lb=e.target.closest('[data-elaw]');
 
-      if(lb){delete exam.case; delete exam.matrixDrill; exam.law=lb.getAttribute('data-elaw');exam.round=null;exam.shown=20;saveJson(EXAM_KEY,exam);render();return;}
+      if(lb){delete exam.case; delete exam.matrixDrill; exam.law=lb.getAttribute('data-elaw');exam.round=null;exam.shown=20;exam.idx=0;saveJson(EXAM_KEY,exam);render();return;}
 
       var pb=e.target.closest('[data-epol]');
 
-      if(pb){exam.pol=pb.getAttribute('data-epol');exam.shown=20;saveJson(EXAM_KEY,exam);render();return;}
+      if(pb){exam.pol=pb.getAttribute('data-epol');exam.shown=20;exam.idx=0;saveJson(EXAM_KEY,exam);render();return;}
 
       var kb=e.target.closest('[data-ekind]');
 
-      if(kb){exam.kind=kb.getAttribute('data-ekind');exam.shown=20;saveJson(EXAM_KEY,exam);render();return;}
+      if(kb){exam.kind=kb.getAttribute('data-ekind');exam.shown=20;exam.idx=0;saveJson(EXAM_KEY,exam);render();return;}
 
       var bmb=e.target.closest('[data-bm]');
 
@@ -9817,7 +11479,7 @@ function render(){
 
       var fb=e.target.closest('[data-efilter]');
 
-      if(fb){delete exam.case; exam.filter=fb.getAttribute('data-efilter');exam.shown=20;saveJson(EXAM_KEY,exam);render();return;}
+      if(fb){delete exam.case; exam.filter=fb.getAttribute('data-efilter');exam.shown=20;exam.idx=0;saveJson(EXAM_KEY,exam);render();return;}
 
       var rb=e.target.closest('[data-eround]');
 
@@ -9833,6 +11495,8 @@ function render(){
 
         exam.shown=20;
 
+        exam.idx=0;
+
         saveJson(EXAM_KEY,exam);
 
         render();
@@ -9845,15 +11509,23 @@ function render(){
 
       if(e.target.closest('#toggle-retry-all')){
 
-        var itemEls = area.querySelectorAll('.oxitem[data-qid]');
+        var curQids = (exam.viewMode !== 'list' && currentExamList.length)
 
-        var curQids = [];
+          ? currentExamList.map(function(q){ return q.i; })
 
-        for(var ii=0; ii<itemEls.length; ii++){
+          : [];
 
-          var qi = itemEls[ii].getAttribute('data-qid');
+        if(!curQids.length){
 
-          if(qi) curQids.push(qi);
+          var itemEls = area.querySelectorAll('.oxitem[data-qid]');
+
+          for(var ii=0; ii<itemEls.length; ii++){
+
+            var qi = itemEls[ii].getAttribute('data-qid');
+
+            if(qi) curQids.push(qi);
+
+          }
 
         }
 
@@ -9885,11 +11557,15 @@ function render(){
 
       if(ob){
 
+        clearExamTimers();
+
         var qid=ob.getAttribute('data-ox');
+
+        var pick=ob.getAttribute('data-pick');
 
         delete examRetrying[qid];
 
-        oxLog[qid]={pick:ob.getAttribute('data-pick'),t:Date.now()};
+        oxLog[qid]={pick:pick,t:Date.now()};
 
         saveJson(OX_KEY,oxLog);
 
@@ -9898,6 +11574,26 @@ function render(){
         trilinkState.activeId=qid;
 
         renderExam();
+
+        if(exam.viewMode !== 'list' && exam.autoNext){
+
+          var answeredQ = currentExamList[exam.idx];
+
+          if(answeredQ && answeredQ.i === qid && pick === answeredQ.a && exam.idx < currentExamList.length - 1){
+
+            examAutoNextTo = setTimeout(function(){
+
+              exam.idx++;
+
+              saveJson(EXAM_KEY, exam);
+
+              renderExam();
+
+            }, 650);
+
+          }
+
+        }
 
         return;
 

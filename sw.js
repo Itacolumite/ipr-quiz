@@ -1,5 +1,5 @@
 // 산업재산권법 & 자연과학 퀴즈 Service Worker (오프라인 지원)
-const CACHE_NAME = 'ipr-quiz-pwa-v53';
+const CACHE_NAME = 'ipr-quiz-pwa-v54';
 const PRECACHE_ASSETS = [
   './',
   './index.html',

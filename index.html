@@ -1537,108 +1537,289 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
   body.dark .mn-modal-card{border-color:#334155;background:#1E293B}
 
   /* ==========================================
-     NATURAL SCIENCE MODE STYLES
+     NATURAL SCIENCE & DOMAIN SWITCHER STYLES
      ========================================== */
-  .domain-toggle-btn {
-    background: linear-gradient(135deg, #1e40af, #2563eb) !important;
-    color: #fff !important;
-    border: 1px solid #60a5fa !important;
-    font-weight: 700 !important;
-    border-radius: 8px !important;
-    padding: 5px 12px !important;
-    font-size: 13px !important;
-    cursor: pointer !important;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-    transition: all 0.2s;
-  }
-  .domain-toggle-btn:hover {
-    filter: brightness(1.1);
-    transform: translateY(-1px);
-  }
-  body.dark .domain-toggle-btn {
-    background: linear-gradient(135deg, #1e3a8a, #3b82f6) !important;
-    border-color: #60a5fa !important;
+  :root {
+    --accent: #3157C9;
   }
 
+  /* Prevent .overlay modal style from colliding with KaTeX internal <span class="overlay"> */
+  .katex .overlay {
+    display: inline-block !important;
+    position: absolute !important;
+    inset: auto !important;
+    background: transparent !important;
+    z-index: auto !important;
+    padding: 0 !important;
+  }
+
+  /* Hide Science elements in Law mode, hide Law elements in Science mode */
+  #sci-hud-brand,
+  #law-hud-brand,
+  #science-modebar,
+  #science-tabs {
+    display: none;
+  }
+
+  body.domain-law.browse #law-hud-brand {
+    display: inline-flex;
+  }
+  body.domain-law.browse .hud {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  body.domain-law:not(.browse) .hud {
+    grid-template-columns: auto auto 1fr auto auto;
+  }
+
+  body.domain-science #law-modebar,
+  body.domain-science #tabs,
+  body.domain-science #new-sel,
+  body.domain-science #ch-sel,
+  body.domain-science .meter,
+  body.domain-science #score,
+  body.domain-science #mnemonics-btn,
+  body.domain-science #law-hud-brand {
+    display: none !important;
+  }
+
+  body.domain-science #sci-hud-brand {
+    display: inline-flex !important;
+  }
   body.domain-science .hud {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
     background: #f0f7ff;
     border-bottom-color: #bfdbfe;
   }
   body.dark.domain-science .hud {
-    background: #0f172a;
+    background: #161d2f;
     border-bottom-color: #1e3a8a;
   }
 
+  body.domain-science #science-modebar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    max-width: 1480px;
+    margin: 0 auto;
+    padding: 8px 16px;
+  }
+
+  body.domain-science #science-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+  }
+  body.domain-science #science-tabs .tab {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 12px 4px;
+  }
+  body.domain-science #science-tabs .tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  .sci-hud-brand, .law-hud-brand {
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    flex-shrink: 1;
+  }
+  .sci-brand-title {
+    font-size: 14.5px;
+    font-weight: 800;
+    color: #1e40af;
+    white-space: nowrap;
+  }
+  .law-hud-brand .sci-brand-title {
+    color: #1e293b;
+  }
+  body.dark .sci-brand-title {
+    color: #93c5fd;
+  }
+  body.dark .law-hud-brand .sci-brand-title {
+    color: #f1f5f9;
+  }
+  .sci-brand-badge {
+    font-size: 11px;
+    font-weight: 700;
+    color: #0369a1;
+    background: #e0f2fe;
+    padding: 2px 7px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  body.dark .sci-brand-badge {
+    background: #1e3a8a;
+    color: #bfdbfe;
+  }
+
+  .hud-btn.domain-toggle-btn {
+    width: auto !important;
+    height: 30px !important;
+    padding: 0 11px !important;
+    border-radius: 999px !important;
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    background: linear-gradient(135deg, #1e40af, #2563eb) !important;
+    color: #fff !important;
+    border: 1px solid #3b82f6 !important;
+    box-shadow: 0 1px 3px rgba(37, 99, 235, 0.25);
+    transition: all 0.15s ease;
+  }
+  .hud-btn.domain-toggle-btn:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+  }
+  body.dark .hud-btn.domain-toggle-btn {
+    background: linear-gradient(135deg, #1d4ed8, #3b82f6) !important;
+    border-color: #60a5fa !important;
+  }
+
+  /* Science Filter & Status Bar */
   .sci-bar {
     background: #fff;
     border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    padding: 12px 16px;
-    margin-bottom: 16px;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
     gap: 10px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
   }
   body.dark .sci-bar {
-    background: #1e293b;
-    border-color: #334155;
+    background: #1a1e27;
+    border-color: #2a3040;
   }
   .sci-bar-controls {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 6px;
     align-items: center;
+    flex: 1 1 auto;
   }
   .sci-select {
-    padding: 6px 12px;
-    font-size: 13px;
-    font-weight: 600;
+    padding: 7px 10px;
+    font-size: 12.5px;
+    font-weight: 700;
     border: 1px solid #cbd5e1;
-    border-radius: 6px;
+    border-radius: 8px;
     background: #f8fafc;
     color: #1e293b;
+    outline: none;
   }
   body.dark .sci-select {
-    background: #0f172a;
-    border-color: #334155;
+    background: #232838;
+    border-color: #333a4c;
     color: #f1f5f9;
   }
   .sci-btn-outline {
-    padding: 6px 12px;
-    font-size: 13px;
-    font-weight: 600;
+    padding: 7px 11px;
+    font-size: 12px;
+    font-weight: 700;
     border: 1px solid #cbd5e1;
-    border-radius: 6px;
+    border-radius: 8px;
     background: #fff;
     cursor: pointer;
     color: #475569;
+    white-space: nowrap;
+    transition: all 0.15s;
+  }
+  .sci-btn-outline:hover {
+    background: #f1f5f9;
+    border-color: #94a3b8;
   }
   body.dark .sci-btn-outline {
-    background: #0f172a;
-    border-color: #334155;
+    background: #232838;
+    border-color: #333a4c;
     color: #cbd5e1;
   }
+  body.dark .sci-btn-outline:hover {
+    background: #2d3448;
+  }
+  .sci-btn-danger {
+    color: #dc2626 !important;
+    border-color: #fca5a5 !important;
+    background: #fef2f2 !important;
+  }
+  body.dark .sci-btn-danger {
+    color: #fca5a5 !important;
+    border-color: #7f1d1d !important;
+    background: #3a141a !important;
+  }
   .sci-bar-status {
-    font-size: 13px;
+    font-size: 12.5px;
     color: #64748b;
     display: flex;
-    gap: 12px;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
   }
   body.dark .sci-bar-status { color: #94a3b8; }
 
+  .sci-cid-banner {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    color: #1e40af;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    font-weight: 700;
+  }
+  body.dark .sci-cid-banner {
+    background: #1e293b;
+    border-color: #3b82f6;
+    color: #93c5fd;
+  }
+  .sci-cid-clear {
+    background: #fff;
+    border: 1px solid #93c5fd;
+    color: #1d4ed8;
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 11.5px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  body.dark .sci-cid-clear {
+    background: #0f172a;
+    border-color: #3b82f6;
+    color: #bfdbfe;
+  }
+
+  /* Science Question Card */
   .sci-card {
     background: #fff;
     border: 1px solid #e2e8f0;
     border-radius: 12px;
-    padding: 18px 20px;
-    margin-bottom: 16px;
+    padding: 16px 18px;
+    margin-bottom: 14px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.03);
   }
   body.dark .sci-card {
-    background: #1e293b;
-    border-color: #334155;
+    background: #1a1e27;
+    border-color: #2a3040;
     box-shadow: none;
   }
   .sci-q-head {
@@ -1650,34 +1831,46 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
   .sci-q-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 5px;
     align-items: center;
   }
   .sci-tag {
     font-size: 11.5px;
-    font-weight: 600;
+    font-weight: 700;
     padding: 3px 8px;
     border-radius: 6px;
+    line-height: 1.3;
   }
   .sci-tag.round { background: #eff6ff; color: #1d4ed8; }
   .sci-tag.chapter { background: #f0fdf4; color: #15803d; }
   .sci-tag.type { background: #fdf4ff; color: #86198f; }
   .sci-tag.correct { background: #ecfdf5; color: #059669; }
   .sci-tag.wrong { background: #fef2f2; color: #dc2626; }
-  body.dark .sci-tag.round { background: #1e3a8a; color: #bfdbfe; }
+  .sci-tag.retrying { background: #fef3c7; color: #92400e; }
+  body.dark .sci-tag.round { background: #1e293b; color: #93c5fd; border: 1px solid #1e3a8a; }
   body.dark .sci-tag.chapter { background: #064e3b; color: #a7f3d0; }
-  body.dark .sci-tag.type { background: #701a75; color: #f5d0fe; }
-  body.dark .sci-tag.correct { background: #064e3b; color: #a7f3d0; }
-  body.dark .sci-tag.wrong { background: #450a0a; color: #fecaca; }
+  body.dark .sci-tag.type { background: #4a044e; color: #f5d0fe; }
+  body.dark .sci-tag.correct { background: #064e3b; color: #6ee7b7; }
+  body.dark .sci-tag.wrong { background: #450a0a; color: #fca5a5; }
+  body.dark .sci-tag.retrying { background: #451a03; color: #fde68a; }
 
   .sci-q-stem {
     font-size: 15px;
-    line-height: 1.7;
+    line-height: 1.8;
     margin: 12px 0;
     color: #1e293b;
     word-break: keep-all;
+    overflow-wrap: break-word;
   }
-  body.dark .sci-q-stem { color: #f1f5f9; }
+  body.dark .sci-q-stem { color: #e6e8ee; }
+
+  .sci-card .katex-display,
+  .sci-concept-card .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 4px 0;
+    margin: 6px 0;
+  }
 
   .sci-q-fig {
     text-align: center;
@@ -1685,126 +1878,169 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
   }
   .sci-q-fig img {
     max-width: 100%;
-    max-height: 320px;
+    max-height: 300px;
     object-fit: contain;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     background: #fff;
-    padding: 4px;
+    padding: 6px;
+  }
+  body.dark .sci-q-fig img {
+    border-color: #334155;
+    background: #f8fafc;
   }
 
   .sci-q-box {
     background: #f8fafc;
     border: 1px solid #cbd5e1;
     border-radius: 8px;
-    padding: 12px 16px;
+    padding: 12px 14px;
     margin: 12px 0;
+    color: #1e293b;
   }
   body.dark .sci-q-box {
-    background: #0f172a;
-    border-color: #334155;
+    background: #141821;
+    border-color: #2a3040;
+    color: #e2e8f0;
   }
   .sci-box-title {
-    font-weight: 700;
-    font-size: 13px;
+    font-weight: 800;
+    font-size: 12.5px;
     color: #475569;
     margin-bottom: 6px;
+    text-align: center;
+    letter-spacing: 2px;
   }
   body.dark .sci-box-title { color: #94a3b8; }
   .sci-box-item {
     font-size: 14px;
-    line-height: 1.6;
-    margin: 4px 0;
+    line-height: 1.7;
+    margin: 5px 0;
+    color: #1e293b;
+    word-break: keep-all;
   }
+  body.dark .sci-box-item { color: #e2e8f0; }
 
   .sci-choices {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    margin: 14px 0;
+    margin: 14px 0 4px;
   }
   .sci-choice-btn {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 10px;
     width: 100%;
+    min-height: 46px;
     text-align: left;
     padding: 10px 14px;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 9px;
     background: #fff;
     cursor: pointer;
     font-size: 14px;
-    line-height: 1.5;
+    line-height: 1.65;
     color: #1e293b;
-    transition: all 0.15s;
+    transition: background 0.15s, border-color 0.15s;
   }
   body.dark .sci-choice-btn {
-    background: #0f172a;
-    border-color: #334155;
-    color: #f1f5f9;
+    background: #141821;
+    border-color: #2e3544;
+    color: #e6e8ee;
   }
   .sci-choice-btn:hover:not(:disabled) {
-    background: #f1f5f9;
-    border-color: #94a3b8;
+    background: #f8fafc;
+    border-color: var(--accent);
+  }
+  body.dark .sci-choice-btn:hover:not(:disabled) {
+    background: #1e2433;
+    border-color: var(--accent);
   }
   .sci-choice-btn:disabled {
     cursor: default;
   }
   .choice-num {
-    font-weight: 700;
-    color: #3b82f6;
+    font-weight: 800;
+    font-size: 15px;
+    color: var(--accent);
     flex-shrink: 0;
-    min-width: 22px;
+    min-width: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  body.dark .choice-num {
+    color: #60a5fa;
   }
   .choice-content {
     flex: 1;
+    min-width: 0;
     word-break: keep-all;
+    overflow-wrap: break-word;
   }
   .choice-img {
-    max-height: 80px;
+    max-width: 100%;
+    max-height: 100px;
     margin-top: 4px;
     display: block;
     border: 1px solid #e2e8f0;
-    border-radius: 4px;
+    border-radius: 6px;
     background: #fff;
+    padding: 3px;
   }
 
   .sci-choice-btn.choice-answer {
     background: #ecfdf5 !important;
     border-color: #10b981 !important;
     color: #065f46 !important;
-    font-weight: 600;
+    font-weight: 700;
+  }
+  .sci-choice-btn.choice-answer .choice-num {
+    color: #059669 !important;
   }
   body.dark .sci-choice-btn.choice-answer {
     background: #064e3b !important;
     border-color: #059669 !important;
     color: #a7f3d0 !important;
   }
+  body.dark .sci-choice-btn.choice-answer .choice-num {
+    color: #6ee7b7 !important;
+  }
   .sci-choice-btn.choice-wrong-pick {
     background: #fef2f2 !important;
     border-color: #ef4444 !important;
     color: #991b1b !important;
+  }
+  .sci-choice-btn.choice-wrong-pick .choice-num {
+    color: #dc2626 !important;
   }
   body.dark .sci-choice-btn.choice-wrong-pick {
     background: #450a0a !important;
     border-color: #dc2626 !important;
     color: #fecaca !important;
   }
+  body.dark .sci-choice-btn.choice-wrong-pick .choice-num {
+    color: #fca5a5 !important;
+  }
 
+  /* Explanation */
   .sci-explanation {
     margin-top: 14px;
     padding: 14px 16px;
-    border-radius: 8px;
+    border-radius: 10px;
     background: #f8fafc;
+    border: 1px solid #e2e8f0;
     border-left: 4px solid #3b82f6;
-    font-size: 14px;
-    line-height: 1.7;
+    font-size: 13.5px;
+    line-height: 1.8;
+    color: #1e293b;
   }
   body.dark .sci-explanation {
-    background: #0f172a;
-    border-color: #2563eb;
-    color: #e2e8f0;
+    background: #141821;
+    border-color: #2a3040;
+    border-left-color: #3b82f6;
+    color: #d1d5db;
   }
   .sci-explanation.expl-correct { border-left-color: #10b981; }
   .sci-explanation.expl-wrong { border-left-color: #ef4444; }
@@ -1812,7 +2048,12 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed #cbd5e1;
+  }
+  body.dark .expl-header {
+    border-bottom-color: #2a3040;
   }
   .expl-badge {
     font-weight: 800;
@@ -1821,10 +2062,34 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
   }
   .sci-explanation.expl-correct .expl-badge { color: #059669; }
   .sci-explanation.expl-wrong .expl-badge { color: #dc2626; }
+  body.dark .sci-explanation.expl-correct .expl-badge { color: #34d399; }
+  body.dark .sci-explanation.expl-wrong .expl-badge { color: #f87171; }
+  .expl-body {
+    color: #1e293b;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+  body.dark .expl-body {
+    color: #e2e8f0;
+  }
+  .expl-sec-title {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 800;
+    color: #1e40af;
+    background: #dbeafe;
+    padding: 2px 8px;
+    border-radius: 5px;
+    margin: 8px 0 4px;
+  }
+  body.dark .expl-sec-title {
+    color: #bfdbfe;
+    background: #1e3a8a;
+  }
   .btn-retry-q {
     padding: 4px 10px;
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 700;
     border: 1px solid #cbd5e1;
     border-radius: 6px;
     background: #fff;
@@ -1832,47 +2097,61 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
     color: #475569;
   }
   body.dark .btn-retry-q {
-    background: #1e293b;
-    border-color: #475569;
+    background: #232838;
+    border-color: #333a4c;
     color: #cbd5e1;
   }
   .expl-fig img {
     max-width: 100%;
     max-height: 240px;
-    margin-top: 8px;
+    margin-top: 10px;
     border: 1px solid #cbd5e1;
     border-radius: 6px;
     background: #fff;
+    padding: 4px;
   }
   .expl-concepts {
-    margin-top: 10px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px dashed #cbd5e1;
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
     align-items: center;
   }
+  body.dark .expl-concepts {
+    border-top-color: #2a3040;
+  }
   .expl-concepts-label {
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 700;
     color: #64748b;
   }
+  body.dark .expl-concepts-label {
+    color: #94a3b8;
+  }
   .btn-concept-link {
-    padding: 3px 8px;
-    font-size: 11px;
-    font-weight: 600;
+    padding: 4px 9px;
+    font-size: 11.5px;
+    font-weight: 700;
     border: 1px solid #bfdbfe;
-    border-radius: 6px;
+    border-radius: 999px;
     background: #eff6ff;
     color: #1e40af;
     cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-concept-link:hover {
+    background: #dbeafe;
   }
   body.dark .btn-concept-link {
-    background: #1e3a8a;
+    background: #1e293b;
     border-color: #3b82f6;
-    color: #bfdbfe;
+    color: #93c5fd;
   }
 
-  .sci-concept-search-wrap { width: 100%; margin-bottom: 8px; }
+  /* Concepts Dictionary */
+  .sci-concept-search-wrap { width: 100%; margin-bottom: 6px; }
   .sci-search-input {
     width: 100%;
     padding: 10px 14px;
@@ -1880,10 +2159,16 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
     border: 1px solid #cbd5e1;
     border-radius: 8px;
     background: #f8fafc;
+    color: #1e293b;
+    outline: none;
+  }
+  .sci-search-input:focus {
+    border-color: var(--accent);
+    background: #fff;
   }
   body.dark .sci-search-input {
-    background: #0f172a;
-    border-color: #334155;
+    background: #141821;
+    border-color: #2a3040;
     color: #f1f5f9;
   }
   .sci-ch-chips {
@@ -1892,166 +2177,459 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
     gap: 6px;
   }
   .sci-chip {
-    padding: 5px 10px;
+    padding: 5px 11px;
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 700;
     border: 1px solid #cbd5e1;
-    border-radius: 16px;
+    border-radius: 999px;
     background: #fff;
     cursor: pointer;
     color: #475569;
+    transition: all 0.15s;
   }
   body.dark .sci-chip {
-    background: #0f172a;
-    border-color: #334155;
+    background: #141821;
+    border-color: #2a3040;
     color: #cbd5e1;
   }
   .sci-chip.active {
-    background: #2563eb;
-    border-color: #2563eb;
+    background: var(--accent);
+    border-color: var(--accent);
     color: #fff;
   }
 
   .sci-concept-card {
     background: #fff;
     border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    padding: 16px;
+    border-radius: 12px;
+    padding: 16px 18px;
     margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
   }
   body.dark .sci-concept-card {
-    background: #1e293b;
-    border-color: #334155;
+    background: #1a1e27;
+    border-color: #2a3040;
   }
   .concept-title-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 8px;
     margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  body.dark .concept-title-row {
+    border-bottom-color: #252b38;
   }
   .concept-title {
     font-size: 16px;
-    font-weight: 700;
+    font-weight: 800;
     color: #0f172a;
   }
   body.dark .concept-title { color: #f8fafc; }
+  .concept-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
   .concept-body-bullet {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
     font-size: 13.5px;
-    line-height: 1.6;
-    margin: 4px 0;
+    line-height: 1.75;
     color: #334155;
   }
   body.dark .concept-body-bullet { color: #cbd5e1; }
+  .concept-bullet-dot {
+    color: var(--accent);
+    font-weight: 900;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .concept-bullet-content {
+    flex: 1;
+    min-width: 0;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+  .concept-main-line {
+    font-weight: 600;
+    color: #1e293b;
+  }
+  body.dark .concept-main-line {
+    color: #e2e8f0;
+  }
+  .concept-sub-note {
+    font-size: 12.5px;
+    color: #64748b;
+    margin-top: 3px;
+    padding-left: 4px;
+    line-height: 1.6;
+  }
+  body.dark .concept-sub-note {
+    color: #94a3b8;
+  }
+  .concept-deriv {
+    margin-top: 6px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 12.5px;
+  }
+  body.dark .concept-deriv {
+    background: #141821;
+    border-color: #2a3040;
+  }
+  .concept-deriv summary {
+    cursor: pointer;
+    font-weight: 700;
+    color: var(--accent);
+    user-select: none;
+  }
+  body.dark .concept-deriv summary {
+    color: #60a5fa;
+  }
+  .concept-deriv-body {
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px dashed #cbd5e1;
+    color: #334155;
+    line-height: 1.75;
+  }
+  body.dark .concept-deriv-body {
+    border-top-color: #2a3040;
+    color: #cbd5e1;
+  }
   .concept-footer {
     margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px dashed #e2e8f0;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
     gap: 8px;
   }
-  .concept-aliases { font-size: 12px; color: #64748b; }
+  body.dark .concept-footer {
+    border-top-color: #2a3040;
+  }
+  .concept-aliases { font-size: 12px; color: #64748b; font-weight: 600; }
+  body.dark .concept-aliases { color: #94a3b8; }
   .btn-filter-concept-qs {
-    padding: 5px 12px;
+    padding: 6px 12px;
     font-size: 12px;
-    font-weight: 700;
-    border: 1px solid #3b82f6;
-    border-radius: 6px;
-    background: #2563eb;
+    font-weight: 800;
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    background: var(--accent);
     color: #fff;
     cursor: pointer;
+    transition: filter 0.15s;
+  }
+  .btn-filter-concept-qs:hover {
+    filter: brightness(1.08);
   }
 
+  /* Stats & Weakness Analysis */
+  .sci-stats-container {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  .sci-stats-heading {
+    font-size: 16px;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  body.dark .sci-stats-heading {
+    color: #f1f5f9;
+  }
   .sci-stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 12px;
-    margin-bottom: 18px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 22px;
   }
   .sci-stat-box {
     background: #fff;
     border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    padding: 14px;
+    border-radius: 12px;
+    padding: 14px 12px;
     text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
   }
   body.dark .sci-stat-box {
-    background: #1e293b;
-    border-color: #334155;
+    background: #1a1e27;
+    border-color: #2a3040;
   }
   .sci-stat-box.active-stat-box {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 2px rgba(59,130,246,0.2);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+  }
+  .sci-stat-subj {
+    font-size: 13px;
+    font-weight: 800;
+    color: #475569;
+  }
+  .sci-stat-box.active-stat-box .sci-stat-subj {
+    color: var(--accent);
+  }
+  body.dark .sci-stat-subj {
+    color: #94a3b8;
+  }
+  body.dark .sci-stat-box.active-stat-box .sci-stat-subj {
+    color: #60a5fa;
   }
   .sci-stat-val {
-    font-size: 26px;
-    font-weight: 800;
-    color: #2563eb;
+    font-size: 24px;
+    font-weight: 900;
+    color: var(--accent);
     margin: 4px 0;
   }
-  .sci-stat-sub { font-size: 11.5px; color: #64748b; }
+  body.dark .sci-stat-val {
+    color: #60a5fa;
+  }
+  .sci-stat-sub { font-size: 11px; color: #64748b; font-weight: 600; }
+  body.dark .sci-stat-sub { color: #94a3b8; }
 
+  .sci-table-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  }
+  body.dark .sci-table-card {
+    background: #1a1e27;
+    border-color: #2a3040;
+  }
+  .sci-table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
   .sci-ch-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 13px;
   }
-  .sci-ch-table th, .sci-ch-table td {
-    padding: 10px 12px;
+  .sci-ch-table thead tr {
+    background: #f8fafc;
+  }
+  body.dark .sci-ch-table thead tr {
+    background: #151821;
+  }
+  .sci-ch-table th {
+    padding: 10px 10px;
     text-align: left;
+    font-size: 12px;
+    font-weight: 800;
+    color: #64748b;
     border-bottom: 1px solid #e2e8f0;
+    white-space: nowrap;
   }
-  body.dark .sci-ch-table th, body.dark .sci-ch-table td {
-    border-color: #334155;
+  .sci-ch-table td {
+    padding: 10px 10px;
+    text-align: left;
+    color: #1e293b;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
   }
+  body.dark .sci-ch-table th {
+    color: #8c96a8;
+    border-bottom-color: #2a3040;
+  }
+  body.dark .sci-ch-table td {
+    color: #e2e8f0;
+    border-bottom-color: #232936;
+  }
+  .btn-focus-ch {
+    padding: 5px 10px;
+    font-size: 11.5px;
+    font-weight: 800;
+    border: 1px solid #bfdbfe;
+    border-radius: 6px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .btn-focus-ch:hover {
+    background: #dbeafe;
+  }
+  body.dark .btn-focus-ch {
+    background: #1e293b;
+    border-color: #3b82f6;
+    color: #93c5fd;
+  }
+
   .sci-bar-wrap {
     background: #e2e8f0;
-    border-radius: 6px;
-    height: 8px;
+    border-radius: 999px;
+    height: 7px;
     overflow: hidden;
     width: 100%;
   }
-  body.dark .sci-bar-wrap { background: #334155; }
+  body.dark .sci-bar-wrap { background: #2a3040; }
   .sci-bar-fill {
     height: 100%;
     background: #3b82f6;
+    border-radius: 999px;
     transition: width 0.3s;
   }
   .sci-empty {
-    padding: 30px;
+    padding: 36px 20px;
     text-align: center;
     color: #64748b;
     font-size: 14px;
     background: #fff;
-    border-radius: 10px;
+    border-radius: 12px;
     border: 1px solid #e2e8f0;
   }
   body.dark .sci-empty {
-    background: #1e293b;
-    border-color: #334155;
+    background: #1a1e27;
+    border-color: #2a3040;
     color: #94a3b8;
   }
+  .sci-more-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 13.5px;
+    font-weight: 800;
+    color: var(--accent);
+    background: #fff;
+    border: 1.5px dashed #cbd5e1;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 4px;
+    transition: all 0.15s;
+  }
+  .sci-more-btn:hover {
+    background: #f8fafc;
+    border-color: var(--accent);
+  }
+  body.dark .sci-more-btn {
+    background: #1a1e27;
+    border-color: #334155;
+    color: #60a5fa;
+  }
 
+  /* Responsive Mobile Adjustments (Galaxy S25 FE 390px) */
+  @media (max-width: 600px) {
+    .hud {
+      padding: 10px 12px;
+      gap: 8px;
+    }
+    body.domain-law:not(.browse) .hud {
+      grid-template-columns: 1fr 1fr;
+    }
+    body.domain-law:not(.browse) #new-sel,
+    body.domain-law:not(.browse) #ch-sel {
+      max-width: 100%;
+      width: 100%;
+    }
+    body.domain-law:not(.browse) .meter {
+      grid-column: 1 / -1;
+    }
+    body.domain-law:not(.browse) #score {
+      justify-self: start;
+    }
+    body.domain-law:not(.browse) .hud-btns {
+      justify-self: end;
+    }
 
-  body.domain-science #new-sel,
-  body.domain-science #ch-sel,
-  body.domain-science .meter,
-  body.domain-science #score,
-  body.domain-science #mnemonics-btn {
-    display: none !important;
+    .law-hud-brand .sci-brand-badge {
+      display: none;
+    }
+    .sci-brand-title {
+      font-size: 13.5px;
+    }
+    .sci-brand-badge {
+      font-size: 10.5px;
+      padding: 2px 6px;
+    }
+    .hud-btn.domain-toggle-btn {
+      height: 28px !important;
+      padding: 0 9px !important;
+      font-size: 11.5px !important;
+    }
+
+    body.domain-science #science-modebar {
+      padding: 6px 8px;
+      gap: 4px;
+    }
+    body.domain-science #science-modebar .modebtn {
+      padding: 7px 2px;
+      font-size: 11.5px;
+      text-align: center;
+    }
+
+    body.domain-science #science-tabs .tab {
+      font-size: 11.5px;
+      padding: 10px 2px;
+      gap: 2px;
+    }
+    body.domain-science #science-tabs .tab .cnt {
+      font-size: 9.5px;
+      padding: 1px 4px;
+      margin-left: 1px;
+    }
+
+    .sci-bar {
+      padding: 10px 12px;
+      gap: 8px;
+    }
+    .sci-bar-controls {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+    .sci-bar-controls #sci-retry-round-btn {
+      grid-column: 1 / -1;
+    }
+    .sci-select {
+      width: 100%;
+      font-size: 12px;
+      padding: 7px 8px;
+    }
+    .sci-bar-status {
+      width: 100%;
+      justify-content: space-between;
+      padding-top: 6px;
+      border-top: 1px dashed #e2e8f0;
+      font-size: 12px;
+    }
+    body.dark .sci-bar-status {
+      border-top-color: #2a3040;
+    }
+
+    .sci-card {
+      padding: 14px;
+    }
+    .sci-q-stem {
+      font-size: 14.5px;
+    }
+    .sci-choice-btn {
+      padding: 9px 12px;
+      font-size: 13.5px;
+    }
+    .sci-stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .sci-ch-table th,
+    .sci-ch-table td {
+      padding: 9px 8px;
+      font-size: 12px;
+    }
   }
-  body.domain-science .hud {
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-  }
-  body.dark.domain-science #sci-hud-brand {
-    color: #93c5fd !important;
-  }
-  body.dark.domain-science #sci-hud-brand span {
-    background: #1e3a8a !important;
-    color: #bfdbfe !important;
-  }
+
 </style>
 
 </head>
@@ -2205,55 +2783,58 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
 
 </script>
 
+<script>
+(function(){
+  try {
+    var mq = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+    if(mq){
+      if(mq.matches) document.body.classList.add('dark');
+      if(mq.addEventListener) mq.addEventListener('change', function(e){ document.body.classList.toggle('dark', e.matches); });
+    }
+  } catch(e){}
+})();
+</script>
+<script>
+(function(){
+  try {
+    var mq = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+    if(mq){
+      if(mq.matches) document.body.classList.add('dark');
+      if(mq.addEventListener) mq.addEventListener('change', function(e){ document.body.classList.toggle('dark', e.matches); });
+    }
+  } catch(e){}
+})();
+</script>
 <div class="hud">
-  <div id="sci-hud-brand" style="display:none;font-size:15px;font-weight:800;color:#1e40af;align-items:center;gap:6px">🔬 자연과학개론 <span style="font-size:12px;font-weight:600;color:#64748b;background:#e0f2fe;padding:2px 8px;border-radius:10px">2005~2026 기출 878제</span></div>
-
+  <div id="sci-hud-brand" class="sci-hud-brand"><span class="sci-brand-title">🔬 자연과학개론</span><span class="sci-brand-badge">22개년 878제</span></div>
+  <div id="law-hud-brand" class="law-hud-brand"><span class="sci-brand-title">🏛️ 산업재산권법</span><span class="sci-brand-badge">조문·판례·기출</span></div>
   <select id="new-sel" aria-label="하루 신규 문항 수"></select>
-
   <select id="ch-sel" aria-label="장(챕터) 필터" title="장 필터"></select>
-
   <div class="meter"><div id="prog"></div></div>
-
   <div class="score" id="score"></div>
-
   <div class="hud-btns">
-
-    <button id="domain-btn" class="hud-btn domain-toggle-btn" title="과목 대분류 전환 (산업재산권법 ⟷ 자연과학개론)">🔬 자연과학</button>
-    <button id="mnemonics-btn" class="hud-btn" title="특허법 필수 두문자 사전 (💡)">💡</button>
-
-    <button id="data-btn" class="hud-btn" title="학습 데이터 백업 및 복원 (Export/Import)">💾</button>
-
-    <button id="help-btn" class="hud-btn" title="단축키 도움말 (?)">?</button>
-
+    <button id="domain-btn" class="hud-btn domain-toggle-btn" type="button" title="과목 대분류 전환 (산업재산권법 ⟷ 자연과학개론)">🔬 자연과학</button>
+    <button id="mnemonics-btn" class="hud-btn" type="button" title="특허법 필수 두문자 사전 (💡)">💡</button>
+    <button id="data-btn" class="hud-btn" type="button" title="학습 데이터 백업 및 복원 (Export/Import)">💾</button>
+    <button id="help-btn" class="hud-btn" type="button" title="단축키 도움말 (?)">?</button>
   </div>
-
 </div>
-
 <div class="modebar" id="law-modebar">
-
   <button id="mode-today" class="modebtn active" type="button">🎯 오늘 할 일</button>
-
   <button id="mode-quiz" class="modebtn" type="button">📝 문제 풀기</button>
-
   <button id="mode-browse" class="modebtn" type="button">📖 조문 열람</button>
-
   <button id="mode-exam" class="modebtn" type="button">📋 기출 정오</button>
-
   <button id="mode-cases" class="modebtn" type="button">⚖️ 판례 383</button>
-
   <button id="mode-matrix" class="modebtn" type="button">📊 약점 진단</button>
-
 </div>
-<div class="modebar" id="science-modebar" style="display:none">
-  <button id="sci-mode-mcq" class="modebtn active" type="button">📝 5지선다 기출</button>
+<div class="modebar" id="science-modebar">
+  <button id="sci-mode-mcq" class="modebtn active" type="button">📝 기출 풀이</button>
   <button id="sci-mode-concept" class="modebtn" type="button">📖 핵심 개념</button>
   <button id="sci-mode-wrong" class="modebtn" type="button">❌ 오답 노트</button>
-  <button id="sci-mode-stats" class="modebtn" type="button">📊 성적 & 취약 단원</button>
+  <button id="sci-mode-stats" class="modebtn" type="button">📊 성적 분석</button>
 </div>
-
 <div class="tabs" id="tabs"></div>
-<div class="tabs" id="science-tabs" style="display:none"></div>
-
+<div class="tabs" id="science-tabs"></div>
 <main class="main"><div id="area"></div></main>
 
 <div class="overlay" id="help" role="dialog" aria-label="단축키 도움말">
@@ -3300,6 +3881,13 @@ var SCIENCE = (function(){
 })();
 
 var SCI_SUBJECTS = ["물리", "화학", "생물", "지구과학"];
+var SCI_ACCENTS = {
+  "물리": "#2563EB",
+  "화학": "#059669",
+  "생물": "#7C3AED",
+  "지구과학": "#D97706"
+};
+
 var DOMAIN_KEY = 'ipquiz.domain_mode.v1';
 var domainMode = loadJson(DOMAIN_KEY, 'law'); // 'law' | 'science'
 
@@ -3312,9 +3900,12 @@ var sciState = loadJson(SCI_STATE_KEY, {
   tab: 'mcq', // 'mcq' | 'concept' | 'wrong' | 'stats'
   roundFilter: 'all',
   chFilter: 'all',
+  conceptIdFilter: '',
+  shown: 20,
   conceptSearch: '',
   conceptChFilter: 'all'
 });
+if (!sciState.shown || sciState.shown < 20) sciState.shown = 20;
 
 var sciRetrying = {}; // in-memory retry tracking { [qid]: true }
 
@@ -3326,8 +3917,7 @@ function renderMath(container){
           {left: "$$", right: "$$", display: true},
           {left: "$", right: "$", display: false}
         ],
-        throwOnError: false,
-        strict: false
+        throwOnError: false
       });
     } catch(e){
       console.warn('KaTeX render error:', e);
@@ -3335,9 +3925,54 @@ function renderMath(container){
   }
 }
 
+var NL_CHAR = String.fromCharCode(10);
+
 function formatMathText(txt){
   if(!txt) return '';
-  return String(txt).split(String.fromCharCode(10)).join('<br>');
+  return esc(String(txt)).split(NL_CHAR).join('<br>');
+}
+
+function formatExplanationText(txt){
+  if(!txt) return '';
+  var lines = String(txt).split(NL_CHAR);
+  var out = [];
+  for(var i=0; i<lines.length; i++){
+    var line = lines[i].trim();
+    if(line.length > 2 && line.charAt(0) === '[' && line.charAt(line.length - 1) === ']'){
+      out.push('<div class="expl-sec-title">' + esc(line.slice(1, -1)) + '</div>');
+    } else {
+      out.push(esc(lines[i]));
+    }
+  }
+  return out.join('<br>');
+}
+
+function formatConceptLine(bLine){
+  if(!bLine) return '';
+  var clean = String(bLine).trim();
+  if(clean.indexOf('- ') === 0){
+    clean = clean.slice(2).trim();
+  }
+  var derivParts = clean.split('!!!');
+  var beforeDeriv = derivParts[0] ? derivParts[0].trim() : '';
+  var derivText = derivParts.length > 1 ? derivParts.slice(1).join(' ').trim() : '';
+
+  var parts = beforeDeriv.split(':::');
+  var mainPart = parts[0] ? parts[0].trim() : '';
+  var subPart = parts.length > 1 ? parts.slice(1).join(' ').trim() : '';
+
+  var html = '<div class="concept-body-bullet">';
+  html += '<span class="concept-bullet-dot">•</span>';
+  html += '<div class="concept-bullet-content">';
+  html += '<div class="concept-main-line">' + formatMathText(mainPart) + '</div>';
+  if(subPart){
+    html += '<div class="concept-sub-note">↳ ' + formatMathText(subPart) + '</div>';
+  }
+  if(derivText){
+    html += '<details class="concept-deriv"><summary>📐 공식 유도 및 상세 설명 보기</summary><div class="concept-deriv-body">' + formatMathText(derivText) + '</div></details>';
+  }
+  html += '</div></div>';
+  return html;
 }
 
 function getConceptTitle(subj, cid){
@@ -3357,6 +3992,7 @@ if(domainBtn){
     domainMode = (domainMode === 'law') ? 'science' : 'law';
     saveJson(DOMAIN_KEY, domainMode);
     render();
+    window.scrollTo(0, 0);
   });
 }
 
@@ -3368,6 +4004,7 @@ if(domainBtn){
       sciState.tab = t;
       saveJson(SCI_STATE_KEY, sciState);
       render();
+      window.scrollTo(0, 0);
     });
   }
 });
@@ -3381,7 +4018,9 @@ function renderScienceTabs(){
     var sData = SCIENCE[s] || {};
     var total = sData.total || 0;
     html += '<button type="button" class="tab' + active + '" data-sci-subj="' + s + '">' +
-            (icons[s] || '') + ' ' + s + ' (' + total + ')' + '</button>';
+            '<span>' + (icons[s] || '') + ' ' + s + '</span>' +
+            '<span class="cnt">' + total + '</span>' +
+            '</button>';
   });
   var sciTabsEl = document.getElementById('science-tabs');
   if(!sciTabsEl) return;
@@ -3389,8 +4028,9 @@ function renderScienceTabs(){
   sciTabsEl.querySelectorAll('.tab').forEach(function(btn){
     btn.addEventListener('click', function(){
       sciState.subj = this.getAttribute('data-sci-subj');
-      // Reset chapter filter on subject change if not matching
       sciState.chFilter = 'all';
+      sciState.conceptIdFilter = '';
+      sciState.shown = 20;
       sciState.conceptChFilter = 'all';
       saveJson(SCI_STATE_KEY, sciState);
       render();
@@ -3405,13 +4045,12 @@ function renderScienceMode(){
     domainBtn.textContent = '🏛️ 법령 모드';
     domainBtn.title = '산업재산권법(특허·상표·디자인)으로 전환';
   }
-  var lawBar = document.getElementById('law-modebar');
-  var sciBar = document.getElementById('science-modebar');
-  if(lawBar) lawBar.style.display = 'none';
-  if(sciBar) sciBar.style.display = 'flex';
 
   document.body.classList.add('domain-science');
-  document.body.classList.remove('domain-law');
+  document.body.classList.remove('domain-law', 'browse', 'cases', 'matrix', 'today', 'has-art');
+
+  var accentColor = SCI_ACCENTS[sciState.subj] || '#2563EB';
+  document.documentElement.style.setProperty('--accent', accentColor);
 
   ['mcq', 'concept', 'wrong', 'stats'].forEach(function(t){
     var btn = document.getElementById('sci-mode-' + t);
@@ -3433,18 +4072,40 @@ function renderScienceMode(){
   renderMath(area);
 }
 
+function getFilteredSciQuestions(subj){
+  var sData = SCIENCE[subj] || { questions: [] };
+  var allQs = sData.questions || [];
+  return allQs.filter(function(q){
+    if(sciState.roundFilter !== 'all' && String(q.r) !== String(sciState.roundFilter)) return false;
+    if(sciState.chFilter !== 'all' && q.c !== sciState.chFilter) return false;
+    if(sciState.conceptIdFilter && (!q.c_ids || q.c_ids.indexOf(sciState.conceptIdFilter) === -1)) return false;
+    return true;
+  });
+}
+
+function updateSciBarStatus(subj){
+  var statusEl = document.getElementById('sci-mcq-status');
+  if(!statusEl) return;
+  var qs = getFilteredSciQuestions(subj);
+  var solvedCount = 0;
+  var correctCount = 0;
+  qs.forEach(function(q){
+    var rec = sciLog[q.id];
+    if(rec){
+      solvedCount++;
+      if(rec.correct) correctCount++;
+    }
+  });
+  statusEl.innerHTML = '<span>문항 <b>' + qs.length + '</b>개</span>' +
+    '<span>풀이 <b>' + solvedCount + '</b>개 (' + (qs.length ? Math.round(solvedCount/qs.length*100) : 0) + '%)</span>' +
+    '<span>정답 <b style="color:#059669">' + correctCount + '</b>개</span>';
+}
+
 // ── 1. 5지선다 기출 풀이 (MCQ) ──
 function renderSciMcq(){
   var subj = sciState.subj;
   var sData = SCIENCE[subj] || { questions: [], chapters: [], rounds: [] };
-  var allQs = sData.questions || [];
-
-  // Filter questions
-  var qs = allQs.filter(function(q){
-    if(sciState.roundFilter !== 'all' && String(q.r) !== String(sciState.roundFilter)) return false;
-    if(sciState.chFilter !== 'all' && q.c !== sciState.chFilter) return false;
-    return true;
-  });
+  var qs = getFilteredSciQuestions(subj);
 
   var solvedCount = 0;
   var correctCount = 0;
@@ -3459,9 +4120,15 @@ function renderSciMcq(){
   var html = '';
   // Top filter bar
   html += '<div class="sci-bar">';
+  if(sciState.conceptIdFilter){
+    html += '  <div class="sci-cid-banner">';
+    html += '    <span>🎯 개념 집중 필터: <b>' + esc(getConceptTitle(subj, sciState.conceptIdFilter)) + '</b> (' + qs.length + '문항)</span>';
+    html += '    <button type="button" id="sci-clear-cid-btn" class="sci-cid-clear">✕ 필터 해제</button>';
+    html += '  </div>';
+  }
   html += '  <div class="sci-bar-controls">';
   html += '    <select id="sci-round-filter" class="sci-select" aria-label="회차 선택">';
-  html += '      <option value="all"' + (sciState.roundFilter === 'all' ? ' selected' : '') + '>전체 22개년 (63회~42회)</option>';
+  html += '      <option value="all"' + (sciState.roundFilter === 'all' ? ' selected' : '') + '>전체 22개년 (63~42회)</option>';
   sData.rounds.forEach(function(r){
     var yr = (r >= 51) ? (2014 + (r - 51)) : (2005 + (r - 42));
     html += '    <option value="' + r + '"' + (String(sciState.roundFilter) === String(r) ? ' selected' : '') + '>' +
@@ -3476,34 +4143,50 @@ function renderSciMcq(){
   });
   html += '    </select>';
 
-  html += '    <button type="button" id="sci-retry-round-btn" class="sci-btn-outline" title="현재 필터된 문항 풀이 기록 초기화 후 다시 풀기">🔄 전체 다시 풀기</button>';
+  html += '    <button type="button" id="sci-retry-round-btn" class="sci-btn-outline" title="현재 필터된 문항 다시 풀기">🔄 현재 목록 다시 풀기</button>';
   html += '  </div>';
 
-  html += '  <div class="sci-bar-status">';
-  html += '    <span>문항: <b>' + qs.length + '</b>개</span>';
-  html += '    <span>풀이: <b>' + solvedCount + '</b>개 (' + (qs.length ? Math.round(solvedCount/qs.length*100) : 0) + '%)</span>';
-  html += '    <span>정답: <b style="color:#059669">' + correctCount + '</b>개</span>';
+  html += '  <div class="sci-bar-status" id="sci-mcq-status">';
+  html += '    <span>문항 <b>' + qs.length + '</b>개</span>';
+  html += '    <span>풀이 <b>' + solvedCount + '</b>개 (' + (qs.length ? Math.round(solvedCount/qs.length*100) : 0) + '%)</span>';
+  html += '    <span>정답 <b style="color:#059669">' + correctCount + '</b>개</span>';
   html += '  </div>';
   html += '</div>';
+
+  var limit = sciState.shown || 20;
+  var shownQs = qs.slice(0, limit);
 
   // Questions container
   html += '<div class="sci-qs-list">';
   if(qs.length === 0){
     html += '<div class="sci-empty">해당 조건에 일치하는 기출문제가 없습니다.</div>';
   } else {
-    qs.forEach(function(q){
+    shownQs.forEach(function(q){
       html += renderSciQuestionCard(subj, q);
     });
+    if(qs.length > shownQs.length){
+      html += '<button type="button" id="sci-more-btn" class="sci-more-btn">더 보기 (' + shownQs.length + ' / ' + qs.length + '문항 표시 중 · +20문항)</button>';
+    }
   }
   html += '</div>';
 
   area.innerHTML = html;
 
   // Bind filter events
+  var clearCidBtn = document.getElementById('sci-clear-cid-btn');
+  if(clearCidBtn){
+    clearCidBtn.addEventListener('click', function(){
+      sciState.conceptIdFilter = '';
+      sciState.shown = 20;
+      saveJson(SCI_STATE_KEY, sciState);
+      render();
+    });
+  }
   var rSel = document.getElementById('sci-round-filter');
   if(rSel){
     rSel.addEventListener('change', function(){
       sciState.roundFilter = this.value;
+      sciState.shown = 20;
       saveJson(SCI_STATE_KEY, sciState);
       render();
     });
@@ -3512,6 +4195,7 @@ function renderSciMcq(){
   if(cSel){
     cSel.addEventListener('change', function(){
       sciState.chFilter = this.value;
+      sciState.shown = 20;
       saveJson(SCI_STATE_KEY, sciState);
       render();
     });
@@ -3523,6 +4207,14 @@ function renderSciMcq(){
         qs.forEach(function(q){ sciRetrying[q.id] = true; });
         render();
       }
+    });
+  }
+  var moreBtn = document.getElementById('sci-more-btn');
+  if(moreBtn){
+    moreBtn.addEventListener('click', function(){
+      sciState.shown = (sciState.shown || 20) + 20;
+      saveJson(SCI_STATE_KEY, sciState);
+      render();
     });
   }
 
@@ -3541,13 +4233,13 @@ function renderSciQuestionCard(subj, q){
   cardHtml += '  <div class="sci-q-head">';
   cardHtml += '    <div class="sci-q-tags">';
   cardHtml += '      <span class="sci-tag round">' + q.yr + '년 제' + q.r + '회 ' + subj + ' ' + q.q + '번</span>';
-  cardHtml += '      <span class="sci-tag chapter">' + q.c + '</span>';
-  if(q.t) cardHtml += '      <span class="sci-tag type">' + q.t + '</span>';
+  cardHtml += '      <span class="sci-tag chapter">' + esc(q.c) + '</span>';
+  if(q.t) cardHtml += '      <span class="sci-tag type">' + esc(q.t) + '</span>';
   if(isAnswered){
     cardHtml += '      <span class="sci-tag ' + (rec.correct ? 'correct' : 'wrong') + '">' +
                 (rec.correct ? '✅ 맞힘' : '❌ 틀림 (내 선택: ' + ['①','②','③','④','⑤'][rec.pick - 1] + ')') + '</span>';
   } else if(isRetrying){
-    cardHtml += '      <span class="sci-tag type" style="background:#fef3c7;color:#92400e">🔄 다시 푸는 중</span>';
+    cardHtml += '      <span class="sci-tag retrying">🔄 다시 푸는 중</span>';
   }
   cardHtml += '    </div>';
   cardHtml += '  </div>';
@@ -3587,7 +4279,7 @@ function renderSciQuestionCard(subj, q){
     cardHtml += '      <span class="choice-content">';
     if(cText) cardHtml += formatMathText(cText);
     if(q.ci && q.ci[idx]){
-      cardHtml += '      <img src="https://quiz-sapiens.pages.dev/figures/' + encodeURIComponent(q.ci[idx]) + '" class="choice-img" loading="lazy">';
+      cardHtml += '      <img src="https://quiz-sapiens.pages.dev/figures/' + encodeURIComponent(q.ci[idx]) + '" class="choice-img" alt="선지 그림" loading="lazy">';
     }
     cardHtml += '      </span>';
     cardHtml += '    </button>';
@@ -3601,7 +4293,7 @@ function renderSciQuestionCard(subj, q){
     cardHtml += '      <span class="expl-badge">정답: ' + numIcons[q.a - 1] + '</span>';
     cardHtml += '      <button type="button" class="btn-retry-q" data-qid="' + q.id + '">🔄 다시 풀기</button>';
     cardHtml += '    </div>';
-    cardHtml += '    <div class="expl-body">' + formatMathText(q.e) + '</div>';
+    cardHtml += '    <div class="expl-body">' + formatExplanationText(q.e) + '</div>';
     if(q.ef){
       cardHtml += '    <div class="expl-fig">';
       cardHtml += '      <img src="https://quiz-sapiens.pages.dev/figures/' + encodeURIComponent(q.ef) + '" alt="해설 그림" loading="lazy">';
@@ -3609,9 +4301,9 @@ function renderSciQuestionCard(subj, q){
     }
     if(q.c_ids && q.c_ids.length > 0){
       cardHtml += '    <div class="expl-concepts">';
-      cardHtml += '      <span class="expl-concepts-label">관련 개념:</span>';
+      cardHtml += '      <span class="expl-concepts-label">💡 핵심 개념:</span>';
       q.c_ids.forEach(function(cid){
-        cardHtml += '      <button type="button" class="btn-concept-link" data-cid="' + cid + '" data-subj="' + subj + '">' + getConceptTitle(subj, cid) + '</button>';
+        cardHtml += '      <button type="button" class="btn-concept-link" data-cid="' + cid + '" data-subj="' + subj + '">' + esc(getConceptTitle(subj, cid)) + '</button>';
       });
       cardHtml += '    </div>';
     }
@@ -3640,6 +4332,7 @@ function bindSciCardEvents(container, subj){
       };
       delete sciRetrying[qid];
       saveJson(SCI_LOG_KEY, sciLog);
+      updateSciBarStatus(subj);
 
       // Replace card DOM
       var oldCard = document.getElementById('card-' + qid);
@@ -3685,8 +4378,10 @@ function bindSciCardEvents(container, subj){
       sciState.subj = s;
       sciState.tab = 'concept';
       sciState.conceptSearch = getConceptTitle(s, cid);
+      sciState.conceptChFilter = 'all';
       saveJson(SCI_STATE_KEY, sciState);
       render();
+      window.scrollTo(0, 0);
     });
   });
 }
@@ -3701,9 +4396,9 @@ function renderSciConcepts(){
   var filtered = allConcepts.filter(function(c){
     if(sciState.conceptChFilter !== 'all' && c.ch !== sciState.conceptChFilter) return false;
     if(searchKw){
-      var matchTitle = (c.title || '').toLowerCase().includes(searchKw);
-      var matchAliases = (c.aliases || []).some(function(a){ return a.toLowerCase().includes(searchKw); });
-      var matchBody = (c.body || []).some(function(b){ return b.toLowerCase().includes(searchKw); });
+      var matchTitle = (c.title || '').toLowerCase().indexOf(searchKw) !== -1;
+      var matchAliases = (c.aliases || []).some(function(a){ return a.toLowerCase().indexOf(searchKw) !== -1; });
+      var matchBody = (c.body || []).some(function(b){ return b.toLowerCase().indexOf(searchKw) !== -1; });
       if(!matchTitle && !matchAliases && !matchBody) return false;
     }
     return true;
@@ -3712,13 +4407,13 @@ function renderSciConcepts(){
   var html = '';
   html += '<div class="sci-bar">';
   html += '  <div class="sci-concept-search-wrap">';
-  html += '    <input type="search" id="sci-concept-search-input" class="sci-search-input" placeholder="🔍 개념명, 공식, 키워드 검색..." value="' + (sciState.conceptSearch || '') + '">';
+  html += '    <input type="search" id="sci-concept-search-input" class="sci-search-input" placeholder="🔍 개념명, 공식, 키워드 검색..." value="' + esc(sciState.conceptSearch || '') + '">';
   html += '  </div>';
   html += '  <div class="sci-ch-chips">';
   html += '    <button type="button" class="sci-chip' + (sciState.conceptChFilter === 'all' ? ' active' : '') + '" data-ch="all">전체 (' + allConcepts.length + ')</button>';
   sData.chapters.forEach(function(ch){
     var chCount = allConcepts.filter(function(c){ return c.ch === ch; }).length;
-    html += '    <button type="button" class="sci-chip' + (sciState.conceptChFilter === ch ? ' active' : '') + '" data-ch="' + ch + '">' + ch + ' (' + chCount + ')</button>';
+    html += '    <button type="button" class="sci-chip' + (sciState.conceptChFilter === ch ? ' active' : '') + '" data-ch="' + esc(ch) + '">' + esc(ch) + ' (' + chCount + ')</button>';
   });
   html += '  </div>';
   html += '</div>';
@@ -3728,31 +4423,32 @@ function renderSciConcepts(){
     html += '<div class="sci-empty">검색 조건에 맞는 개념이 없습니다.</div>';
   } else {
     filtered.forEach(function(c){
-      // Count how many questions test this concept
       var qCount = (sData.questions || []).filter(function(q){
-        return (q.c_ids || []).includes(c.id);
+        return (q.c_ids || []).indexOf(c.id) !== -1;
       }).length;
 
       html += '<div class="sci-concept-card">';
       html += '  <div class="concept-title-row">';
-      html += '    <span class="concept-title">' + c.title + '</span>';
-      html += '    <span class="sci-tag chapter">' + c.ch + '</span>';
+      html += '    <span class="concept-title">' + esc(c.title) + '</span>';
+      html += '    <span class="sci-tag chapter">' + esc(c.ch) + '</span>';
       html += '  </div>';
 
       if(c.body && c.body.length > 0){
         html += '  <div class="concept-body">';
         c.body.forEach(function(bLine){
-          html += '    <div class="concept-body-bullet">• ' + formatMathText(bLine) + '</div>';
+          html += formatConceptLine(bLine);
         });
         html += '  </div>';
       }
 
       html += '  <div class="concept-footer">';
       if(c.aliases && c.aliases.length > 0){
-        html += '    <div class="concept-aliases">동의어: ' + c.aliases.join(', ') + '</div>';
+        html += '    <div class="concept-aliases">키워드: ' + esc(c.aliases.join(', ')) + '</div>';
+      } else {
+        html += '    <div></div>';
       }
       if(qCount > 0){
-        html += '    <button type="button" class="btn-filter-concept-qs" data-cid="' + c.id + '">🎯 관련 기출문제 (' + qCount + '문항) 풀기 →</button>';
+        html += '    <button type="button" class="btn-filter-concept-qs" data-cid="' + c.id + '">🎯 관련 기출 (' + qCount + '문항) 풀기 →</button>';
       }
       html += '  </div>';
       html += '</div>';
@@ -3766,10 +4462,16 @@ function renderSciConcepts(){
   var searchInput = document.getElementById('sci-concept-search-input');
   if(searchInput){
     searchInput.addEventListener('input', function(){
+      var cursorPos = this.selectionStart;
       sciState.conceptSearch = this.value;
       saveJson(SCI_STATE_KEY, sciState);
       renderSciConcepts();
       renderMath(area);
+      var newInp = document.getElementById('sci-concept-search-input');
+      if(newInp){
+        newInp.focus();
+        try { newInp.setSelectionRange(cursorPos, cursorPos); } catch(e){}
+      }
     });
   }
 
@@ -3790,8 +4492,11 @@ function renderSciConcepts(){
       sciState.tab = 'mcq';
       sciState.roundFilter = 'all';
       sciState.chFilter = 'all';
+      sciState.conceptIdFilter = cid;
+      sciState.shown = 20;
       saveJson(SCI_STATE_KEY, sciState);
       render();
+      window.scrollTo(0, 0);
     });
   });
 }
@@ -3809,21 +4514,21 @@ function renderSciWrong(){
 
   var html = '';
   html += '<div class="sci-bar">';
-  html += '  <div class="sci-bar-status">';
-  html += '    <span style="font-size:15px;font-weight:700">❌ ' + subj + ' 오답 노트: 총 <b>' + wrongQs.length + '</b>문항</span>';
+  html += '  <div class="sci-bar-status" style="border-top:0;padding-top:0">';
+  html += '    <span style="font-size:14.5px;font-weight:800">❌ ' + subj + ' 오답 노트: 총 <b>' + wrongQs.length + '</b>문항</span>';
   html += '  </div>';
   if(wrongQs.length > 0){
-    html += '  <button type="button" id="sci-retry-all-wrong-btn" class="sci-btn-outline" style="color:#dc2626;border-color:#fca5a5">⚡ 오답 전 문항 다시 풀기</button>';
+    html += '  <button type="button" id="sci-retry-all-wrong-btn" class="sci-btn-outline sci-btn-danger">⚡ 오답 전 문항 다시 풀기</button>';
   }
   html += '</div>';
 
   html += '<div class="sci-qs-list">';
   if(wrongQs.length === 0){
-    html += '<div class="sci-empty" style="padding:40px 20px;text-align:center">';
-    html += '  <div style="font-size:36px;margin-bottom:12px">🎉</div>';
-    html += '  <div style="font-size:16px;font-weight:700;color:#059669;margin-bottom:8px">현재 ' + subj + ' 오답이 없습니다!</div>';
-    html += '  <div style="font-size:13px;color:#64748b;margin-bottom:16px">실전 기출문제를 더 풀고 취약점을 점검해 보세요.</div>';
-    html += '  <button type="button" id="btn-go-latest-sci" class="btn-filter-concept-qs" style="margin:0 auto">📝 ' + subj + ' 최신 63회 기출 풀러 가기 →</button>';
+    html += '<div class="sci-empty">';
+    html += '  <div style="font-size:36px;margin-bottom:10px">🎉</div>';
+    html += '  <div style="font-size:15.5px;font-weight:800;color:#10b981;margin-bottom:6px">현재 ' + subj + ' 과목에 누적된 오답이 없습니다!</div>';
+    html += '  <div style="font-size:13px;margin-bottom:16px">실전 기출문제를 풀면서 틀린 문항이 이곳에 자동으로 기록됩니다.</div>';
+    html += '  <button type="button" id="btn-go-latest-sci" class="btn-filter-concept-qs">📝 ' + subj + ' 최신 63회 기출 풀러 가기 →</button>';
     html += '</div>';
   } else {
     wrongQs.forEach(function(q){
@@ -3848,6 +4553,8 @@ function renderSciWrong(){
       sciState.tab = 'mcq';
       sciState.roundFilter = '63';
       sciState.chFilter = 'all';
+      sciState.conceptIdFilter = '';
+      sciState.shown = 20;
       saveJson(SCI_STATE_KEY, sciState);
       render();
     });
@@ -3862,10 +4569,10 @@ function renderSciStats(){
   var sData = SCIENCE[subj] || { questions: [], chapters: [] };
 
   var html = '';
-  html += '<div class="sci-stats-container" style="max-width:960px;margin:0 auto;padding:12px">';
+  html += '<div class="sci-stats-container">';
   
   // 4 Subjects Overview Grid
-  html += '  <h3 style="font-size:16px;font-weight:700;margin-bottom:12px">🔬 자연과학개론 4과목 누적 성적 요약</h3>';
+  html += '  <h3 class="sci-stats-heading">🔬 자연과학개론 4과목 누적 성적 요약</h3>';
   html += '  <div class="sci-stats-grid">';
   SCI_SUBJECTS.forEach(function(s){
     var subData = SCIENCE[s] || { questions: [] };
@@ -3882,10 +4589,10 @@ function renderSciStats(){
     var acc = solved ? Math.round(correct / solved * 100) : 0;
     var isCurrent = (s === subj);
 
-    html += '<div class="sci-stat-box' + (isCurrent ? ' active-stat-box' : '') + '">';
-    html += '  <div style="font-size:13px;font-weight:700;color:' + (isCurrent ? '#2563eb' : '#475569') + '">' + s + '</div>';
+    html += '<div class="sci-stat-box' + (isCurrent ? ' active-stat-box' : '') + '" data-stat-subj="' + s + '">';
+    html += '  <div class="sci-stat-subj">' + s + '</div>';
     html += '  <div class="sci-stat-val">' + acc + '%</div>';
-    html += '  <div class="sci-stat-sub">정답 ' + correct + ' / 풀이 ' + solved + ' (전체 ' + totalQs + '제)</div>';
+    html += '  <div class="sci-stat-sub">정답 ' + correct + ' / 풀이 ' + solved + ' (' + totalQs + '제)</div>';
     html += '  <div class="sci-bar-wrap" style="margin-top:8px">';
     html += '    <div class="sci-bar-fill" style="width:' + acc + '%;background:' + (acc >= 70 ? '#10b981' : acc >= 50 ? '#f59e0b' : '#ef4444') + '"></div>';
     html += '  </div>';
@@ -3894,21 +4601,19 @@ function renderSciStats(){
   html += '  </div>';
 
   // Current Subject Chapter Table
-  html += '  <h3 style="font-size:16px;font-weight:700;margin:24px 0 12px 0">📊 ' + subj + ' 단원별 정답률 & 취약 영역</h3>';
-  html += '  <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden">';
-  html += '    <table class="sci-ch-table">';
-  html += '      <thead>';
-  html += '        <tr style="background:#f8fafc">';
-  html += '          <th>단원명</th>';
-  html += '          <th>출제</th>';
-  html += '          <th>풀이</th>';
-  html += '          <th>정답</th>';
-  html += '          <th>정답률</th>';
-  html += '          <th>게이지</th>';
-  html += '          <th>공략</th>';
-  html += '        </tr>';
-  html += '      </thead>';
-  html += '      <tbody>';
+  html += '  <h3 class="sci-stats-heading">📊 ' + subj + ' 단원별 정답률 & 취약 영역</h3>';
+  html += '  <div class="sci-table-card">';
+  html += '    <div class="sci-table-scroll">';
+  html += '      <table class="sci-ch-table">';
+  html += '        <thead>';
+  html += '          <tr>';
+  html += '            <th>단원명</th>';
+  html += '            <th>풀이 현황</th>';
+  html += '            <th>정답률</th>';
+  html += '            <th style="text-align:right">집중 학습</th>';
+  html += '          </tr>';
+  html += '        </thead>';
+  html += '        <tbody>';
 
   var chStats = sData.chapters.map(function(ch){
     var chQs = (sData.questions || []).filter(function(q){ return q.c === ch; });
@@ -3932,7 +4637,6 @@ function renderSciStats(){
   });
 
   chStats.sort(function(a, b){
-    // Lowest accuracy first (weakest first) among attempted
     if(a.solved > 0 && b.solved > 0) return a.acc - b.acc;
     if(a.solved > 0) return -1;
     if(b.solved > 0) return 1;
@@ -3940,29 +4644,39 @@ function renderSciStats(){
   });
 
   chStats.forEach(function(cs){
-    html += '      <tr>';
-    html += '        <td><b>' + cs.ch + '</b></td>';
-    html += '        <td>' + cs.total + '제</td>';
-    html += '        <td>' + cs.solved + '제</td>';
-    html += '        <td>' + cs.correct + '제</td>';
-    html += '        <td><b>' + (cs.solved ? cs.acc + '%' : '-') + '</b></td>';
-    html += '        <td style="width:140px">';
-    html += '          <div class="sci-bar-wrap">';
-    html += '            <div class="sci-bar-fill" style="width:' + (cs.solved ? cs.acc : 0) + '%;background:' + (cs.acc >= 70 ? '#10b981' : cs.acc >= 50 ? '#f59e0b' : '#ef4444') + '"></div>';
-    html += '          </div>';
-    html += '        </td>';
-    html += '        <td>';
-    html += '          <button type="button" class="btn-focus-ch" data-ch="' + cs.ch + '" style="padding:3px 8px;font-size:11px;font-weight:700;border:1px solid #3b82f6;border-radius:4px;background:#eff6ff;color:#1e40af;cursor:pointer">집중 공략 🎯</button>';
-    html += '        </td>';
-    html += '      </tr>';
+    html += '        <tr>';
+    html += '          <td><b>' + esc(cs.ch) + '</b></td>';
+    html += '          <td>' + cs.solved + '/' + cs.total + '제 <span style="font-size:11px;color:#64748b">(정답 ' + cs.correct + ')</span></td>';
+    html += '          <td style="min-width:90px">';
+    html += '            <div style="font-weight:800;margin-bottom:3px">' + (cs.solved ? cs.acc + '%' : '-') + '</div>';
+    html += '            <div class="sci-bar-wrap">';
+    html += '              <div class="sci-bar-fill" style="width:' + (cs.solved ? cs.acc : 0) + '%;background:' + (cs.acc >= 70 ? '#10b981' : cs.acc >= 50 ? '#f59e0b' : '#ef4444') + '"></div>';
+    html += '            </div>';
+    html += '          </td>';
+    html += '          <td style="text-align:right">';
+    html += '            <button type="button" class="btn-focus-ch" data-ch="' + esc(cs.ch) + '">공략 🎯</button>';
+    html += '          </td>';
+    html += '        </tr>';
   });
 
-  html += '      </tbody>';
-  html += '    </table>';
+  html += '        </tbody>';
+  html += '      </table>';
+  html += '    </div>';
   html += '  </div>';
   html += '</div>';
 
   area.innerHTML = html;
+
+  area.querySelectorAll('.sci-stat-box').forEach(function(box){
+    box.addEventListener('click', function(){
+      var s = this.getAttribute('data-stat-subj');
+      if(s && s !== sciState.subj){
+        sciState.subj = s;
+        saveJson(SCI_STATE_KEY, sciState);
+        render();
+      }
+    });
+  });
 
   area.querySelectorAll('.btn-focus-ch').forEach(function(btn){
     btn.addEventListener('click', function(){
@@ -3970,8 +4684,11 @@ function renderSciStats(){
       sciState.tab = 'mcq';
       sciState.chFilter = ch;
       sciState.roundFilter = 'all';
+      sciState.conceptIdFilter = '';
+      sciState.shown = 20;
       saveJson(SCI_STATE_KEY, sciState);
       render();
+      window.scrollTo(0, 0);
     });
   });
 }
@@ -3983,17 +4700,6 @@ function render(){
     domainBtn.textContent = (domainMode === 'science') ? '🏛️ 법령 모드' : '🔬 자연과학';
     domainBtn.title = (domainMode === 'science') ? '산업재산권법 모드로 전환' : '자연과학개론 모드로 전환';
   }
-  var lawBar = document.getElementById('law-modebar');
-  var sciBar = document.getElementById('science-modebar');
-  var lawTabsEl = document.getElementById('tabs');
-  var sciTabsEl = document.getElementById('science-tabs');
-  var sciBrandEl = document.getElementById('sci-hud-brand');
-
-  if(lawBar) lawBar.style.display = (domainMode === 'science') ? 'none' : 'flex';
-  if(sciBar) sciBar.style.display = (domainMode === 'science') ? 'flex' : 'none';
-  if(lawTabsEl) lawTabsEl.style.display = (domainMode === 'science') ? 'none' : 'flex';
-  if(sciTabsEl) sciTabsEl.style.display = (domainMode === 'science') ? 'flex' : 'none';
-  if(sciBrandEl) sciBrandEl.style.display = (domainMode === 'science') ? 'flex' : 'none';
 
   document.body.classList.toggle('domain-science', domainMode === 'science');
   document.body.classList.toggle('domain-law', domainMode === 'law');
@@ -4002,7 +4708,6 @@ function render(){
     renderScienceMode();
     return;
   } else {
-    // Law mode: ensure law tab counts are painted
     if(typeof paintTabCounts === 'function') paintTabCounts();
   }
 

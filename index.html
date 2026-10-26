@@ -2032,6 +2032,26 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
     color: #94a3b8;
   }
 
+
+  body.domain-science #new-sel,
+  body.domain-science #ch-sel,
+  body.domain-science .meter,
+  body.domain-science #score,
+  body.domain-science #mnemonics-btn {
+    display: none !important;
+  }
+  body.domain-science .hud {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+  }
+  body.dark.domain-science #sci-hud-brand {
+    color: #93c5fd !important;
+  }
+  body.dark.domain-science #sci-hud-brand span {
+    background: #1e3a8a !important;
+    color: #bfdbfe !important;
+  }
 </style>
 
 </head>
@@ -2186,6 +2206,7 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
 </script>
 
 <div class="hud">
+  <div id="sci-hud-brand" style="display:none;font-size:15px;font-weight:800;color:#1e40af;align-items:center;gap:6px">🔬 자연과학개론 <span style="font-size:12px;font-weight:600;color:#64748b;background:#e0f2fe;padding:2px 8px;border-radius:10px">2005~2026 기출 878제</span></div>
 
   <select id="new-sel" aria-label="하루 신규 문항 수"></select>
 
@@ -2231,6 +2252,7 @@ body.dark .pill.note{background:#382F13;border-color:#534015;color:#FDE047}
 </div>
 
 <div class="tabs" id="tabs"></div>
+<div class="tabs" id="science-tabs" style="display:none"></div>
 
 <main class="main"><div id="area"></div></main>
 
@@ -3304,7 +3326,8 @@ function renderMath(container){
           {left: "$$", right: "$$", display: true},
           {left: "$", right: "$", display: false}
         ],
-        throwOnError: false
+        throwOnError: false,
+        strict: false
       });
     } catch(e){
       console.warn('KaTeX render error:', e);
@@ -3360,8 +3383,10 @@ function renderScienceTabs(){
     html += '<button type="button" class="tab' + active + '" data-sci-subj="' + s + '">' +
             (icons[s] || '') + ' ' + s + ' (' + total + ')' + '</button>';
   });
-  tabs.innerHTML = html;
-  tabs.querySelectorAll('.tab').forEach(function(btn){
+  var sciTabsEl = document.getElementById('science-tabs');
+  if(!sciTabsEl) return;
+  sciTabsEl.innerHTML = html;
+  sciTabsEl.querySelectorAll('.tab').forEach(function(btn){
     btn.addEventListener('click', function(){
       sciState.subj = this.getAttribute('data-sci-subj');
       // Reset chapter filter on subject change if not matching
@@ -3960,14 +3985,25 @@ function render(){
   }
   var lawBar = document.getElementById('law-modebar');
   var sciBar = document.getElementById('science-modebar');
+  var lawTabsEl = document.getElementById('tabs');
+  var sciTabsEl = document.getElementById('science-tabs');
+  var sciBrandEl = document.getElementById('sci-hud-brand');
+
   if(lawBar) lawBar.style.display = (domainMode === 'science') ? 'none' : 'flex';
   if(sciBar) sciBar.style.display = (domainMode === 'science') ? 'flex' : 'none';
+  if(lawTabsEl) lawTabsEl.style.display = (domainMode === 'science') ? 'none' : 'flex';
+  if(sciTabsEl) sciTabsEl.style.display = (domainMode === 'science') ? 'flex' : 'none';
+  if(sciBrandEl) sciBrandEl.style.display = (domainMode === 'science') ? 'flex' : 'none';
+
   document.body.classList.toggle('domain-science', domainMode === 'science');
   document.body.classList.toggle('domain-law', domainMode === 'law');
 
   if(domainMode === 'science'){
     renderScienceMode();
     return;
+  } else {
+    // Law mode: ensure law tab counts are painted
+    if(typeof paintTabCounts === 'function') paintTabCounts();
   }
 
     saveJson(MODE_KEY,mode);

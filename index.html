@@ -768,6 +768,7 @@ body.browse{display:block;grid-template-columns:none}
 .opts{display:grid;gap:8px;margin-top:16px}
 
 .picks{display:grid;gap:6px;margin:12px 0;background:#F8FAFC;border:1.5px solid #CBD5E1;border-radius:10px;padding:10px 12px}
+.picks[hidden]{display:none !important}
 
 .picks-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
 
@@ -6825,6 +6826,26 @@ function render(){
 
       input.addEventListener('keydown',function(e){if(e.key==='Enter'){if(st().answered)next();else check();}});
 
+      var pBox=document.getElementById('picks');
+      if(pBox){
+        Array.prototype.forEach.call(pBox.querySelectorAll('.pick'),function(btn){
+          btn.addEventListener('click',function(){
+            if(st().answered)return;
+            st().hinted=true;
+            Array.prototype.forEach.call(pBox.querySelectorAll('.pick'),function(b){b.classList.remove('sel');});
+            btn.classList.add('sel');
+            input.value=btn.getAttribute('data-c');
+            if(!isTouchMobile){
+              input.focus();
+            }
+            var act=document.querySelector('.actions');
+            if(act && isTouchMobile){
+              act.scrollIntoView({behavior:'smooth', block:'nearest'});
+            }
+          });
+        });
+      }
+
       if(!isTouchMobile){
 
         setTimeout(function(){input.focus();},40);
@@ -6918,34 +6939,6 @@ function render(){
     }
 
     box.scrollIntoView({behavior:'smooth', block:'nearest'});
-
-    Array.prototype.forEach.call(box.querySelectorAll('.pick'),function(btn){
-
-      btn.addEventListener('click',function(){
-
-        Array.prototype.forEach.call(box.querySelectorAll('.pick'),function(b){b.classList.remove('sel');});
-
-        btn.classList.add('sel');
-
-        input.value=btn.getAttribute('data-c');
-
-        if(!isTouchMobile){
-
-          input.focus();
-
-        }
-
-        var act=document.querySelector('.actions');
-
-        if(act && isTouchMobile){
-
-          act.scrollIntoView({behavior:'smooth', block:'nearest'});
-
-        }
-
-      });
-
-    });
 
     setResult('warn','선지를 펼쳤습니다 — 고른 뒤 확인을 누르세요. 재인은 인출보다 약해 틀림으로 기록됩니다.');
 

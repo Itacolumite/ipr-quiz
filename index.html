@@ -472,6 +472,8 @@ body.dark .ox-scenario-title{color:#A5B4FC}
 
 .oxretry-badge{color:#334155;font-weight:800;display:flex;align-items:center;gap:4px}
 
+.oxretry-note{margin-top:6px;padding:6px 10px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:6px;font-size:12px;font-weight:700;color:#9A3412}
+
 .oxcancel{background:transparent;border:1px solid #CBD5E1;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;color:#64748B;cursor:pointer;transition:all .15s}
 
 .oxcancel:hover{background:#E2E8F0;color:#0F172A}
@@ -487,6 +489,8 @@ body.dark .oxagain:hover{background:rgba(255,255,255,0.1)}
 body.dark .oxretry-bar{background:#1E293B;border-color:#334155}
 
 body.dark .oxretry-badge{color:#94A3B8}
+
+body.dark .oxretry-note{background:#431407;border-color:#9A3412;color:#FDBA74}
 
 body.dark .oxcancel{border-color:#475569;color:#94A3B8}
 
@@ -4876,6 +4880,7 @@ if (typeof sciState.qIdx !== 'number' || sciState.qIdx < 0) sciState.qIdx = 0;
 if (typeof sciState.wrongIdx !== 'number' || sciState.wrongIdx < 0) sciState.wrongIdx = 0;
 
 var sciRetrying = {}; // in-memory retry tracking { [qid]: true }
+function sciKstDay(ts){ return new Date((ts || 0) + 9 * 3600e3).toISOString().slice(0, 10); }
 var sciTimerHandle = null;
 var sciAutoNextHandle = null;
 
@@ -5577,6 +5582,9 @@ function renderSciQuestionCard(subj, q, idx, totalLen){
     cardHtml += '    </div>';
   }
 
+  // 같은 날 다시 풀어 맞힌 경우: 화면에는 방금 고른 답을 보여 주되, 기록(rec)은 첫 시도 오답 그대로 둔다
+  var shownRec = (rec && rec.retry && rec.retry.ts > rec.ts) ? rec.retry : rec;
+
   // 5 Choices (OMR Bubble Options)
   cardHtml += '    <div class="sci-choices omr-opts" data-qid="' + q.id + '">';
   (q.ch || []).forEach(function(cText, cIdx){
@@ -5584,7 +5592,7 @@ function renderSciQuestionCard(subj, q, idx, totalLen){
     var stateClass = '';
     if(isAnswered){
       if(cNum === q.a) stateClass = ' choice-answer right';
-      else if(rec && rec.pick === cNum && !rec.correct) stateClass = ' choice-wrong-pick wrong';
+      else if(shownRec && shownRec.pick === cNum && !shownRec.correct) stateClass = ' choice-wrong-pick wrong';
     }
     cardHtml += '      <button type="button" class="sci-choice-btn omr-opt' + stateClass + '" data-qid="' + q.id + '" data-choice="' + cNum + '"' + (isAnswered ? ' disabled' : '') + '>';
     cardHtml += '        <span class="omr-bubble choice-num">' + cNum + '</span>';
@@ -5601,11 +5609,14 @@ function renderSciQuestionCard(subj, q, idx, totalLen){
   // Verdict & Explanation
   var numIcons = ['①','②','③','④','⑤'];
   if(isAnswered){
-    cardHtml += '    <div class="sci-explanation omr-res-wrap ' + (rec.correct ? 'expl-correct' : 'expl-wrong') + '">';
-    cardHtml += '      <div class="omr-verdict ' + (rec.correct ? 'ok' : 'bad') + '">';
-    cardHtml += '        <span>' + (rec.correct ? '정답입니다! (' + numIcons[q.a - 1] + ')' : '오답 · 정답은 ' + numIcons[q.a - 1] + '번입니다') + '</span>';
+    cardHtml += '    <div class="sci-explanation omr-res-wrap ' + (shownRec.correct ? 'expl-correct' : 'expl-wrong') + '">';
+    cardHtml += '      <div class="omr-verdict ' + (shownRec.correct ? 'ok' : 'bad') + '">';
+    cardHtml += '        <span>' + (shownRec.correct ? '정답입니다! (' + numIcons[q.a - 1] + ')' : '오답 · 정답은 ' + numIcons[q.a - 1] + '번입니다') + '</span>';
     cardHtml += '        <span class="expl-badge">정답: ' + numIcons[q.a - 1] + '</span>';
     cardHtml += '      </div>';
+    if(shownRec !== rec){
+      cardHtml += '      <div class="oxretry-note">첫 시도 오답 기록은 유지됩니다 · 다른 날 다시 맞히면 오답 노트에서 빠집니다</div>';
+    }
 
     var hasBogiReview = (q.b || []).some(function(bItem){
       return bItem && typeof bItem === 'object' && (bItem.explanation || typeof bItem.correct === 'boolean');
@@ -5781,11 +5792,18 @@ function bindSciCardEvents(container, subj, qs, isWrongTab){
       if(!q) return;
 
       var isCorrect = (choiceNum === q.a);
-      sciLog[qid] = {
-        pick: choiceNum,
-        correct: isCorrect,
-        ts: Date.now()
-      };
+      // 첫 시도 오답은 같은 날(KST) 다시 풀어 맞혀도 지우지 않는다. 해설을 본 직후의 정답은
+      // retry 필드에만 남기고, 다른 날 다시 맞혔을 때만 새 기록으로 덮어써 오답 노트에서 빠지게 한다.
+      var nowTs = Date.now(), prevRec = sciLog[qid];
+      if(prevRec && !prevRec.correct && isCorrect && sciKstDay(prevRec.ts) === sciKstDay(nowTs)){
+        prevRec.retry = { pick: choiceNum, correct: true, ts: nowTs };
+      } else {
+        sciLog[qid] = {
+          pick: choiceNum,
+          correct: isCorrect,
+          ts: nowTs
+        };
+      }
       delete sciRetrying[qid];
       saveJson(SCI_LOG_KEY, sciLog);
       updateSciBarStatus(subj);
@@ -9472,15 +9490,18 @@ function render(){
 
     var oCls = 'omr-oxb oxbtn', xCls = 'omr-oxb oxbtn';
 
+    // 같은 날 다시 풀어 맞힌 경우: 화면에는 방금 고른 답을 보여 주되, 기록(rec.pick)은 첫 시도 오답 그대로 둔다
+    var shown = (rec && rec.retry && rec.retry.t > rec.t) ? rec.retry : rec;
+
     if(!showSolveBtns && rec){
 
       if(q.a === 'O') oCls += ' right';
 
-      else if(rec.pick === 'O') oCls += ' wrong';
+      else if(shown.pick === 'O') oCls += ' wrong';
 
       if(q.a === 'X') xCls += ' right';
 
-      else if(rec.pick === 'X') xCls += ' wrong';
+      else if(shown.pick === 'X') xCls += ' wrong';
 
     }
 
@@ -9508,13 +9529,19 @@ function render(){
 
     }else{
 
-      var right=rec.pick===q.a;
+      var right=shown.pick===q.a;
 
-      var vMsg = rec.pick === 'TIMEOUT'
+      var vMsg = shown.pick === 'TIMEOUT'
 
         ? ('시간 초과 · 정답은 ' + q.a + ' (' + (q.a==='O'?'맞음':'틀림') + ')')
 
         : ((right?'맞혔습니다':'틀렸습니다')+' · 이 서술은 '+(q.a==='O'?'맞음 (O)':'틀림 (X)'));
+
+      var retryNote = (shown !== rec)
+
+        ? '<div class="oxretry-note">첫 시도 오답 기록은 유지됩니다 · 다른 날 다시 맞히면 오답 목록에서 빠집니다</div>'
+
+        : '';
 
       body+='<div class="omr-res-wrap">'
 
@@ -9523,6 +9550,8 @@ function render(){
         +'<span>'+vMsg+'</span>'
 
         +' <button type="button" class="oxagain" data-again="'+esc(q.i)+'" title="이 문제를 다시 풀어봅니다">🔄 다시 풀기</button></div>'
+
+        +retryNote
 
         +(q.e?'<div class="omr-ex oxexpl">'+renderExplain(q.e)+'</div>':'')
 
@@ -9848,9 +9877,32 @@ function render(){
 
   if(typeof exam.idx!=='number')exam.idx=0;
 
+  // 정오 기록. 첫 시도 오답은 같은 날(KST) 다시 풀어 맞혀도 지우지 않는다.
+  // 해설을 막 본 직후의 정답은 독립 인출이 아니므로 retry 필드에만 남기고,
+  // 다른 날 다시 맞혔을 때만 새 기록으로 덮어써 오답 목록·약점 진단에서 빠지게 한다.
+  function kstDayOf(ts){return new Date((ts||0)+9*3600e3).toISOString().slice(0,10);}
+
+  function recordOx(id,pick){
+
+    var now=Date.now(), prev=oxLog[id], item=findOxItem(id);
+
+    var prevWrong=!!(prev&&item&&prev.pick!==item.a);
+
+    if(prevWrong&&item&&pick===item.a&&kstDayOf(prev.t)===kstDayOf(now)){
+
+      prev.retry={pick:pick,t:now};
+
+    }else{
+
+      oxLog[id]={pick:pick,t:now};
+
+    }
+
+  }
+
   function gradeOx(id,pick){
 
-    oxLog[id]={pick:pick,t:Date.now()};
+    recordOx(id,pick);
 
     saveJson(OX_KEY,oxLog);syncSchedulePush();
 
@@ -11976,7 +12028,7 @@ function render(){
 
         delete examRetrying[qid];
 
-        oxLog[qid]={pick:pick,t:Date.now()};
+        recordOx(qid,pick);
 
         saveJson(OX_KEY,oxLog);
 

@@ -490,6 +490,30 @@ body.dark .ox-stem-prompt .ox-stem-qmark{background:#334155;color:#F8FAFC}
 .oxretry-badge{color:#334155;font-weight:800;display:flex;align-items:center;gap:4px}
 
 .oxretry-note{margin-top:6px;padding:6px 10px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:6px;font-size:12px;font-weight:700;color:#9A3412}
+.oxretry-note.sure{background:#FEF2F2;border-color:#FECACA;color:#B91C1C}
+.omr-ox-btns.oxconf-btns{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-areas:"os ou xu xs";gap:8px}
+.oxconf-btns .oxconf-os{grid-area:os}.oxconf-btns .oxconf-ou{grid-area:ou}.oxconf-btns .oxconf-xu{grid-area:xu}.oxconf-btns .oxconf-xs{grid-area:xs}
+.oxconf-btns .omr-oxb{padding:12px 4px;min-width:0}
+.oxconf-btns .oxconf-ou,.oxconf-btns .oxconf-xu{border-style:dashed}
+.oxconf-btns .omr-oxb small{white-space:nowrap}
+.oxconf-btns .omr-oxb.chosen{box-shadow:0 0 0 2px #334155 inset}
+.oxconf-key{opacity:.7;font-weight:500}
+@media (max-width:640px){
+  .omr-ox-btns.oxconf-btns{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:"os xs" "ou xu"}
+  .oxconf-btns .omr-oxb{padding:10px 4px;min-height:56px}
+  .oxconf-key{display:none}
+}
+.omr-tag.u{background:#FEF3C7;color:#B45309}
+.omr-mlegend i.d2{background:#f59e0b}
+.omr-tag.r.sure{background:#B91C1C;color:#fff}
+.omr-exnav.unsure{background:#FEF3C7;color:#B45309;border-color:#F59E0B;font-weight:700}
+.omr-exnav.bad.sure{box-shadow:0 0 0 2px #B91C1C inset}
+.oxsure-count{font-size:.9em;font-weight:800}
+.unsure-round-btn{background:#FFFBEB;border-color:#FDE68A;color:#B45309;font-weight:800}
+.unsure-round-btn.active{background:#D97706!important;border-color:#B45309!important;color:#fff!important}
+.matrix-conf-line{display:flex;gap:14px;font-size:11.5px;font-weight:700;color:#475569;margin-top:2px}
+.matrix-conf-line b{color:#B91C1C}
+.matrix-conf-line span+span b{color:#B45309}
 
 .oxcancel{background:transparent;border:1px solid #CBD5E1;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;color:#64748B;cursor:pointer;transition:all .15s}
 
@@ -508,6 +532,13 @@ body.dark .oxretry-bar{background:#1E293B;border-color:#334155}
 body.dark .oxretry-badge{color:#94A3B8}
 
 body.dark .oxretry-note{background:#431407;border-color:#9A3412;color:#FDBA74}
+body.dark .oxretry-note.sure{background:#450A0A;border-color:#991B1B;color:#FCA5A5}
+body.dark .oxconf-btns .omr-oxb.chosen{box-shadow:0 0 0 2px #CBD5E1 inset}
+body.dark .omr-tag.u,body.dark .omr-exnav.unsure{background:#451A03;color:#FCD34D;border-color:#B45309}
+body.dark .unsure-round-btn{background:#451A03;border-color:#92400E;color:#FCD34D}
+body.dark .matrix-conf-line{color:#CBD5E1}
+body.dark .matrix-conf-line b{color:#FCA5A5}
+body.dark .matrix-conf-line span+span b{color:#FCD34D}
 
 body.dark .oxcancel{border-color:#475569;color:#94A3B8}
 
@@ -7705,25 +7736,15 @@ function render(){
 
         var canSolve=(!oxLog[eq.i]||!!examRetrying[eq.i]);
 
-        if((e.key==='o'||e.key==='O'||e.key==='1')&&canSolve){
+        // 정답 + 확신도 단축키: 1 O확신 · 2 O애매 · 3 X애매 · 4 X확신 (O·X 키와 ←·→는 확신으로 본다)
+        var keyConf={'o':['O','sure'],'O':['O','sure'],'1':['O','sure'],'2':['O','unsure'],'3':['X','unsure'],'x':['X','sure'],'X':['X','sure'],'4':['X','sure']}[e.key];
+        if(keyConf&&canSolve){
 
           e.preventDefault();
 
-          var obtnO=area.querySelector('[data-ox="'+eq.i+'"][data-pick="O"]');
+          var obtnK=area.querySelector('[data-ox="'+eq.i+'"][data-pick="'+keyConf[0]+'"][data-conf="'+keyConf[1]+'"]');
 
-          if(obtnO)obtnO.click();
-
-          return;
-
-        }
-
-        if((e.key==='x'||e.key==='X'||e.key==='2')&&canSolve){
-
-          e.preventDefault();
-
-          var obtnX=area.querySelector('[data-ox="'+eq.i+'"][data-pick="X"]');
-
-          if(obtnX)obtnX.click();
+          if(obtnK)obtnK.click();
 
           return;
 
@@ -7735,7 +7756,7 @@ function render(){
 
           if(canSolve){
 
-            var obtnL=area.querySelector('[data-ox="'+eq.i+'"][data-pick="O"]');
+            var obtnL=area.querySelector('[data-ox="'+eq.i+'"][data-pick="O"][data-conf="sure"]');
 
             if(obtnL)obtnL.click();
 
@@ -7755,7 +7776,7 @@ function render(){
 
           if(canSolve){
 
-            var obtnR=area.querySelector('[data-ox="'+eq.i+'"][data-pick="X"]');
+            var obtnR=area.querySelector('[data-ox="'+eq.i+'"][data-pick="X"][data-conf="sure"]');
 
             if(obtnR)obtnR.click();
 
@@ -9614,6 +9635,14 @@ function render(){
 
   }
 
+  // 정답 + 확신도 상태. conf가 없는 옛 기록은 확신 없이 맞힘/틀림으로만 본다.
+  //  sureWrong: 확신하고 틀림(과잉수정 효과가 큰 복습 1순위) · wrong: 틀림
+  //  unsure: 애매하게 맞힘(찍어서 맞혔을 수 있어 숙달로 치지 않음) · right: 맞힘
+  function oxState(rec,q){
+    if(!rec) return 'new';
+    if(rec.pick!==q.a) return rec.conf==='sure'?'sureWrong':'wrong';
+    return rec.conf==='unsure'?'unsure':'right';
+  }
   // 선지 카드 하나. 조문 화면과 회차 화면이 함께 쓴다 (OMR 답안지 스타일).
 
   function oxItemHtml(q, isActive, idx, totalLen, isSingle){
@@ -9658,7 +9687,12 @@ function render(){
 
       ? '<span class="omr-tag">미학습</span>'
 
-      : (rec.pick === q.a ? '<span class="omr-tag p">Easy · 정답</span>' : '<span class="omr-tag r">Again · 오답</span>');
+      : ({
+          right:'<span class="omr-tag p">Easy · 정답</span>',
+          unsure:'<span class="omr-tag u">Hard · 애매 정답</span>',
+          wrong:'<span class="omr-tag r">Again · 오답</span>',
+          sureWrong:'<span class="omr-tag r sure">Again · 확신 오답</span>'
+        })[oxState(rec,q)];
 
     var tags='<span class="omr-tag c">OX</span>'
 
@@ -9780,29 +9814,28 @@ function render(){
 
     }
 
-    var oCls = 'omr-oxb oxbtn', xCls = 'omr-oxb oxbtn';
-
     // 같은 날 다시 풀어 맞힌 경우: 화면에는 방금 고른 답을 보여 주되, 기록(rec.pick)은 첫 시도 오답 그대로 둔다
     var shown = (rec && rec.retry && rec.retry.t > rec.t) ? rec.retry : rec;
 
-    if(!showSolveBtns && rec){
-
-      if(q.a === 'O') oCls += ' right';
-
-      else if(shown.pick === 'O') oCls += ' wrong';
-
-      if(q.a === 'X') xCls += ' right';
-
-      else if(shown.pick === 'X') xCls += ' wrong';
-
-    }
-
-    body += '<div class="omr-ox-btns oxbtns">'
-
-      + '<button type="button" class="'+oCls+'" data-ox="'+esc(q.i)+'" data-pick="O"'+(showSolveBtns?'':' disabled')+'><b>O</b><small>맞다 (O / ←)</small></button>'
-
-      + '<button type="button" class="'+xCls+'" data-ox="'+esc(q.i)+'" data-pick="X"'+(showSolveBtns?'':' disabled')+'><b>X</b><small>틀리다 (X / →)</small></button>'
-
+    // 정답 + 확신도 4버튼: 누르는 횟수는 그대로 한 번. 데스크톱 한 줄(O확신·O애매·X애매·X확신), 모바일 2×2(윗줄 확신, 아랫줄 애매)
+    var confBtns = [
+      ['O','sure','확신','1·O·←'],
+      ['O','unsure','애매','2'],
+      ['X','unsure','애매','3'],
+      ['X','sure','확신','4·X·→']
+    ];
+    body += '<div class="omr-ox-btns oxbtns oxconf-btns">'
+      + confBtns.map(function(b){
+          var cls = 'omr-oxb oxbtn oxconf-' + b[0].toLowerCase() + (b[1]==='sure'?'s':'u');
+          if(!showSolveBtns && rec){
+            var chosen = shown.pick === b[0] && (!shown.conf || shown.conf === b[1]);
+            if(q.a === b[0]) cls += ' right';
+            else if(chosen) cls += ' wrong';
+            if(chosen) cls += ' chosen';
+          }
+          return '<button type="button" class="'+cls+'" data-ox="'+esc(q.i)+'" data-pick="'+b[0]+'" data-conf="'+b[1]+'"'+(showSolveBtns?'':' disabled')+'>'
+            + '<b>'+b[0]+'</b><small>'+b[2]+' <span class="oxconf-key">('+b[3]+')</span></small></button>';
+        }).join('')
       + '</div>';
 
     if(showSolveBtns){
@@ -9827,13 +9860,20 @@ function render(){
 
         ? ('시간 초과 · 정답은 ' + q.a + ' (' + (q.a==='O'?'맞음':'틀림') + ')')
 
-        : ((right?'맞혔습니다':'틀렸습니다')+' · 이 서술은 '+(q.a==='O'?'맞음 (O)':'틀림 (X)'));
+        : ((right
+            ? (shown.conf==='unsure'?'애매하게 맞혔습니다':'맞혔습니다')
+            : (shown.conf==='sure'?'확신했는데 틀렸습니다':'틀렸습니다'))
+          +' · 이 서술은 '+(q.a==='O'?'맞음 (O)':'틀림 (X)'));
 
       var retryNote = (shown !== rec)
 
-        ? '<div class="oxretry-note">첫 시도 오답 기록은 유지됩니다 · 다른 날 다시 맞히면 오답 목록에서 빠집니다</div>'
+        ? '<div class="oxretry-note">첫 시도 '+(oxState(rec,q)==='unsure'?'애매 정답':'오답')+' 기록은 유지됩니다 · 다른 날 '+(oxState(rec,q)==='unsure'?'확신으로 ':'다시 ')+'맞히면 목록에서 빠집니다</div>'
 
-        : '';
+        : (oxState(rec,q)==='unsure'
+          ? '<div class="oxretry-note">애매하게 맞힌 문항은 숙달로 치지 않습니다 · 🤔 애매 정답 목록에 남고, 다른 날 확신으로 맞히면 빠집니다</div>'
+          : (oxState(rec,q)==='sureWrong'
+            ? '<div class="oxretry-note sure">🎯 확신 오답: 확신했던 오개념이라 고치면 오래 남습니다 · 오답 목록 맨 앞에 모아 둡니다</div>'
+            : ''));
 
       body+='<div class="omr-res-wrap">'
 
@@ -10174,27 +10214,23 @@ function render(){
   // 다른 날 다시 맞혔을 때만 새 기록으로 덮어써 오답 목록·약점 진단에서 빠지게 한다.
   function kstDayOf(ts){return new Date((ts||0)+9*3600e3).toISOString().slice(0,10);}
 
-  function recordOx(id,pick){
-
+  // 확신도(conf)도 같은 규칙을 따른다: 애매 정답은 같은 날 다시 맞혀도 retry에만 남고,
+  // 다른 날 확신으로 맞혀야 기록이 바뀌어 애매 정답 목록에서 빠진다.
+  function recordOx(id,pick,conf){
     var now=Date.now(), prev=oxLog[id], item=findOxItem(id);
-
-    var prevWrong=!!(prev&&item&&prev.pick!==item.a);
-
-    if(prevWrong&&item&&pick===item.a&&kstDayOf(prev.t)===kstDayOf(now)){
-
-      prev.retry={pick:pick,t:now};
-
+    var prevWeak=!!(prev&&item&&(prev.pick!==item.a||prev.conf==='unsure'));
+    var rec={pick:pick,t:now};
+    if(conf==='sure'||conf==='unsure') rec.conf=conf;
+    if(prevWeak&&item&&pick===item.a&&kstDayOf(prev.t)===kstDayOf(now)){
+      prev.retry=rec;
     }else{
-
-      oxLog[id]={pick:pick,t:now};
-
+      oxLog[id]=rec;
     }
-
   }
 
-  function gradeOx(id,pick){
+  function gradeOx(id,pick,conf){
 
-    recordOx(id,pick);
+    recordOx(id,pick,conf);
 
     saveJson(OX_KEY,oxLog);syncSchedulePush();
 
@@ -10464,7 +10500,7 @@ function render(){
 
         delete examRetrying[qid];
 
-        gradeOx(qid,oxb.getAttribute('data-pick'));
+        gradeOx(qid,oxb.getAttribute('data-pick'),oxb.getAttribute('data-conf'));
 
         return;
 
@@ -11324,9 +11360,11 @@ function render(){
 
     var db=OXDB[exam.law]||{},rounds=Object.keys(db.byRound||{}).map(Number).sort(function(a,b){return b-a;});
 
-    if(exam.round!=='fav'&&exam.round!=='note'&&exam.round!=='wrong'&&(exam.round===null||rounds.indexOf(exam.round)<0))exam.round=rounds[0]||null;
+    if(exam.round!=='fav'&&exam.round!=='note'&&exam.round!=='wrong'&&exam.round!=='unsure'&&(exam.round===null||rounds.indexOf(exam.round)<0))exam.round=rounds[0]||null;
 
-    var totalFavCount=0, totalNoteCount=0, totalWrongCount=0;
+    var totalFavCount=0, totalNoteCount=0, totalWrongCount=0, totalSureWrongCount=0, totalUnsureCount=0;
+    // 오답·약점 목록 정렬 순서: 확신 오답 → 오답 → 애매 정답 → 미풀이 → 정답
+    var oxWeakRank={sureWrong:0,wrong:1,unsure:2,'new':3,right:4};
 
     for(var rk in (db.byRound||{})){
 
@@ -11339,6 +11377,9 @@ function render(){
         var rec=oxLog[q.i];
 
         if(rec && rec.pick !== q.a) totalWrongCount++;
+        var st0=oxState(rec,q);
+        if(st0==='sureWrong') totalSureWrongCount++;
+        if(st0==='unsure') totalUnsureCount++;
 
       });
 
@@ -11362,7 +11403,8 @@ function render(){
 
       }
 
-      all.sort(function(a,b){return (b.r-a.r)||(a.q-b.q)||(a.o-b.o);});
+      // 약점 공략: 확신 오답 → 오답 → 애매 정답을 먼저 풀게 한다
+      all.sort(function(a,b){return (oxWeakRank[oxState(oxLog[a.i],a)]-oxWeakRank[oxState(oxLog[b.i],b)])||(b.r-a.r)||(a.q-b.q)||(a.o-b.o);});
 
     }else if(exam.round==='fav'){
 
@@ -11398,6 +11440,15 @@ function render(){
 
       }
 
+      // 확신 오답을 맨 앞에 모은다
+      all.sort(function(a,b){return (oxWeakRank[oxState(oxLog[a.i],a)]-oxWeakRank[oxState(oxLog[b.i],b)])||(b.r-a.r)||(a.q-b.q)||(a.o-b.o);});
+
+    }else if(exam.round==='unsure'){
+      for(var rk in (db.byRound||{})){
+        (db.byRound[rk]||[]).forEach(function(q){
+          if(oxState(oxLog[q.i],q)==='unsure') all.push(q);
+        });
+      }
       all.sort(function(a,b){return (b.r-a.r)||(a.q-b.q)||(a.o-b.o);});
 
     }else{
@@ -11435,6 +11486,7 @@ function render(){
       if(exam.filter==='todo')return !rec;
 
       if(exam.filter==='wrong')return rec&&rec.pick!==q.a;
+      if(exam.filter==='unsure')return oxState(rec,q)==='unsure';
 
       if(exam.filter==='fav')return !!bookmarks[q.i];
 
@@ -11520,7 +11572,9 @@ function render(){
 
       +'<button type="button" data-eround="note" class="note-round-btn '+(exam.matrixDrill ? '' : (exam.round==='note'?'active':''))+'">📝 전체 메모 <span style="opacity:.8">'+totalNoteCount+'</span></button>'
 
-      +'<button type="button" data-eround="wrong" class="wrong-round-btn '+(exam.matrixDrill ? '' : (exam.round==='wrong'?'active':''))+'">❌ 전체 오답 <span style="opacity:.8">'+totalWrongCount+'</span></button>'
+      +'<button type="button" data-eround="wrong" class="wrong-round-btn '+(exam.matrixDrill ? '' : (exam.round==='wrong'?'active':''))+'" title="확신 오답이 맨 앞에 옵니다">❌ 전체 오답 <span class="rcount" style="opacity:.8">'+totalWrongCount+'</span>'+(totalSureWrongCount?' <span class="oxsure-count" title="확신했는데 틀린 문항 수">· 🎯확신 '+totalSureWrongCount+'</span>':'')+'</button>'
+
+      +'<button type="button" data-eround="unsure" class="unsure-round-btn '+(exam.matrixDrill ? '' : (exam.round==='unsure'?'active':''))+'" title="애매하게 맞힌 문항: 다른 날 확신으로 맞히면 빠집니다">🤔 애매 정답 <span style="opacity:.8">'+totalUnsureCount+'</span></button>'
 
       +(exam.matrixDrill ? '<button type="button" class="fav-round-btn active" style="background:#DC2626;border-color:#DC2626;color:#fff">🎯 약점 집중 공략 (' + esc(exam.matrixDrill.drillType) + ')</button>' : '')
 
@@ -11528,11 +11582,14 @@ function render(){
 
     var filterOptions=[['all','전체 '+all.length]];
 
-    if(exam.round!=='wrong'){
+    if(exam.round!=='wrong'&&exam.round!=='unsure'){
 
       filterOptions.push(['todo','안 푼 것 '+(all.length-done.length)]);
 
       filterOptions.push(['wrong','틀린 것 '+wrong]);
+
+      var unsureInAll=all.filter(function(q){return oxState(oxLog[q.i],q)==='unsure';}).length;
+      if(unsureInAll) filterOptions.push(['unsure','애매 정답 '+unsureInAll]);
 
     }
 
@@ -11614,7 +11671,7 @@ function render(){
 
       ? ('🎯 약점 집중 공략 (' + esc(exam.matrixDrill.catTitle) + ' · ' + esc(exam.matrixDrill.drillType) + ') ')
 
-      : ((exam.round==='fav')?('⭐ '+esc(exam.law)+' 전체 즐겨찾기 모아보기 '):((exam.round==='note')?('📝 '+esc(exam.law)+' 전체 메모 모아보기 '):((exam.round==='wrong')?('❌ '+esc(exam.law)+' 전체 오답 모아보기 '):('제'+exam.round+'회 정오문제 '))));
+      : ((exam.round==='fav')?('⭐ '+esc(exam.law)+' 전체 즐겨찾기 모아보기 '):((exam.round==='note')?('📝 '+esc(exam.law)+' 전체 메모 모아보기 '):((exam.round==='wrong')?('❌ '+esc(exam.law)+' 전체 오답 모아보기 '):((exam.round==='unsure')?('🤔 '+esc(exam.law)+' 애매 정답 모아보기 '):('제'+exam.round+'회 정오문제 ')))));
 
     var emptyMsg = (exam.filter==='fav'||exam.round==='fav')
 
@@ -11628,7 +11685,9 @@ function render(){
 
           ? '<div style="padding:22px 16px;text-align:center"><div style="font-size:32px;margin-bottom:8px">🎉</div><div style="font-size:15px;font-weight:800;color:#1E293B;margin-bottom:6px">틀린 기출문제가 없습니다!</div><div style="font-size:13px;color:#64748B;margin-bottom:14px">기출문제를 풀다가 틀린 지문이 생기면 이곳에 자동으로 모여 집중 복습할 수 있습니다.</div><button type="button" class="btn primary" id="exam-go-solve" style="padding:9px 20px;font-size:13px;font-weight:800;background:var(--accent);color:#fff;border-radius:8px;border:none;cursor:pointer">📝 최신 ' + (rounds[0]||63) + '회 기출 풀러 가기 →</button></div>'
 
-          : '해당하는 문항이 없습니다.'));
+          : ((exam.filter==='unsure'||exam.round==='unsure')
+            ? '🤔 애매하게 맞힌 문항이 없습니다. 풀 때 「애매」 버튼으로 맞힌 문항이 이곳에 모이고, 다른 날 「확신」으로 맞히면 빠집니다.'
+            : '해당하는 문항이 없습니다.')));
 
 
 
@@ -11638,7 +11697,7 @@ function render(){
 
       + '<label class="omr-chk"><input type="checkbox" id="exam-opt-auto" '+(exam.autoNext?'checked':'')+'> 맞히면 자동으로 다음</label>'
 
-      + '<span class="omr-kbd-hint">키보드: <b>O/←</b> 맞다 · <b>X/→</b> 틀리다 · <b>Enter/Space</b> 다음</span>'
+      + '<span class="omr-kbd-hint">키보드: <b>1</b> O확신 · <b>2</b> O애매 · <b>3</b> X애매 · <b>4</b> X확신 (O·X·←·→는 확신) · <b>Enter/Space</b> 다음</span>'
 
       + '<div class="sci-view-switch" style="margin-left:auto">'
 
@@ -11658,18 +11717,15 @@ function render(){
 
       if(isSingle){
 
-        var mUnseen = 0, mWrong = 0, mEasy = 0;
+        var mUnseen = 0, mWrong = 0, mUnsure = 0, mEasy = 0;
 
+        // 애매 정답은 숙달(정답)에 넣지 않고 따로 센다
         list.forEach(function(item){
-
-          var r = oxLog[item.i];
-
-          if(!r) mUnseen++;
-
-          else if(r.pick === item.a) mEasy++;
-
+          var ms = oxState(oxLog[item.i], item);
+          if(ms === 'new') mUnseen++;
+          else if(ms === 'right') mEasy++;
+          else if(ms === 'unsure') mUnsure++;
           else mWrong++;
-
         });
 
         var mTot = list.length || 1;
@@ -11684,7 +11740,7 @@ function render(){
 
           +   '<span class="m1" style="width:' + (mWrong/mTot*100) + '%"></span>'
 
-          +   '<span class="m2" style="width:0%"></span>'
+          +   '<span class="m2" style="width:' + (mUnsure/mTot*100) + '%"></span>'
 
           +   '<span class="m3" style="width:' + (mEasy/mTot*100) + '%"></span>'
 
@@ -11695,6 +11751,8 @@ function render(){
           +   '<span><i class="d0"></i>미학습 ' + mUnseen + '</span>'
 
           +   '<span><i class="d1"></i>오답 ' + mWrong + '</span>'
+
+          +   (mUnsure ? '<span><i class="d2"></i>애매 정답 ' + mUnsure + '</span>' : '')
 
           +   '<span><i class="d3"></i>정답 ' + mEasy + '</span>'
 
@@ -11716,7 +11774,7 @@ function render(){
 
               if(idx === exam.idx) cls += ' cur';
 
-              if(r) cls += (r.pick === item.a ? ' ok' : ' bad');
+              if(r) cls += ({right:' ok', unsure:' unsure', wrong:' bad', sureWrong:' bad sure'})[oxState(r, item)];
 
               return '<button type="button" class="' + cls + '" data-exam-jump="' + idx + '" title="' + item.r + '회 ' + item.q + '번-' + (item.o||1) + '">' + (idx + 1) + '</button>';
 
@@ -12248,7 +12306,7 @@ function render(){
 
         var rVal=rb.getAttribute('data-eround');
 
-        exam.round=(rVal==='fav'||rVal==='note'||rVal==='wrong')?rVal:Number(rVal);
+        exam.round=(rVal==='fav'||rVal==='note'||rVal==='wrong'||rVal==='unsure')?rVal:Number(rVal);
 
         exam.shown=20;
 
@@ -12322,7 +12380,7 @@ function render(){
 
         delete examRetrying[qid];
 
-        recordOx(qid,pick);
+        recordOx(qid,pick,ob.getAttribute('data-conf'));
 
         saveJson(OX_KEY,oxLog);
 
@@ -13271,6 +13329,7 @@ function render(){
     };
 
     var grandTotal = 0, grandDone = 0, grandRight = 0, grandWrong = 0, grandAllQids = [];
+    var grandSureWrong = 0, grandUnsure = 0;
 
 
 
@@ -13295,6 +13354,9 @@ function render(){
       var isDone = !!rec;
 
       var isRight = rec && (rec.pick === q.a);
+      var cState = oxState(rec, q);
+      if(cState === 'sureWrong') grandSureWrong++;
+      if(cState === 'unsure') grandUnsure++;
 
       var isWrong = rec && !isRight;
 
@@ -13407,6 +13469,10 @@ function render(){
       +   '<span>진도율 ' + progRate + '% (' + grandDone + '/' + grandTotal + ')</span>'
 
       +   '<span>🟢 정답 ' + grandRight + ' · 🔴 오답 ' + grandWrong + '</span>'
+      + '</div>'
+      + '<div class="matrix-conf-line" title="확신 오답: 확신했는데 틀린 문항(복습 1순위) · 애매 정답: 애매하게 맞힌 문항(숙달 아님)">'
+      +   '<span>🎯 확신 오답 <b>' + grandSureWrong + '</b></span>'
+      +   '<span>🤔 애매 정답 <b>' + grandUnsure + '</b></span>'
 
       + '</div>'
 

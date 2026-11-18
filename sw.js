@@ -1,5 +1,5 @@
 // 산업재산권법 & 자연과학 퀴즈 Service Worker (오프라인 지원)
-const CACHE_NAME = 'ipr-quiz-pwa-v67';
+const CACHE_NAME = 'ipr-quiz-pwa-v68';
 const PRECACHE_ASSETS = [
   './',
   './index.html',
@@ -31,6 +31,15 @@ self.addEventListener('activate', (e) => {
 
 self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET') return;
+
+  const url = new URL(e.request.url);
+  if (
+    e.request.cache === 'no-store' ||
+    url.hostname.endsWith('firebasedatabase.app') ||
+    url.hostname.endsWith('firebaseio.com')
+  ) {
+    return;
+  }
   
   // HTML 페이지 탐색(navigation)은 Network-First: 온라인 시 항상 최신 배포본을 즉시 반영
   if (e.request.mode === 'navigate') {

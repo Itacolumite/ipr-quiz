@@ -6427,6 +6427,7 @@ function startSciQuestionTimerIfNeeded(subj, qs, isWrongTab){
     sciLog[q.id] = { pick: 0, correct: false, ts: Date.now() };
     delete sciRetrying[q.id];
     saveJson(SCI_LOG_KEY, sciLog);
+    if(typeof syncSchedulePush==='function')syncSchedulePush();
     render();
   }, 90000);
 }
@@ -6538,6 +6539,7 @@ function bindSciCardEvents(container, subj, qs, isWrongTab){
       }
       delete sciRetrying[qid];
       saveJson(SCI_LOG_KEY, sciLog);
+      if(typeof syncSchedulePush==='function')syncSchedulePush();
       updateSciBarStatus(subj);
 
       if(sciState.viewMode === 'single'){
@@ -7539,6 +7541,7 @@ function pdCheck(q, giveup, isWrongMode){
   delete pdRetrying[q.id];
   delete pdDraftPicks[q.id];
   saveJson(PD_LOG_KEY, pdLog);
+  if(typeof syncSchedulePush==='function')syncSchedulePush();
   render();
 }
 
@@ -8127,6 +8130,7 @@ function pbCheck(b, giveup, isWrongMode){
   delete pbRetrying[b.id];
   delete pbDraftSels[b.id];
   saveJson(PD_BUILD_LOG_KEY, pbLog);
+  if(typeof syncSchedulePush==='function')syncSchedulePush();
   render();
 }
 
@@ -10387,6 +10391,14 @@ function render(){
 
       hiddenQuiz: hiddenQuiz, // 숨긴 조문퀴즈 문항
 
+      scienceLog: (typeof sciLog!=='undefined'?sciLog:{}),
+
+      pdrillLog: (typeof pdLog!=='undefined'?pdLog:{}),
+
+      pbuildLog: (typeof pbLog!=='undefined'?pbLog:{}),
+
+      today: (typeof getTodayState==='function'?getTodayState():null),
+
       settings: settings,
 
       newday: newdayInfo()
@@ -10499,6 +10511,26 @@ function render(){
 
   }
 
+  // ts 필드 기준 병합 (자연과학 객관식, 물리 원리선택, 수식 작도 등).
+
+  function mergeTimestampLog(target,incomingAll){
+
+    var count=0;
+
+    if(!target||typeof target!=='object'||!incomingAll||typeof incomingAll!=='object')return 0;
+
+    Object.keys(incomingAll).forEach(function(k){
+
+      var inc=incomingAll[k],cur=target[k];
+
+      if(!cur||(inc&&typeof inc==='object'&&(inc.ts||0)>(cur.ts||0))){target[k]=inc;count++;}
+
+    });
+
+    return count;
+
+  }
+
   // 정오문제 기록. 병합은 나중에 푼 것을 남긴다.
 
   function mergeOx(incomingAll){
@@ -10510,6 +10542,26 @@ function render(){
       var inc=incomingAll[k],cur=oxLog[k];
 
       if(!cur||(inc.t||0)>(cur.t||0)){oxLog[k]=inc;count++;}
+
+    });
+
+    return count;
+
+  }
+
+  // ts 필드 기준 병합 (자연과학 객관식, 물리 원리선택, 수식 작도 등).
+
+  function mergeTimestampLog(target,incomingAll){
+
+    var count=0;
+
+    if(!target||typeof target!=='object'||!incomingAll||typeof incomingAll!=='object')return 0;
+
+    Object.keys(incomingAll).forEach(function(k){
+
+      var inc=incomingAll[k],cur=target[k];
+
+      if(!cur||(inc&&typeof inc==='object'&&(inc.ts||0)>(cur.ts||0))){target[k]=inc;count++;}
 
     });
 
@@ -10587,13 +10639,51 @@ function render(){
 
       .then(function(remote){
 
-        var got=0,gotOx=0;
+        var got=0,gotOx=0,gotSci=0,gotPd=0,gotPb=0,gotToday=0;
 
         if(remote&&typeof remote==='object'){
 
           got=mergeRecords(remote.records);
 
           gotOx=mergeOx(remote.ox);
+
+          if(remote.scienceLog&&typeof remote.scienceLog==='object'&&typeof sciLog!=='undefined'){
+
+            gotSci=mergeTimestampLog(sciLog,remote.scienceLog);
+
+            if(gotSci)saveJson(SCI_LOG_KEY,sciLog);
+
+          }
+
+          if(remote.pdrillLog&&typeof remote.pdrillLog==='object'&&typeof pdLog!=='undefined'){
+
+            gotPd=mergeTimestampLog(pdLog,remote.pdrillLog);
+
+            if(gotPd)saveJson(PD_LOG_KEY,pdLog);
+
+          }
+
+          if(remote.pbuildLog&&typeof remote.pbuildLog==='object'&&typeof pbLog!=='undefined'){
+
+            gotPb=mergeTimestampLog(pbLog,remote.pbuildLog);
+
+            if(gotPb)saveJson(PD_BUILD_LOG_KEY,pbLog);
+
+          }
+
+          if(remote.today&&typeof remote.today==='object'&&remote.today.date===todayKst()&&remote.today.completed){
+
+            var curToday=getTodayState();
+
+            Object.keys(remote.today.completed).forEach(function(k){
+
+              if(remote.today.completed[k]&&!curToday.completed[k]){curToday.completed[k]=true;gotToday++;}
+
+            });
+
+            if(gotToday)saveJson(TODAY_KEY,curToday);
+
+          }
 
           if(remote.oxLinks&&typeof remote.oxLinks==='object'){
 
@@ -10671,7 +10761,7 @@ function render(){
 
           if(!res.ok)throw new Error('올리기 실패 ('+res.status+')');
 
-          return {got:got,gotOx:gotOx};
+          return {got:got,gotOx:gotOx,gotSci:gotSci,gotPd:gotPd,gotPb:gotPb,gotToday:gotToday};
 
         });
 
@@ -10681,11 +10771,13 @@ function render(){
 
         syncBusy=false;
 
+        var extra=(r.gotSci||0)+(r.gotPd||0)+(r.gotPb||0);
+
         setSyncState('마지막 동기화 '+new Date().toLocaleTimeString('ko-KR')
 
-          +' · 내려받아 합친 기록 '+r.got+'개'+(r.gotOx?' (정오 '+r.gotOx+'개)':''));
+          +' · 내려받아 합친 기록 '+r.got+'개'+(r.gotOx?' (정오 '+r.gotOx+'개)':'')+(extra?' (과학/물리 '+extra+'개)':''));
 
-        if(r.got||r.gotOx){
+        if(r.got||r.gotOx||extra||r.gotToday){
 
           updateDataSummary();
 
@@ -10719,9 +10811,15 @@ function render(){
 
           paint();
 
+          if(typeof domainMode!=='undefined'&&domainMode==='science'&&typeof renderScience==='function'){
+
+            renderScience();
+
+          }
+
         }
 
-        if(!quiet)showDataMsg('ok','동기화했습니다. 내려받아 합친 기록 '+r.got+'개입니다.');
+        if(!quiet)showDataMsg('ok','동기화했습니다. 내려받아 합친 기록 '+(r.got+r.gotOx+extra)+'개입니다.');
 
       })
 
@@ -10862,6 +10960,40 @@ function render(){
         }
 
         saveJson(HIDDEN_QUIZ_KEY,hiddenQuiz);
+
+      }
+
+      if(backup.scienceLog&&typeof backup.scienceLog==='object'&&typeof sciLog!=='undefined'){
+
+        if(isMerge){mergeTimestampLog(sciLog,backup.scienceLog);}else{sciLog=backup.scienceLog;}
+
+        saveJson(SCI_LOG_KEY,sciLog);
+
+      }
+
+      if(backup.pdrillLog&&typeof backup.pdrillLog==='object'&&typeof pdLog!=='undefined'){
+
+        if(isMerge){mergeTimestampLog(pdLog,backup.pdrillLog);}else{pdLog=backup.pdrillLog;}
+
+        saveJson(PD_LOG_KEY,pdLog);
+
+      }
+
+      if(backup.pbuildLog&&typeof backup.pbuildLog==='object'&&typeof pbLog!=='undefined'){
+
+        if(isMerge){mergeTimestampLog(pbLog,backup.pbuildLog);}else{pbLog=backup.pbuildLog;}
+
+        saveJson(PD_BUILD_LOG_KEY,pbLog);
+
+      }
+
+      if(backup.today&&typeof backup.today==='object'&&backup.today.date===todayKst()&&backup.today.completed){
+
+        var impToday=getTodayState();
+
+        if(isMerge){Object.assign(impToday.completed,backup.today.completed);}else{impToday.completed=backup.today.completed;}
+
+        saveJson(TODAY_KEY,impToday);
 
       }
 
@@ -16453,6 +16585,26 @@ function render(){
 
   }
 
+  // ts 필드 기준 병합 (자연과학 객관식, 물리 원리선택, 수식 작도 등).
+
+  function mergeTimestampLog(target,incomingAll){
+
+    var count=0;
+
+    if(!target||typeof target!=='object'||!incomingAll||typeof incomingAll!=='object')return 0;
+
+    Object.keys(incomingAll).forEach(function(k){
+
+      var inc=incomingAll[k],cur=target[k];
+
+      if(!cur||(inc&&typeof inc==='object'&&(inc.ts||0)>(cur.ts||0))){target[k]=inc;count++;}
+
+    });
+
+    return count;
+
+  }
+
 
 
   function allWrongExamCount(){
@@ -16480,6 +16632,26 @@ function render(){
       }
 
     }
+
+    return count;
+
+  }
+
+  // ts 필드 기준 병합 (자연과학 객관식, 물리 원리선택, 수식 작도 등).
+
+  function mergeTimestampLog(target,incomingAll){
+
+    var count=0;
+
+    if(!target||typeof target!=='object'||!incomingAll||typeof incomingAll!=='object')return 0;
+
+    Object.keys(incomingAll).forEach(function(k){
+
+      var inc=incomingAll[k],cur=target[k];
+
+      if(!cur||(inc&&typeof inc==='object'&&(inc.ts||0)>(cur.ts||0))){target[k]=inc;count++;}
+
+    });
 
     return count;
 
@@ -16939,6 +17111,8 @@ function render(){
 
           saveJson(TODAY_KEY, tState);
 
+          syncSchedulePush();
+
           renderTodayDashboard();
 
           return;
@@ -16966,6 +17140,8 @@ function render(){
           tState2.completed[task.id] = true;
 
           saveJson(TODAY_KEY, tState2);
+
+          syncSchedulePush();
 
 
 
@@ -17226,6 +17402,8 @@ function render(){
             tState3.completed = {};
 
             saveJson(TODAY_KEY, tState3);
+
+            syncSchedulePush();
 
             renderTodayDashboard();
 

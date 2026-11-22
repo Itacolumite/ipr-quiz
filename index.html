@@ -4207,11 +4207,12 @@ body.archive .score {
   display: none !important;
 }
 
-body.recall .main {
-  max-width: 760px;
+body.recall .main,
+body.domain-law.browse.recall .main {
+  max-width: 760px !important;
   width: 100%;
   margin: 0 auto;
-  padding: 14px 14px 104px;
+  padding: 14px 14px calc(144px + env(safe-area-inset-bottom, 0px)) !important;
 }
 
 body.archive .main {
@@ -4629,6 +4630,16 @@ body.archive .main {
   padding-top: 8px;
   border-top: 1px dashed #fcd34d;
   color: #451a03;
+}
+.rc-cloze-hint {
+  margin-top: 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #64748b;
+  text-align: center;
+}
+body.dark .rc-cloze-hint {
+  color: #94a3b8;
 }
 
 /* Part pager for long articles */
@@ -9664,6 +9675,7 @@ document.addEventListener('keydown', function(e){
   "use strict";
 
   var STORAGE_KEY = "bepatRecall.v1";
+  var suppressChange = false; // true while merging remote data, so sync does not loop
   var LAW_ORDER = ["\uc0c1\ud45c\ubc95", "\ud2b9\ud5c8\ubc95", "\ub514\uc790\uc778\ubcf4\ud638\ubc95"];
   var REF_RE = /\uc81c(\d+)\uc870(\uc758\d+)?/g;
 
@@ -9850,6 +9862,9 @@ document.addEventListener('keydown', function(e){
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch (e) {
       // Ignore storage failures so app keeps working in restricted environments
+    }
+    if (!suppressChange && host.onChange) {
+      try { host.onChange(); } catch (e2) { /* sync hook must not break recall */ }
     }
   }
 
@@ -10494,6 +10509,8 @@ document.addEventListener('keydown', function(e){
       });
       html += "</details>";
     }
+
+    html += '<div class="rc-cloze-hint">\ud0ed: \uc815\ub2f5 \uc5f4\uae30 \u00b7 \ud55c \ubc88 \ub354 \ud0ed: \ud2c0\ub9bc \ud45c\uc2dc(\ube68\uac15) \u00b7 \uae38\uac8c \ub204\ub974\uae30: \uce78 \ube7c\uae30</div>';
 
     return html;
   }
@@ -11216,6 +11233,7 @@ document.addEventListener('keydown', function(e){
         host.openBrowseArticle = callbacks.openBrowseArticle || host.openBrowseArticle;
         host.openBrowseArticleExam = callbacks.openBrowseArticleExam || host.openBrowseArticleExam;
         host.getExamCount = callbacks.getExamCount || host.getExamCount;
+        host.onChange = callbacks.onChange || host.onChange;
       }
       ensureDb();
     },
@@ -11344,7 +11362,8 @@ document.addEventListener('keydown', function(e){
           if (inc.favorites[id]) state.favorites[id] = true;
         });
       }
-      saveState();
+      suppressChange = !!isMerge;
+      try { saveState(); } finally { suppressChange = false; }
     }
   };
 })();
@@ -11379,6 +11398,9 @@ if (window.RecallMode && window.RecallMode.init) {
     },
     getExamCount: function (law, num) {
       return artRounds(law, num).length;
+    },
+    onChange: function () {
+      if (typeof syncSchedulePush === 'function') syncSchedulePush();
     }
   });
 }
@@ -13396,6 +13418,12 @@ function render(){
             });
 
             saveJson(HIDDEN_QUIZ_KEY,hiddenQuiz);
+
+          }
+
+          if(remote.bepatRecall&&typeof remote.bepatRecall==='object'&&window.RecallMode&&window.RecallMode.importData){
+
+            try{window.RecallMode.importData(remote.bepatRecall,true);}catch(e){}
 
           }
 

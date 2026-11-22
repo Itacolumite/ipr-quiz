@@ -11328,42 +11328,229 @@ document.addEventListener('keydown', function(e){
       if (host.switchToRecall) host.switchToRecall();
     },
 
+    isSessionActive: function () {
+      return view === "session";
+    },
+
+    getTodaySummary: function () {
+      loadState();
+      ensureDb();
+      var st = computeScheduleStats();
+      var wrongCards = 0;
+      var againCards = 0;
+      var seenCards = 0;
+      Object.keys(state.cards || {}).forEach(function (id) {
+        var r = state.cards[id];
+        if (!r) return;
+        if (r.seen > 0) seenCards++;
+        if (r.wrongCount > 0) wrongCards++;
+        if (r.againNextDay) againCards++;
+      });
+      return {
+        round: st.round,
+        goal: st.goal,
+        pct: st.pct,
+        todayRem: st.todayRem,
+        todayDone: st.todayDone,
+        estMin: st.estMin,
+        wrongCardCount: wrongCards,
+        againCardCount: againCards,
+        seenCardCount: seenCards
+      };
+    },
+
+    startWrongOrToday: function () {
+      loadState();
+      ensureDb();
+      var list = Object.keys(state.cards || {})
+        .filter(function (id) {
+          var r = state.cards[id];
+          return r && (r.againNextDay || r.wrongCount > 0) && cardById[id];
+        })
+        .sort(function (a, b) {
+          var ra = state.cards[a];
+          var rb = state.cards[b];
+          return ((rb.againNextDay ? 1 : 0) - (ra.againNextDay ? 1 : 0)) || ((rb.wrongCount || 0) - (ra.wrongCount || 0));
+        })
+        .map(function (id) { return cardById[id]; });
+      if (list.length) {
+        startSession(list.slice(0, 20), "\ud2c0\ub9b0 \uc870\ubb38 \ubcf5\uc2b5");
+        if (host.switchToRecall) host.switchToRecall();
+        return;
+      }
+      var st = computeScheduleStats();
+      startSession(buildDailyQueue(st.todayRem || 50), "\uc624\ub298 \ud68c\ub3c5");
+      if (host.switchToRecall) host.switchToRecall();
+    },
+
+    startTraps: function (limit) {
+      loadState();
+      ensureDb();
+      var n = limit || 5;
+      var trapsSorted = (db.traps || []).slice().sort(function (a, b) {
+        return (peekCardWrong(b.id) - peekCardWrong(a.id)) || ((state.cards[a.id] ? state.cards[a.id].seen : 0) - (state.cards[b.id] ? state.cards[b.id].seen : 0));
+      }).slice(0, n);
+      if (trapsSorted.length) {
+        startSession(trapsSorted, "\ud568\uc815 30\uc120 " + trapsSorted.length + "\ubb38\uc81c");
+        if (host.switchToRecall) host.switchToRecall();
+      }
+    },
+
+    pickDailyArticle: function (seedHash) {
+      loadState();
+      ensureDb();
+      var wrongIds = Object.keys(state.cards || {})
+        .filter(function (id) { return peekCardWrong(id) > 0 && cardById[id] && cardById[id].kind === "cloze"; })
+        .sort(function (a, b) { return peekCardWrong(b) - peekCardWrong(a); });
+      if (wrongIds.length) {
+        var wc = cardById[wrongIds[0]];
+        return { law: wc.law, article: String(wc.article), title: wc.title || "", wrongCount: peekCardWrong(wc.id), isWrong: true };
+      }
+      var tier = getTierForRound(state.rotation.round || 1);
+      var pool = getClozeForTier(tier).filter(function (c) { return c.mustMemorize || c.examCount >= 3; });
+      if (!pool.length) pool = db.cloze || [];
+      if (!pool.length) return null;
+      var c = pool[Math.abs(seedHash || 0) % pool.length];
+      return { law: c.law, article: String(c.article), title: c.title || "", wrongCount: 0, isWrong: false };
+    },
+
     exportData: function () {
       loadState();
       return state;
     },
 
     importData: function (incoming, isMerge) {
-      if (!incoming || typeof incoming !== "object") return;
+      if (!incoming || typeof incoming !== "object") return 0;
+      loadState();
+      ensureDb();
+      var changed = 0;
       if (!isMerge) {
         state = normalizeState(incoming);
+        changed = Object.keys(state.cards || {}).length + Object.keys(state.rotation.doneIds || {}).length;
       } else {
         var inc = normalizeState(incoming);
         Object.keys(inc.cards).forEach(function (id) {
           var a = state.cards[id];
           var b = inc.cards[id];
-          if (!a || (b.seen || 0) > (a.seen || 0)) {
-            state.cards[id] = Object.assign({}, b, { wrongCount: Math.max((a && a.wrongCount) || 0, b.wrongCount || 0) });
+          if (!a) {
+            state.cards[id] = Object.assign({}, b);
+            changed++;
+            return;
+          }
+          var maxWrong = Math.max(a.wrongCount || 0, b.wrongCount || 0);
+          var maxRound = Math.max(a.roundCompleted || 0, b.roundCompleted || 0);
+          var bNewer = (b.seen || 0) > (a.seen || 0) || ((b.lastSeen || "") > (a.lastSeen || ""));
+          if (bNewer) {
+            state.cards[id] = Object.assign({}, a, b, {
+              seen: Math.max(a.seen || 0, b.seen || 0),
+              wrongCount: maxWrong,
+              roundCompleted: maxRound
+            });
+            changed++;
           } else {
-            a.wrongCount = Math.max(a.wrongCount || 0, b.wrongCount || 0);
+            if (maxWrong !== (a.wrongCount || 0) || maxRound !== (a.roundCompleted || 0)) {
+              a.wrongCount = maxWrong;
+              a.roundCompleted = maxRound;
+              changed++;
+            }
           }
         });
         Object.keys(inc.blanks).forEach(function (bid) {
           var ba = state.blanks[bid];
           var bb = inc.blanks[bid];
-          if (!ba) state.blanks[bid] = bb;
-          else {
-            ba.wrongCount = Math.max(ba.wrongCount || 0, bb.wrongCount || 0);
-            ba.streak = Math.max(ba.streak || 0, bb.streak || 0);
-            ba.muted = !!(ba.muted || bb.muted);
+          if (!ba) {
+            state.blanks[bid] = Object.assign({}, bb);
+            changed++;
+          } else {
+            var nw = Math.max(ba.wrongCount || 0, bb.wrongCount || 0);
+            var ns = Math.max(ba.streak || 0, bb.streak || 0);
+            var nm = !!(ba.muted || bb.muted);
+            if (nw !== (ba.wrongCount || 0) || ns !== (ba.streak || 0) || nm !== !!ba.muted) {
+              ba.wrongCount = nw;
+              ba.streak = ns;
+              ba.muted = nm;
+              changed++;
+            }
           }
         });
         Object.keys(inc.favorites).forEach(function (id) {
-          if (inc.favorites[id]) state.favorites[id] = true;
+          if (inc.favorites[id] && !state.favorites[id]) {
+            state.favorites[id] = true;
+            changed++;
+          }
         });
+
+        // Merge rotation progress (round, doneIds, today progress)
+        var lr = state.rotation;
+        var rr = inc.rotation;
+        var lRound = Math.max(1, lr.round || 1);
+        var rRound = Math.max(1, rr.round || 1);
+        if (rRound > lRound) {
+          lr.round = rRound;
+          lr.doneIds = Object.assign({}, rr.doneIds);
+          changed++;
+        } else if (rRound === lRound) {
+          Object.keys(rr.doneIds || {}).forEach(function (id) {
+            if (rr.doneIds[id] && !lr.doneIds[id]) {
+              lr.doneIds[id] = true;
+              changed++;
+            }
+          });
+        }
+        // Recover doneIds from merged card records if roundCompleted matches current round
+        Object.keys(state.cards).forEach(function (id) {
+          var cr = state.cards[id];
+          if (cr && (cr.roundCompleted || 0) >= lr.round && !lr.doneIds[id]) {
+            lr.doneIds[id] = true;
+            changed++;
+          }
+        });
+
+        var tk = todayKst();
+        if (rr.todayDate === tk) {
+          if (lr.todayDate !== tk) {
+            lr.todayDate = tk;
+            lr.todayDoneCardIds = Object.assign({}, rr.todayDoneCardIds);
+            lr.todayDoneBlanks = rr.todayDoneBlanks || 0;
+            lr.oxTodayCount = rr.oxTodayCount || 0;
+            lr.trapTodayCount = rr.trapTodayCount || 0;
+            changed++;
+          } else {
+            Object.keys(rr.todayDoneCardIds || {}).forEach(function (id) {
+              if (rr.todayDoneCardIds[id] && !lr.todayDoneCardIds[id]) {
+                lr.todayDoneCardIds[id] = true;
+                changed++;
+              }
+            });
+            var unionBlanks = 0;
+            Object.keys(lr.todayDoneCardIds || {}).forEach(function (id) {
+              if (lr.todayDoneCardIds[id] && cardById[id]) unionBlanks += countActiveCardBlanks(cardById[id]);
+            });
+            var nextBlanks = Math.max(lr.todayDoneBlanks || 0, rr.todayDoneBlanks || 0, unionBlanks);
+            if (nextBlanks > (lr.todayDoneBlanks || 0)) { lr.todayDoneBlanks = nextBlanks; changed++; }
+            var nextOx = Math.max(lr.oxTodayCount || 0, rr.oxTodayCount || 0);
+            if (nextOx > (lr.oxTodayCount || 0)) { lr.oxTodayCount = nextOx; changed++; }
+            var nextTrap = Math.max(lr.trapTodayCount || 0, rr.trapTodayCount || 0);
+            if (nextTrap > (lr.trapTodayCount || 0)) { lr.trapTodayCount = nextTrap; changed++; }
+          }
+        }
+
+        // Merge session log entries without duplicates
+        var seenLog = {};
+        (state.log || []).forEach(function (e) { seenLog[e.date + "|" + e.title + "|" + e.total + "|" + e.known] = true; });
+        (inc.log || []).forEach(function (e) {
+          var k = e.date + "|" + e.title + "|" + e.total + "|" + e.known;
+          if (!seenLog[k]) {
+            seenLog[k] = true;
+            state.log.push(e);
+            changed++;
+          }
+        });
+        if (state.log.length > 40) state.log = state.log.slice(0, 40);
       }
       suppressChange = !!isMerge;
       try { saveState(); } finally { suppressChange = false; }
+      return changed;
     }
   };
 })();
@@ -12989,7 +13176,11 @@ function render(){
 
     var hCnt=countHiddenQuiz();
 
-    document.getElementById('data-summary').textContent='현재 보관된 학습 문항: '+total+'개 (누적 정답: '+correct+', 오답/힌트: '+wrong+', ⭐ 즐겨찾기: '+bmTotal+'개, 📝 메모: '+noteTotal+'개)';
+    var rcSum = (window.RecallMode && window.RecallMode.getTodaySummary) ? window.RecallMode.getTodaySummary() : null;
+
+    var rcTxt = rcSum ? (', 📒 조문 회독: ' + rcSum.seenCardCount + '카드 (' + rcSum.round + '회독째 ' + rcSum.pct + '%)') : '';
+
+    document.getElementById('data-summary').textContent='현재 보관된 학습 문항: '+total+'개 (누적 정답: '+correct+', 오답/힌트: '+wrong+', ⭐ 즐겨찾기: '+bmTotal+'개, 📝 메모: '+noteTotal+'개'+rcTxt+')';
 
     var hSummary=document.getElementById('hidden-quiz-summary');
 
@@ -13317,7 +13508,7 @@ function render(){
 
       .then(function(remote){
 
-        var got=0,gotOx=0,gotSci=0,gotPd=0,gotPb=0,gotToday=0;
+        var got=0,gotOx=0,gotSci=0,gotPd=0,gotPb=0,gotToday=0,gotRecall=0;
 
         if(remote&&typeof remote==='object'){
 
@@ -13423,7 +13614,7 @@ function render(){
 
           if(remote.bepatRecall&&typeof remote.bepatRecall==='object'&&window.RecallMode&&window.RecallMode.importData){
 
-            try{window.RecallMode.importData(remote.bepatRecall,true);}catch(e){}
+            try{gotRecall=window.RecallMode.importData(remote.bepatRecall,true)||0;}catch(e){}
 
           }
 
@@ -13445,7 +13636,7 @@ function render(){
 
           if(!res.ok)throw new Error('올리기 실패 ('+res.status+')');
 
-          return {got:got,gotOx:gotOx,gotSci:gotSci,gotPd:gotPd,gotPb:gotPb,gotToday:gotToday};
+          return {got:got,gotOx:gotOx,gotSci:gotSci,gotPd:gotPd,gotPb:gotPb,gotToday:gotToday,gotRecall:gotRecall};
 
         });
 
@@ -13457,11 +13648,13 @@ function render(){
 
         var extra=(r.gotSci||0)+(r.gotPd||0)+(r.gotPb||0);
 
+        var recCnt=(r.gotRecall||0);
+
         setSyncState('마지막 동기화 '+new Date().toLocaleTimeString('ko-KR')
 
-          +' · 내려받아 합친 기록 '+r.got+'개'+(r.gotOx?' (정오 '+r.gotOx+'개)':'')+(extra?' (과학/물리 '+extra+'개)':''));
+          +' · 내려받아 합친 기록 '+r.got+'개'+(r.gotOx?' (정오 '+r.gotOx+'개)':'')+(recCnt?' (회독 '+recCnt+'건)':'')+(extra?' (과학/물리 '+extra+'개)':''));
 
-        if(r.got||r.gotOx||extra||r.gotToday){
+        if(r.got||r.gotOx||extra||r.gotToday||recCnt){
 
           updateDataSummary();
 
@@ -13483,7 +13676,9 @@ function render(){
 
           }
 
-          if(quiet && (isTyping || hasValue || (mode === 'quiz' && st() && st().idx > 0))){
+          var inRecallSession = (mode === 'recall' && window.RecallMode && window.RecallMode.isSessionActive && window.RecallMode.isSessionActive());
+
+          if(quiet && (isTyping || hasValue || inRecallSession || (mode === 'quiz' && st() && st().idx > 0))){
 
             return;
 
@@ -13503,7 +13698,7 @@ function render(){
 
         }
 
-        if(!quiet)showDataMsg('ok','동기화했습니다. 내려받아 합친 기록 '+(r.got+r.gotOx+extra)+'개입니다.');
+        if(!quiet)showDataMsg('ok','동기화했습니다. 내려받아 합친 기록 '+(r.got+r.gotOx+extra+recCnt)+'건입니다.');
 
       })
 
@@ -13847,7 +14042,17 @@ function render(){
 
   window.addEventListener('online',function(){if(syncOn())syncNow(true);});
 
-  document.addEventListener('visibilitychange',function(){if(!document.hidden&&syncOn())syncNow(true);});
+  document.addEventListener('visibilitychange',function(){
+    if(!syncOn())return;
+    if(document.hidden){
+      if(syncTimer){clearTimeout(syncTimer);syncTimer=null;syncNow(true);}
+    }else{
+      syncNow(true);
+    }
+  });
+  window.addEventListener('pagehide',function(){
+    if(syncOn()&&syncTimer){clearTimeout(syncTimer);syncTimer=null;syncNow(true);}
+  });
 
 
 
@@ -19369,91 +19574,91 @@ function render(){
 
     var tasks = [];
 
+    var rcSum = (window.RecallMode && window.RecallMode.getTodaySummary) ? window.RecallMode.getTodaySummary() : { round: 1, pct: 0, todayRem: 50, estMin: 5, wrongCardCount: 0, againCardCount: 0 };
 
+    // 1. Daily Article Recall quota (Task 1)
 
-    // 1. 복습 과제 (Task 1)
+    tasks.push({
 
-    var dueList = [];
+      id: 'task_recall_today',
 
-    allQuestions().forEach(function(q){
+      priority: 'high',
 
-      var r = rec(q.id);
+      pLabel: '우선',
 
-      if(isSeen(r) && (r.due || today) <= today){
+      time: Math.max(5, Math.min(30, rcSum.estMin || 10)) + '분',
 
-        dueList.push(q);
+      icon: '📒',
 
-      }
+      title: '조문 회독 — 오늘 할당량 이어서 하기',
+
+      desc: '오늘 남은 ' + rcSum.todayRem + '칸 · ' + rcSum.round + '회독째 ' + rcSum.pct + '% (상표·특허·디자인 교차 진행)',
+
+      actionLabel: '회독 시작 →',
+
+      actionType: 'recall_today'
 
     });
 
-    if(dueList.length > 0){
+    // 2. Weak or Core Article Blank Recall (Task 2)
 
-      var q = dueList[simpleHash(today + '_due') % dueList.length];
+    var focusArt = (window.RecallMode && window.RecallMode.pickDailyArticle) ? window.RecallMode.pickDailyArticle(simpleHash(today + '_rc_art')) : null;
 
-      tasks.push({
-
-        id: 'task_srs',
-
-        priority: 'high',
-
-        pLabel: '우선',
-
-        time: '3분',
-
-        icon: '🎯',
-
-        title: '복습 예정 — 제' + q.article + '조 ' + (q.title || ''),
-
-        desc: q.law + ' 제' + q.article + '조 — SM-2 간격 복습 주기 도래 (' + dueList.length + '문항 대기)',
-
-        actionLabel: '복습 풀기 →',
-
-        actionType: 'quiz_art',
-
-        law: q.law,
-
-        art: q.article
-
-      });
-
-    } else {
-
-      var patArts = (ART['특허법'] || []).filter(function(a){ return (a[3] || 0) >= 2; });
-
-      var a = patArts[simpleHash(today + '_fallback_due') % Math.max(1, patArts.length)] || ['29', '특허요건', '', 3];
+    if(focusArt){
 
       tasks.push({
 
-        id: 'task_srs',
+        id: 'task_recall_art',
 
-        priority: 'high',
+        priority: 'rec',
 
-        pLabel: '우선',
+        pLabel: '권장',
 
-        time: '3분',
+        time: '5분',
 
         icon: '🎯',
 
-        title: '복습 예정 — 제' + a[0] + '조 ' + (a[1] || ''),
+        title: (focusArt.isWrong ? '약점 조문 빈칸 회독' : '핵심 조문 빈칸 회독') + ' — ' + focusArt.law + ' 제' + focusArt.article + '조 ' + focusArt.title,
 
-        desc: '특허법 제' + a[0] + '조 — 오늘 핵심 조문 복습 권장',
+        desc: focusArt.isWrong ? ('누적 오답 ❌ ' + focusArt.wrongCount + '회 조문 집중 복습') : (focusArt.law + ' 제' + focusArt.article + '조 — 통암기·고빈출 조문 탭 회독'),
 
-        actionLabel: '복습 풀기 →',
+        actionLabel: '빈칸 회독 →',
 
-        actionType: 'quiz_art',
+        actionType: 'recall_art',
 
-        law: '특허법',
+        law: focusArt.law,
 
-        art: String(a[0])
+        art: focusArt.article
 
       });
 
     }
 
+    // 3. Trap 30 Drill (Task 3)
 
+    tasks.push({
 
-    // 2. 판례 과제 (Task 2)
+      id: 'task_recall_traps',
+
+      priority: 'rec',
+
+      pLabel: '권장',
+
+      time: '5분',
+
+      icon: '⚠️',
+
+      title: '함정 30선 5문제 — 틀린 구절 찾기',
+
+      desc: '특허·상표 출제자 6대 함정 수법(숫자·주체·서술어) 집중 점검',
+
+      actionLabel: '함정 찾기 →',
+
+      actionType: 'recall_traps'
+
+    });
+
+    // 4. Key Precedent Case Study (Task 4)
 
     var starCases = CASES_383.filter(function(c){
 
@@ -19491,75 +19696,7 @@ function render(){
 
     });
 
-
-
-    // 3. 빈칸 과제 (Task 3)
-
-    var impArts = (ART['특허법'] || []).filter(function(a){ return (a[3] || 0) >= 2; });
-
-    var clozeArt = impArts[simpleHash(today + '_cloze') % Math.max(1, impArts.length)] || ['42', '특허출원', '', 3];
-
-    tasks.push({
-
-      id: 'task_cloze',
-
-      priority: 'rec',
-
-      pLabel: '권장',
-
-      time: '5분',
-
-      icon: '✏️',
-
-      title: '빈칸 학습 — 제' + clozeArt[0] + '조 ' + (clozeArt[1] || ''),
-
-      desc: '특허법 제' + clozeArt[0] + '조 — 핵심 법조문 클로즈/괄호 채우기 훈련',
-
-      actionLabel: '빈칸 풀기 →',
-
-      actionType: 'quiz_cloze',
-
-      law: '특허법',
-
-      art: String(clozeArt[0])
-
-    });
-
-
-
-    // 4. 조문 열람 과제 (Task 4)
-
-    var browseArt = impArts[simpleHash(today + '_browse') % Math.max(1, impArts.length)] || ['62', '특허거절결정', '', 3];
-
-    tasks.push({
-
-      id: 'task_browse',
-
-      priority: 'rec',
-
-      pLabel: '권장',
-
-      time: '5분',
-
-      icon: '🔄',
-
-      title: '조문 복습 — 제' + browseArt[0] + '조 ' + (browseArt[1] || ''),
-
-      desc: '특허법 제' + browseArt[0] + '조 — 조문 체계도 및 전문 정독 · 연혁 대조',
-
-      actionLabel: '조문 열람 →',
-
-      actionType: 'browse_art',
-
-      law: '특허법',
-
-      art: String(browseArt[0])
-
-    });
-
-
-
-    // 5. 기출 정오 5선 과제 (Task 5)
+    // 5. Past Exam OX 5 Questions (Task 5)
 
     var examList = [];
 
@@ -19589,7 +19726,7 @@ function render(){
 
       pLabel: '추가',
 
-      time: '15분',
+      time: '10분',
 
       icon: '✨',
 
@@ -19604,8 +19741,6 @@ function render(){
       qids: qids
 
     });
-
-
 
     return tasks;
 
@@ -19647,11 +19782,13 @@ function render(){
 
     var pct = Math.round((doneCount / tasks.length) * 100);
 
-    var dueCount = allDueQuestionsCount();
+    var rcSum = (window.RecallMode && window.RecallMode.getTodaySummary) ? window.RecallMode.getTodaySummary() : { round: 1, pct: 0, todayRem: 50, wrongCardCount: 0, againCardCount: 0 };
+
+    var rcWeakCount = Math.max(rcSum.wrongCardCount || 0, rcSum.againCardCount || 0);
 
     var wrongCount = allWrongExamCount();
 
-    var totalReviewCount = dueCount + wrongCount;
+    var totalReviewCount = rcWeakCount + wrongCount;
 
     var dateLabel = formatKoreanToday();
 
@@ -19711,13 +19848,13 @@ function render(){
 
       + '</div>'
 
-      + '<div class="today-primary-title">' + (totalReviewCount > 0 ? '복습 주기가 도래한 문항을 가장 먼저 점검하세요' : '현재 대기 중인 복습 문항이 없습니다!') + '</div>'
+      + '<div class="today-primary-title">' + (totalReviewCount > 0 ? '틀린 조문 회독 카드와 기출 오답을 가장 먼저 점검하세요' : '밀린 오답이 없습니다! 오늘 조문 회독을 바로 시작해 보세요') + '</div>'
 
-      + '<div class="today-primary-desc">' + (totalReviewCount > 0 ? ('망각곡선(SRS) 간격 주기가 도래한 조문 퀴즈(' + dueCount + '개)와 기출 정오 오답 지문(' + wrongCount + '개)이 대기 중입니다.') : '망각곡선(SRS) 주기 만료 문항이나 틀린 기출문제가 없습니다. 아래 오늘의 맞춤 학습 5개를 먼저 진행해보세요!') + '</div>'
+      + '<div class="today-primary-desc">' + (totalReviewCount > 0 ? ('조문 회독 오답·다시 카드(' + rcWeakCount + '장)와 기출 정오 오답 지문(' + wrongCount + '개)이 대기 중입니다. (오늘 회독 남은 분량 ' + rcSum.todayRem + '칸)') : ('오늘 조문 회독 할당량 ' + rcSum.todayRem + '칸(' + rcSum.round + '회독째 ' + rcSum.pct + '%)과 아래 맞춤 학습 5개를 진행해 보세요!')) + '</div>'
 
       + '<div class="today-primary-actions">'
 
-      + '<button type="button" class="today-btn-primary" id="today-start-review">지금 시작 →</button>'
+      + '<button type="button" class="today-btn-primary" id="today-start-review">' + (rcWeakCount > 0 ? '틀린 조문 복습 →' : '오늘 회독 시작 →') + '</button>'
 
       + '<button type="button" class="today-btn-subtle" id="today-exam-wrong">기출 오답 복습' + (wrongCount > 0 ? (' (' + wrongCount + '개)') : '') + '</button>'
 
@@ -19731,7 +19868,7 @@ function render(){
 
       + '<div class="today-section-title"><span>✨</span> 오늘의 맞춤 학습 ' + tasks.length + '개</div>'
 
-      + '<div class="today-section-est">⏱️ 예상 33분</div>'
+      + '<div class="today-section-est">⏱️ 예상 35분</div>'
 
       + '</div>'
 
@@ -19865,7 +20002,31 @@ function render(){
 
 
 
-          if(task.actionType === 'quiz_art'){
+          if(task.actionType === 'recall_today'){
+
+            if(window.RecallMode && window.RecallMode.startFromToday){
+
+              window.RecallMode.startFromToday('continue');
+
+            }
+
+          } else if(task.actionType === 'recall_art'){
+
+            if(window.RecallMode && window.RecallMode.openArticle){
+
+              window.RecallMode.openArticle(task.law, task.art);
+
+            }
+
+          } else if(task.actionType === 'recall_traps'){
+
+            if(window.RecallMode && window.RecallMode.startTraps){
+
+              window.RecallMode.startTraps(5);
+
+            }
+
+          } else if(task.actionType === 'quiz_art'){
 
             launchArticleQuiz(task.law, task.art);
 
@@ -19915,35 +20076,15 @@ function render(){
 
         if(e.target.closest('#today-start-review')){
 
-          var curDue = allDueQuestionsCount();
+          var curRc = (window.RecallMode && window.RecallMode.getTodaySummary) ? window.RecallMode.getTodaySummary() : { wrongCardCount: 0, againCardCount: 0 };
+
+          var curRcWeak = Math.max(curRc.wrongCardCount || 0, curRc.againCardCount || 0);
 
           var curWrong = allWrongExamCount();
 
-          if(curDue > 0){
+          if(curRcWeak > 0 && window.RecallMode && window.RecallMode.startWrongOrToday){
 
-            var targetTab = REVIEW;
-
-            for(var li=0; li<CONTENT.length; li++){
-
-              var b = lawBuckets(CONTENT[li]);
-
-              if(b && b.due && b.due.length > 0){
-
-                targetTab = li;
-
-                break;
-
-              }
-
-            }
-
-            mode = 'quiz';
-
-            tabIdx = targetTab;
-
-            resetTab(TABS[targetTab]);
-
-            render();
+            window.RecallMode.startWrongOrToday();
 
             window.scrollTo(0,0);
 
@@ -20015,21 +20156,17 @@ function render(){
 
             window.scrollTo(0,0);
 
+          } else if(window.RecallMode && window.RecallMode.startFromToday){
+
+            window.RecallMode.startFromToday('continue');
+
+            window.scrollTo(0,0);
+
           } else {
 
-            var dTasks = getDailyTasks();
+            mode = 'recall';
 
-            if(dTasks[0] && dTasks[0].art){
-
-              launchArticleQuiz(dTasks[0].law, dTasks[0].art);
-
-            } else {
-
-              mode = 'quiz';
-
-              render();
-
-            }
+            render();
 
           }
 

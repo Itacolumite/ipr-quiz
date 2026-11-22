@@ -4567,19 +4567,69 @@ body.archive .main {
   border-top: 1px dashed #93c5fd;
 }
 
-/* Trap 4-choice inline panel */
-.rc-mcq-panel {
-  margin-top: 12px;
-  padding: 12px;
-  border-radius: 12px;
-  background: #f8fafc;
+/* Trap 4-choice popup modal overlay */
+.rc-mcq-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  background: rgba(15, 23, 42, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.rc-mcq-modal {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
   border: 1px solid #cbd5e1;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.25);
+}
+.rc-mcq-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
 }
 .rc-mcq-title {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 800;
+  color: #1e293b;
+}
+.rc-mcq-close {
+  min-width: 34px;
+  min-height: 34px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
   color: #475569;
-  margin-bottom: 8px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.rc-mcq-ctx {
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: #334155;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.rc-mcq-ctx-slot {
+  display: inline-block;
+  padding: 0 6px;
+  margin: 0 2px;
+  border-radius: 5px;
+  background: #e0e7ff;
+  color: #3730a3;
+  font-weight: 800;
 }
 .rc-mcq-grid {
   display: grid;
@@ -4587,16 +4637,17 @@ body.archive .main {
   gap: 8px;
 }
 .rc-mcq-opt {
-  min-height: 44px;
-  padding: 8px 10px;
+  min-height: 50px;
+  padding: 10px 10px;
   border-radius: 10px;
-  border: 1px solid #cbd5e1;
+  border: 1.5px solid #cbd5e1;
   background: #ffffff;
   color: #0f172a;
-  font-size: 14.5px;
+  font-size: 15px;
   font-weight: 700;
   cursor: pointer;
   text-align: center;
+  word-break: keep-all;
 }
 .rc-mcq-opt.ok {
   background: #ecfdf5;
@@ -4608,6 +4659,14 @@ body.archive .main {
   border-color: #ef4444;
   color: #991b1b;
 }
+.rc-mcq-fb {
+  margin-top: 10px;
+  font-size: 13.5px;
+  font-weight: 800;
+  text-align: center;
+}
+.rc-mcq-fb.ok { color: #059669; }
+.rc-mcq-fb.bad { color: #dc2626; }
 
 /* Twists box */
 .rc-twists {
@@ -5005,13 +5064,26 @@ body.dark .rc-ref-box {
   border-color: #1d4ed8;
   color: #dbeafe;
 }
-body.dark .rc-mcq-panel,
+body.dark .rc-mcq-modal,
 body.dark .rc-expl-box,
 body.dark .rc-ox-guide,
 body.dark .rc-mute-bar {
-  background: #161a22;
+  background: #1a1e27;
   border-color: #2a3040;
   color: #e2e8f0;
+}
+body.dark .rc-mcq-title {
+  color: #f1f5f9;
+}
+body.dark .rc-mcq-close,
+body.dark .rc-mcq-ctx {
+  background: #232838;
+  border-color: #333a4c;
+  color: #e2e8f0;
+}
+body.dark .rc-mcq-ctx-slot {
+  background: #312e81;
+  color: #c7d2fe;
 }
 body.dark .rc-mcq-opt,
 body.dark .rc-trap-chip,
@@ -5068,6 +5140,59 @@ body.dark .rc-today-info {
     flex-wrap: wrap;
     gap: 4px;
   }
+}
+/* Mobile card layout for Cases 383 table (prevent left/right clipping on <= 768px) */
+@media (max-width: 768px) {
+  .cases-table-meta { flex-wrap: wrap; gap: 4px; }
+  .cases-table-card > div[style*="overflow-x"] { overflow-x: visible !important; }
+  .cases-table,
+  .cases-table tbody { display: block; width: 100%; }
+  .cases-table thead { display: none; }
+  .cases-table tbody tr:not(.cases-detail-pane) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+    padding: 12px;
+    border-bottom: 1px solid #E2E8F0;
+  }
+  .cases-table tbody tr:not(.cases-detail-pane) td {
+    display: inline-flex;
+    align-items: center;
+    padding: 0;
+    border: 0;
+    width: auto;
+    max-width: 100%;
+  }
+  .cases-table tbody tr:not(.cases-detail-pane) td:empty { display: none; }
+  .cases-table tbody tr:not(.cases-detail-pane) td:last-child {
+    display: block;
+    flex: 1 1 100%;
+    width: 100%;
+    padding-top: 6px;
+  }
+  .cases-table tbody tr.cases-detail-pane {
+    display: block;
+    width: 100%;
+  }
+  .cases-table tbody tr.cases-detail-pane td {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px !important;
+  }
+  .cases-item-block {
+    padding: 10px 12px;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+  .cases-item-head,
+  .cases-item-text {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+  body.dark .cases-table tbody tr:not(.cases-detail-pane) { border-bottom-color: #232936; }
 }
 </style>
 
@@ -9726,6 +9851,7 @@ document.addEventListener('keydown', function(e){
   var session = null;
   var cardRuntime = null;
   var muteTimer = null;
+  var mcqCloseTimer = null;
   var muteSuppressClick = false;
   var statusBanner = "";
 
@@ -9742,7 +9868,7 @@ document.addEventListener('keydown', function(e){
   function daysUntil(dateStr) {
     try {
       var t1 = Date.parse(todayKst() + "T00:00:00Z");
-      var t2 = Date.parse((dateStr || "2027-02-20") + "T00:00:00Z");
+      var t2 = Date.parse((dateStr || "2027-02-27") + "T00:00:00Z");
       var d = Math.ceil((t2 - t1) / 86400000);
       return d > 0 ? d : 1;
     } catch (e) {
@@ -9808,7 +9934,7 @@ document.addEventListener('keydown', function(e){
         trapTodayCount: 0
       },
       settings: {
-        examDate: "2027-02-20",
+        examDate: "2027-02-27",
         goalRounds: 5,
         dailyNewCards: 30,
         coreOnly: false,
@@ -9834,6 +9960,7 @@ document.addEventListener('keydown', function(e){
     };
     if (!s.rotation.doneIds || typeof s.rotation.doneIds !== "object") s.rotation.doneIds = {};
     if (!s.rotation.todayDoneCardIds || typeof s.rotation.todayDoneCardIds !== "object") s.rotation.todayDoneCardIds = {};
+    if (s.settings.examDate === "2027-02-20") s.settings.examDate = "2027-02-27";
     var tk = todayKst();
     if (s.rotation.todayDate !== tk) {
       s.rotation.todayDate = tk;
@@ -10458,14 +10585,35 @@ document.addEventListener('keydown', function(e){
       html += "</div>";
     }
 
-    // Active 4-choice panel for number|modal|subject blank
+    // Active 4-choice popup modal for number|modal|subject blank
     if (cardRuntime.activeMcqBid) {
-      var targetSeg = (card.segments || []).find(function (s) { return s.bid === cardRuntime.activeMcqBid; });
+      var segList = card.segments || [];
+      var targetIdx = -1;
+      for (var si = 0; si < segList.length; si++) {
+        if (segList[si].bid === cardRuntime.activeMcqBid) { targetIdx = si; break; }
+      }
+      var targetSeg = targetIdx >= 0 ? segList[targetIdx] : null;
       if (targetSeg) {
         var opts = getMcqOptionsForBlank(card, targetSeg);
         var picked = cardRuntime.mcqPicked[targetSeg.bid];
-        html += '<div class="rc-mcq-panel">';
-        html += '<div class="rc-mcq-title">\ud568\uc815 \uce78 4\uc9c0\uc120\ub2e4</div>';
+        var beforeTxt = "";
+        for (var bi = targetIdx - 1; bi >= 0 && beforeTxt.length < 28; bi--) {
+          var bs = segList[bi];
+          beforeTxt = ("b" in bs ? (cardRuntime.opened[bs.bid] ? bs.b : "[ ]") : (bs.t || "")) + beforeTxt;
+        }
+        beforeTxt = beforeTxt.replace(/\s+/g, " ");
+        if (beforeTxt.length > 26) beforeTxt = "\u2026" + beforeTxt.slice(-26);
+        var afterTxt = "";
+        for (var ai = targetIdx + 1; ai < segList.length && afterTxt.length < 28; ai++) {
+          var as = segList[ai];
+          afterTxt += ("b" in as ? (cardRuntime.opened[as.bid] ? as.b : "[ ]") : (as.t || ""));
+        }
+        afterTxt = afterTxt.replace(/\s+/g, " ");
+        if (afterTxt.length > 26) afterTxt = afterTxt.slice(0, 26) + "\u2026";
+
+        html += '<div class="rc-mcq-backdrop" id="rc-mcq-backdrop"><div class="rc-mcq-modal" role="dialog" aria-label="\ud568\uc815 \uce78 4\uc9c0\uc120\ub2e4">';
+        html += '<div class="rc-mcq-head"><div class="rc-mcq-title">\ud83c\udfaf \ud568\uc815 \uce78 4\uc9c0\uc120\ub2e4</div><button type="button" class="rc-mcq-close" id="rc-mcq-close" aria-label="\ub2eb\uae30">\u2715</button></div>';
+        html += '<div class="rc-mcq-ctx">' + esc(beforeTxt) + '<span class="rc-mcq-ctx-slot">' + esc(picked != null ? targetSeg.b : "?") + "</span>" + esc(afterTxt) + "</div>";
         html += '<div class="rc-mcq-grid">';
         opts.forEach(function (opt) {
           var cls = "rc-mcq-opt";
@@ -10475,6 +10623,11 @@ document.addEventListener('keydown', function(e){
           }
           html += '<button type="button" class="' + cls + '" data-rc-mcq-opt="' + esc(opt) + '" data-rc-mcq-bid="' + esc(targetSeg.bid) + '">' + esc(opt) + "</button>";
         });
+        html += "</div>";
+        if (picked != null) {
+          var isOk = picked === targetSeg.b;
+          html += '<div class="rc-mcq-fb ' + (isOk ? "ok" : "bad") + '">' + (isOk ? "\u2b55 \uc815\ub2f5\uc785\ub2c8\ub2e4!" : "\u274c \uc624\ub2f5 \u00b7 \uc815\ub2f5: " + esc(targetSeg.b)) + "</div>";
+        }
         html += "</div></div>";
       }
     }
@@ -10899,6 +11052,8 @@ document.addEventListener('keydown', function(e){
 
   function render() {
     if (!rootContainer) return;
+    var keepScroll = (view === "session");
+    var sy = keepScroll ? window.scrollY : 0;
     var html = '<div class="rc-wrap">';
     if (view === "home") html += renderHomeScreen();
     else if (view === "session") html += renderSessionScreen();
@@ -10909,6 +11064,7 @@ document.addEventListener('keydown', function(e){
     else if (view === "settings") html += renderSettingsScreen();
     html += "</div>";
     rootContainer.innerHTML = html;
+    if (keepScroll && sy > 0) window.scrollTo(0, sy);
   }
 
   function onRootClick(e) {
@@ -11016,17 +11172,35 @@ document.addEventListener('keydown', function(e){
       return;
     }
 
+    // Close 4-choice popup on backdrop or close button
+    if (t.id === "rc-mcq-backdrop" || t.closest("#rc-mcq-close")) {
+      clearTimeout(mcqCloseTimer);
+      if (cardRuntime) {
+        cardRuntime.activeMcqBid = null;
+        render();
+      }
+      return;
+    }
+
     // Trap 4-choice pick
     if ((el = t.closest("[data-rc-mcq-opt]"))) {
       if (!cardRuntime) return;
+      clearTimeout(mcqCloseTimer);
       var mBid = el.getAttribute("data-rc-mcq-bid");
       var opt = el.getAttribute("data-rc-mcq-opt");
       var mSeg = (cardRuntime.card.segments || []).find(function (s) { return s.bid === mBid; });
       if (!mSeg || cardRuntime.mcqPicked[mBid] != null) return;
       cardRuntime.mcqPicked[mBid] = opt;
       cardRuntime.opened[mBid] = true;
-      if (opt !== mSeg.b) cardRuntime.wrongMarks[mBid] = true;
+      var isWrongPick = opt !== mSeg.b;
+      if (isWrongPick) cardRuntime.wrongMarks[mBid] = true;
       render();
+      mcqCloseTimer = setTimeout(function () {
+        if (cardRuntime && cardRuntime.activeMcqBid === mBid) {
+          cardRuntime.activeMcqBid = null;
+          render();
+        }
+      }, isWrongPick ? 950 : 420);
       return;
     }
 
@@ -11182,7 +11356,7 @@ document.addEventListener('keydown', function(e){
   function onRootChange(e) {
     var t = e.target;
     if (t.id === "rc-set-examdate") {
-      state.settings.examDate = t.value || "2027-02-20";
+      state.settings.examDate = t.value || "2027-02-27";
       saveState();
     } else if (t.id === "rc-set-goal") {
       state.settings.goalRounds = Number(t.value) || 5;
@@ -11253,6 +11427,7 @@ document.addEventListener('keydown', function(e){
 
     unmount: function () {
       cancelMuteTimer();
+      clearTimeout(mcqCloseTimer);
       rootContainer = null;
     },
 
@@ -18431,7 +18606,7 @@ function render(){
 
           var isHidden = pane.style.display === 'none';
 
-          pane.style.display = isHidden ? 'table-row' : 'none';
+          pane.style.display = isHidden ? '' : 'none';
 
           tb.classList.toggle('active', isHidden);
 
